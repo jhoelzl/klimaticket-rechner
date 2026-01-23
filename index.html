@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Klimaticket Rechner">
+    <meta name="description" content="Verfolge Deine Klimaticket-Fahrten und berechne Deine Ersparnisse">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192'/><text x='96' y='140' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>€</text></svg>">
+    <title>Klimaticket Rechner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #087e8b;
+            --secondary: #05a8a3;
+            --success: #4caf50;
+            --danger: #f44336;
+            --light: #f5f5f5;
+            --dark: #333;
+            --border: #ddd;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 24px 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .info-box strong {
+            display: block;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .info-box span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 16px;
+            font-size: 18px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .quick-buttons button {
+            flex: 1;
+        }
+
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            background: #066270;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            font-size: 13px;
+        }
+
+        .btn-secondary:active {
+            background: #048a82;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            font-size: 13px;
+        }
+
+        .btn-danger:active {
+            background: #da190b;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:active {
+            background: #388e3c;
+        }
+
+        .trips-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .trip-item {
+            background: var(--light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .trip-item .trip-info {
+            flex: 1;
+        }
+
+        .trip-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .trip-cost {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .trip-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .stat-box .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-savings {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--success), #66bb6a) !important;
+        }
+
+        .stat-savings .value {
+            font-size: 32px;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--success);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .message.positive {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .message.negative {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .export-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .export-buttons button {
+            flex: 1;
+            min-width: 120px;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 600;
+            font-size: 16px;
+            z-index: 9999;
+            max-width: 90%;
+            animation: slideUp 0.3s ease forwards;
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            to {
+                transform: translateX(-50%) translateY(120px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hide {
+            animation: slideDown 0.3s ease forwards;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 24px;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* iPhone specific styles */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .container {
+                padding: 16px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚆 Klimaticket Rechner</h1>
+            <div class="info-row">
+                <div class="info-box">
+                    <strong>Gültig bis:</strong>
+                    <span id="expiryDate">22. Jän. 2026</span>
+                </div>
+                <div class="info-box">
+                    <strong>Gültigkeit:</strong>
+                    <span id="daysRemaining">-</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Eingabe-Bereich -->
+        <div class="card">
+            <h2>📝 Fahrt hinzufügen</h2>
+            
+            <div class="quick-buttons">
+                <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn Sbg')">
+                    🚇 S-Bahn<br>(3,60€)
+                </button>
+                <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Sbg')">
+                    🚌 Obus Sbg<br>(3,00€)
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label for="tripDate">Datum:</label>
+                <input type="date" id="tripDate">
+            </div>
+
+            <div class="form-group">
+                <label for="tripRoute">Route (z.B. Salzburg - Wien):</label>
+                <input type="text" id="tripRoute" placeholder="Von - Nach">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tripCost">Kosten ohne Ticket (EUR):</label>
+                    <input type="number" id="tripCost" placeholder="5.00" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="tripNotes">Notiz:</label>
+                    <input type="text" id="tripNotes" placeholder="optional">
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="addTrip()" style="width: 100%;">
+                ➕ Fahrt speichern
+            </button>
+        </div>
+
+        <!-- Statistiken -->
+        <div class="card">
+            <h2>📊 Übersicht</h2>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="label">Anzahl Fahrten</div>
+                    <div class="value" id="tripCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Gesamtkosten (ohne Ticket)</div>
+                    <div class="value" id="totalCost">0€</div>
+                </div>
+                <div class="stat-box stat-savings">
+                    <div class="label">Ersparnis mit Klimaticket</div>
+                    <div class="value" id="savings">0€</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="message" class="hidden message"></div>
+        </div>
+
+        <!-- Fahrten-Liste -->
+        <div class="card">
+            <h2>📋 Deine Fahrten</h2>
+            <div class="trips-list" id="tripsList">
+                <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
+            </div>
+        </div>
+
+        <!-- Export/Backup -->
+        <div class="card">
+            <h2>💾 Datensicherung</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
+                Exportiere Deine Daten als JSON oder CSV für Dropbox/iCloud.
+            </p>
+            <div class="export-buttons">
+                <button class="btn-secondary" onclick="exportJSON()">📥 JSON Export</button>
+                <button class="btn-secondary" onclick="exportCSV()">📊 CSV Export</button>
+                <button class="btn-secondary" onclick="importData()">📤 Importieren</button>
+                <button class="btn-danger" onclick="clearAllData()">🗑️ Löschen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden input for import -->
+    <input type="file" id="importFile" accept=".json,.csv" style="display: none;" onchange="handleFileImport()">
+
+    <script>
+        // Initialize app
+        const TICKET_COST = 1400;
+        const START_DATE = new Date(2025, 0, 23); // 23. Jänner 2025
+        const END_DATE = new Date(2026, 0, 22); // 22. Jänner 2026
+
+        // Set today's date in input
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tripDate').value = today;
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => 
+                console.log('Service Worker registration failed:', err)
+            );
+        }
+
+        // Load and display data
+        function loadData() {
+            const trips = getTrips();
+            displayTrips(trips);
+            updateStats(trips);
+            updateDaysRemaining();
+        }
+
+        function getTrips() {
+            const data = localStorage.getItem('trips');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveTrips(trips) {
+            localStorage.setItem('trips', JSON.stringify(trips));
+        }
+
+        function addTrip() {
+            const date = document.getElementById('tripDate').value;
+            const route = document.getElementById('tripRoute').value.trim();
+            const cost = parseFloat(document.getElementById('tripCost').value);
+            const notes = document.getElementById('tripNotes').value.trim();
+
+            if (!date || !route || !cost || cost <= 0) {
+                showToast('❌ Bitte alle Felder ausfüllen!', 'error');
+                return;
+            }
+
+            const trip = {
+                id: Date.now(),
+                date,
+                route,
+                cost: parseFloat(cost.toFixed(2)),
+                notes,
+                timestamp: new Date().toISOString()
+            };
+
+            const trips = getTrips();
+            trips.push(trip);
+            saveTrips(trips);
+
+            // Show success message
+            showToast(`✅ Fahrt "${route}" (+€${cost.toFixed(2)}) hinzugefügt!`);
+
+            // Clear form
+            document.getElementById('tripRoute').value = '';
+            document.getElementById('tripCost').value = '';
+            document.getElementById('tripNotes').value = '';
+            document.getElementById('tripDate').value = today;
+
+            loadData();
+            
+            // Scroll to trips list
+            setTimeout(() => {
+                document.getElementById('tripsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+
+        function addQuickTrip(cost, route) {
+            const trips = getTrips();
+            const trip = {
+                id: Date.now(),
+                date: today,
+                route,
+                cost,
+                notes: '',
+                timestamp: new Date().toISOString()
+            };
+
+            trips.push(trip);
+            saveTrips(trips);
+            loadData();
+            
+            // Show toast notification
+            showToast(`✅ ${route} (+€${cost.toFixed(2)}) hinzugefügt!`);
+            
+            // Scroll to trips list
+            setTimeout(() => {
+                document.getElementById('tripsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+
+        function deleteTrip(id) {
+            if (confirm('Fahrt wirklich löschen?')) {
+                let trips = getTrips();
+                trips = trips.filter(t => t.id !== id);
+                saveTrips(trips);
+                loadData();
+            }
+        }
+
+        function displayTrips(trips) {
+            const tripsList = document.getElementById('tripsList');
+            
+            if (trips.length === 0) {
+                tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>';
+                return;
+            }
+
+            // Sort by date descending
+            const sorted = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            tripsList.innerHTML = sorted.map(trip => `
+                <div class="trip-item">
+                    <div class="trip-info">
+                        <div class="trip-date">${formatDate(trip.date)}</div>
+                        <div><strong>${trip.route}</strong></div>
+                        ${trip.notes ? `<div style="font-size: 12px; color: #666;">${trip.notes}</div>` : ''}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="trip-cost">€${trip.cost.toFixed(2)}</div>
+                        <button class="trip-delete" onclick="deleteTrip(${trip.id})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(trips) {
+            const totalCost = trips.reduce((sum, trip) => sum + trip.cost, 0);
+            const savings = totalCost - TICKET_COST;
+            const progressPercent = Math.min(100, (totalCost / TICKET_COST) * 100);
+
+            document.getElementById('tripCount').textContent = trips.length;
+            document.getElementById('totalCost').textContent = '€' + totalCost.toFixed(2);
+            document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+
+            const messageEl = document.getElementById('message');
+            if (trips.length === 0) {
+                messageEl.classList.add('hidden');
+            } else if (savings >= 0) {
+                messageEl.className = 'message positive';
+                messageEl.textContent = `✅ Glückwunsch! Du sparst ${Math.abs(savings).toFixed(2)}€ mit dem Klimaticket.`;
+            } else {
+                messageEl.className = 'message negative';
+                messageEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um Deine Kosten für das Ticket zu sparen.`;
+            }
+        }
+
+        function updateDaysRemaining() {
+            const now = new Date();
+            const daysLeft = Math.max(0, Math.ceil((END_DATE - now) / (1000 * 60 * 60 * 24)));
+            document.getElementById('daysRemaining').textContent = daysLeft + ' Tage';
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('de-AT', options);
+        }
+
+        // Export functions
+        function exportJSON() {
+            const trips = getTrips();
+            const dataStr = JSON.stringify(trips, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            downloadFile(dataBlob, 'klimaticket-daten.json');
+        }
+
+        function exportCSV() {
+            const trips = getTrips();
+            const headers = ['Datum', 'Route', 'Kosten (EUR)', 'Notiz'];
+            const rows = trips.map(t => [
+                t.date,
+                t.route,
+                t.cost,
+                t.notes
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+
+            const dataBlob = new Blob([csv], { type: 'text/csv' });
+            downloadFile(dataBlob, 'klimaticket-daten.csv');
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleFileImport() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let trips = [];
+                    if (file.name.endsWith('.json')) {
+                        trips = JSON.parse(e.target.result);
+                    } else if (file.name.endsWith('.csv')) {
+                        // Simple CSV parsing
+                        const lines = e.target.result.split('\n').slice(1);
+                        trips = lines.map(line => {
+                            const parts = line.split(',').map(p => p.replace(/^"|"$/g, ''));
+                            return {
+                                id: Date.now() + Math.random(),
+                                date: parts[0],
+                                route: parts[1],
+                                cost: parseFloat(parts[2]) || 0,
+                                notes: parts[3] || ''
+                            };
+                        }).filter(t => t.date && t.route && t.cost > 0);
+                    }
+
+                    if (trips.length > 0) {
+                        saveTrips(trips);
+                        loadData();
+                        alert(`✅ ${trips.length} Fahrten importiert!`);
+                    }
+                } catch (err) {
+                    alert('Fehler beim Import: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            document.getElementById('importFile').value = '';
+        }
+
+        function clearAllData() {
+            if (confirm('Alle Daten wirklich löschen? Dies kann nicht rückgängig gemacht werden.')) {
+                localStorage.removeItem('trips');
+                loadData();
+                showToast('🗑️ Alle Daten gelöscht!', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            // Remove any existing toasts
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Animate out after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Initial load
+        loadData();
+    </script>
+</body>
+</html>

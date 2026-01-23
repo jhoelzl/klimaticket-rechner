@@ -1,0 +1,40 @@
+{
+  "name": "Klimaticket Rechner",
+  "short_name": "Klimaticket",
+  "description": "Verfolge Deine Klimaticket-Fahrten und berechne Deine Ersparnisse",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "scope": "./",
+  "background_color": "#ffffff",
+  "theme_color": "#087e8b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192'/><text x='96' y='140' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>€</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192' rx='45'/><text x='96' y='140' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>€</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "S-Bahn zur Arbeit",
+      "short_name": "S-Bahn",
+      "description": "Schnell eine S-Bahn-Fahrt (3,60€) hinzufügen",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192'/><text x='96' y='100' font-size='80' text-anchor='middle'>🚇</text></svg>",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "categories": ["productivity", "travel"]
+}
