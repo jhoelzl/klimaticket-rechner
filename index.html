@@ -10,6 +10,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192'/><text x='96' y='140' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>€</text></svg>">
     <title>Klimaticket Rechner</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
     <style>
         * {
             margin: 0;
@@ -53,6 +54,49 @@
         header h1 {
             font-size: 28px;
             margin-bottom: 8px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .auth-status {
+            font-size: 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+
+        .auth-status.online {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .auth-status.offline {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .auth-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.9);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .auth-buttons button:active {
+            opacity: 0.8;
         }
 
         .info-row {
@@ -379,7 +423,6 @@
             }
         }
 
-        /* iPhone specific styles */
         @supports (padding: max(0px)) {
             body {
                 padding-left: max(16px, env(safe-area-inset-left));
@@ -395,7 +438,10 @@
 <body>
     <div class="container">
         <header>
-            <h1>🚆 Klimaticket Rechner</h1>
+            <div class="header-top">
+                <h1>🚆 Klimaticket Rechner</h1>
+                <div id="authStatus" class="auth-status">⏳ Laden...</div>
+            </div>
             <div class="info-row">
                 <div class="info-box">
                     <strong>Gültig bis:</strong>
@@ -406,6 +452,10 @@
                     <span id="daysRemaining">-</span>
                 </div>
             </div>
+            <div class="auth-buttons">
+                <button onclick="handleAuth()" id="authBtn">📧 Anmelden</button>
+                <button onclick="logout()" id="logoutBtn" class="hidden">🚪 Abmelden</button>
+            </div>
         </header>
 
         <!-- Eingabe-Bereich -->
@@ -413,10 +463,10 @@
             <h2>📝 Fahrt hinzufügen</h2>
             
             <div class="quick-buttons">
-                <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn Sbg')">
+                <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn zur Arbeit')">
                     🚇 S-Bahn<br>(3,60€)
                 </button>
-                <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Sbg')">
+                <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Salzburg')">
                     🚌 Obus Sbg<br>(3,00€)
                 </button>
             </div>
@@ -484,7 +534,7 @@
         <div class="card">
             <h2>💾 Datensicherung</h2>
             <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
-                Exportiere Deine Daten als JSON oder CSV für Dropbox/iCloud.
+                Exportiere Deine Daten als JSON oder CSV für Backup.
             </p>
             <div class="export-buttons">
                 <button class="btn-secondary" onclick="exportJSON()">📥 JSON Export</button>
@@ -499,40 +549,134 @@
     <input type="file" id="importFile" accept=".json,.csv" style="display: none;" onchange="handleFileImport()">
 
     <script>
-        // Initialize app
+        // Configuration
         const TICKET_COST = 1400;
-        const START_DATE = new Date(2025, 0, 23); // 23. Jänner 2025
-        const END_DATE = new Date(2026, 0, 22); // 22. Jänner 2026
+        const START_DATE = new Date(2025, 0, 23);
+        const END_DATE = new Date(2026, 0, 22);
+        const SUPABASE_URL = 'https://qfkfcirfwlfjscevxilu.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_REFOWIFpP1IbO5rEARlXUA_Z5Qw--d0';
 
-        // Set today's date in input
+        let supabase = null;
+        let currentUser = null;
+
+        // Initialize Supabase
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (err) {
+            console.error('Supabase initialization failed:', err);
+            showToast('⚠️ Cloud-Verbindung konnte nicht hergestellt werden', 'error');
+        }
+
+        // Set today's date
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('tripDate').value = today;
 
-        // Register Service Worker for PWA
+        // Register Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(err => 
                 console.log('Service Worker registration failed:', err)
             );
         }
 
-        // Load and display data
-        function loadData() {
-            const trips = getTrips();
-            displayTrips(trips);
-            updateStats(trips);
-            updateDaysRemaining();
+        // Check authentication status
+        async function checkAuth() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                updateAuthUI();
+                loadData();
+            } catch (err) {
+                console.error('Auth check failed:', err);
+                updateAuthUI();
+                loadData();
+            }
         }
 
-        function getTrips() {
+        // Handle authentication
+        async function handleAuth() {
+            const email = prompt('Gib Deine E-Mail-Adresse ein:');
+            if (!email) return;
+
+            try {
+                showToast('⏳ Authentifizierung läuft...', 'success');
+                const { error } = await supabase.auth.signInWithOtp({ email });
+                if (error) throw error;
+                showToast('✅ Check-Link wurde an Deine E-Mail gesendet!', 'success');
+            } catch (err) {
+                console.error('Auth error:', err);
+                showToast('❌ Authentifizierung fehlgeschlagen: ' + err.message, 'error');
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await supabase.auth.signOut();
+                currentUser = null;
+                updateAuthUI();
+                showToast('👋 Abgemeldet', 'success');
+            } catch (err) {
+                console.error('Logout error:', err);
+            }
+        }
+
+        // Update auth UI
+        function updateAuthUI() {
+            const authStatus = document.getElementById('authStatus');
+            const authBtn = document.getElementById('authBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (currentUser) {
+                authStatus.className = 'auth-status online';
+                authStatus.textContent = '✅ Angemeldet';
+                authBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+            } else {
+                authStatus.className = 'auth-status offline';
+                authStatus.textContent = '⏳ Anonym (lokal)';
+                authBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        // Load data from Supabase or localStorage
+        async function loadData() {
+            try {
+                let trips = [];
+                
+                if (currentUser) {
+                    // Load from Supabase
+                    const { data, error } = await supabase
+                        .from('trips')
+                        .select('*')
+                        .order('date', { ascending: false });
+                    
+                    if (error) throw error;
+                    trips = data || [];
+                } else {
+                    // Load from localStorage
+                    trips = getLocalTrips();
+                }
+
+                displayTrips(trips);
+                updateStats(trips);
+                updateDaysRemaining();
+            } catch (err) {
+                console.error('Load error:', err);
+                // Fallback to localStorage
+                const trips = getLocalTrips();
+                displayTrips(trips);
+                updateStats(trips);
+            }
+        }
+
+        function getLocalTrips() {
             const data = localStorage.getItem('trips');
             return data ? JSON.parse(data) : [];
         }
 
-        function saveTrips(trips) {
-            localStorage.setItem('trips', JSON.stringify(trips));
-        }
-
-        function addTrip() {
+        // Add trip
+        async function addTrip() {
             const date = document.getElementById('tripDate').value;
             const route = document.getElementById('tripRoute').value.trim();
             const cost = parseFloat(document.getElementById('tripCost').value);
@@ -544,68 +688,106 @@
             }
 
             const trip = {
-                id: Date.now(),
                 date,
                 route,
                 cost: parseFloat(cost.toFixed(2)),
-                notes,
-                timestamp: new Date().toISOString()
+                notes
             };
 
-            const trips = getTrips();
-            trips.push(trip);
-            saveTrips(trips);
+            try {
+                if (currentUser) {
+                    // Save to Supabase
+                    const { error } = await supabase
+                        .from('trips')
+                        .insert([trip]);
+                    
+                    if (error) throw error;
+                } else {
+                    // Save to localStorage
+                    const trips = getLocalTrips();
+                    trips.push({ ...trip, id: Date.now(), timestamp: new Date().toISOString() });
+                    localStorage.setItem('trips', JSON.stringify(trips));
+                }
 
-            // Show success message
-            showToast(`✅ Fahrt "${route}" (+€${cost.toFixed(2)}) hinzugefügt!`);
+                showToast(`✅ Fahrt "${route}" (+€${cost.toFixed(2)}) hinzugefügt!`);
 
-            // Clear form
-            document.getElementById('tripRoute').value = '';
-            document.getElementById('tripCost').value = '';
-            document.getElementById('tripNotes').value = '';
-            document.getElementById('tripDate').value = today;
+                // Clear form
+                document.getElementById('tripRoute').value = '';
+                document.getElementById('tripCost').value = '';
+                document.getElementById('tripNotes').value = '';
+                document.getElementById('tripDate').value = today;
 
-            loadData();
-            
-            // Scroll to trips list
-            setTimeout(() => {
-                document.getElementById('tripsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 300);
-        }
-
-        function addQuickTrip(cost, route) {
-            const trips = getTrips();
-            const trip = {
-                id: Date.now(),
-                date: today,
-                route,
-                cost,
-                notes: '',
-                timestamp: new Date().toISOString()
-            };
-
-            trips.push(trip);
-            saveTrips(trips);
-            loadData();
-            
-            // Show toast notification
-            showToast(`✅ ${route} (+€${cost.toFixed(2)}) hinzugefügt!`);
-            
-            // Scroll to trips list
-            setTimeout(() => {
-                document.getElementById('tripsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 300);
-        }
-
-        function deleteTrip(id) {
-            if (confirm('Fahrt wirklich löschen?')) {
-                let trips = getTrips();
-                trips = trips.filter(t => t.id !== id);
-                saveTrips(trips);
                 loadData();
+
+                // Scroll to trips list
+                setTimeout(() => {
+                    document.getElementById('tripsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            } catch (err) {
+                console.error('Add trip error:', err);
+                showToast('❌ Fehler beim Speichern: ' + err.message, 'error');
             }
         }
 
+        // Add quick trip
+        async function addQuickTrip(cost, route) {
+            const trip = {
+                date: today,
+                route,
+                cost
+            };
+
+            try {
+                if (currentUser) {
+                    const { error } = await supabase
+                        .from('trips')
+                        .insert([trip]);
+                    
+                    if (error) throw error;
+                } else {
+                    const trips = getLocalTrips();
+                    trips.push({ ...trip, id: Date.now(), notes: '', timestamp: new Date().toISOString() });
+                    localStorage.setItem('trips', JSON.stringify(trips));
+                }
+
+                showToast(`✅ ${route} (+€${cost.toFixed(2)}) hinzugefügt!`);
+                loadData();
+
+                setTimeout(() => {
+                    document.getElementById('tripsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            } catch (err) {
+                console.error('Quick trip error:', err);
+                showToast('❌ Fehler: ' + err.message, 'error');
+            }
+        }
+
+        // Delete trip
+        async function deleteTrip(id) {
+            if (!confirm('Fahrt wirklich löschen?')) return;
+
+            try {
+                if (currentUser) {
+                    const { error } = await supabase
+                        .from('trips')
+                        .delete()
+                        .eq('id', id);
+                    
+                    if (error) throw error;
+                } else {
+                    const trips = getLocalTrips();
+                    const filtered = trips.filter(t => t.id !== id);
+                    localStorage.setItem('trips', JSON.stringify(filtered));
+                }
+
+                loadData();
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast('❌ Fehler beim Löschen: ' + err.message, 'error');
+            }
+        }
+
+        // Display trips
         function displayTrips(trips) {
             const tripsList = document.getElementById('tripsList');
             
@@ -614,7 +796,6 @@
                 return;
             }
 
-            // Sort by date descending
             const sorted = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date));
 
             tripsList.innerHTML = sorted.map(trip => `
@@ -632,6 +813,7 @@
             `).join('');
         }
 
+        // Update stats
         function updateStats(trips) {
             const totalCost = trips.reduce((sum, trip) => sum + trip.cost, 0);
             const savings = totalCost - TICKET_COST;
@@ -654,12 +836,14 @@
             }
         }
 
+        // Update days remaining
         function updateDaysRemaining() {
             const now = new Date();
             const daysLeft = Math.max(0, Math.ceil((END_DATE - now) / (1000 * 60 * 60 * 24)));
             document.getElementById('daysRemaining').textContent = daysLeft + ' Tage';
         }
 
+        // Format date
         function formatDate(dateStr) {
             const date = new Date(dateStr + 'T00:00:00');
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -667,30 +851,49 @@
         }
 
         // Export functions
-        function exportJSON() {
-            const trips = getTrips();
-            const dataStr = JSON.stringify(trips, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            downloadFile(dataBlob, 'klimaticket-daten.json');
+        async function exportJSON() {
+            try {
+                let trips = [];
+                if (currentUser) {
+                    const { data, error } = await supabase.from('trips').select('*');
+                    if (error) throw error;
+                    trips = data || [];
+                } else {
+                    trips = getLocalTrips();
+                }
+
+                const dataStr = JSON.stringify(trips, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                downloadFile(dataBlob, 'klimaticket-daten.json');
+            } catch (err) {
+                showToast('❌ Export fehler: ' + err.message, 'error');
+            }
         }
 
-        function exportCSV() {
-            const trips = getTrips();
-            const headers = ['Datum', 'Route', 'Kosten (EUR)', 'Notiz'];
-            const rows = trips.map(t => [
-                t.date,
-                t.route,
-                t.cost,
-                t.notes
-            ]);
+        async function exportCSV() {
+            try {
+                let trips = [];
+                if (currentUser) {
+                    const { data, error } = await supabase.from('trips').select('*');
+                    if (error) throw error;
+                    trips = data || [];
+                } else {
+                    trips = getLocalTrips();
+                }
 
-            let csv = headers.join(',') + '\n';
-            rows.forEach(row => {
-                csv += row.map(cell => `"${cell}"`).join(',') + '\n';
-            });
+                const headers = ['Datum', 'Route', 'Kosten (EUR)', 'Notiz'];
+                const rows = trips.map(t => [t.date, t.route, t.cost, t.notes || '']);
 
-            const dataBlob = new Blob([csv], { type: 'text/csv' });
-            downloadFile(dataBlob, 'klimaticket-daten.csv');
+                let csv = headers.join(',') + '\n';
+                rows.forEach(row => {
+                    csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+                });
+
+                const dataBlob = new Blob([csv], { type: 'text/csv' });
+                downloadFile(dataBlob, 'klimaticket-daten.csv');
+            } catch (err) {
+                showToast('❌ Export fehler: ' + err.message, 'error');
+            }
         }
 
         function downloadFile(blob, filename) {
@@ -713,18 +916,16 @@
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 try {
                     let trips = [];
                     if (file.name.endsWith('.json')) {
                         trips = JSON.parse(e.target.result);
                     } else if (file.name.endsWith('.csv')) {
-                        // Simple CSV parsing
                         const lines = e.target.result.split('\n').slice(1);
                         trips = lines.map(line => {
                             const parts = line.split(',').map(p => p.replace(/^"|"$/g, ''));
                             return {
-                                id: Date.now() + Math.random(),
                                 date: parts[0],
                                 route: parts[1],
                                 cost: parseFloat(parts[2]) || 0,
@@ -734,40 +935,60 @@
                     }
 
                     if (trips.length > 0) {
-                        saveTrips(trips);
+                        if (currentUser) {
+                            const { error } = await supabase.from('trips').insert(trips);
+                            if (error) throw error;
+                        } else {
+                            const localTrips = getLocalTrips();
+                            localTrips.push(...trips.map(t => ({
+                                ...t,
+                                id: Date.now() + Math.random(),
+                                timestamp: new Date().toISOString()
+                            })));
+                            localStorage.setItem('trips', JSON.stringify(localTrips));
+                        }
+
                         loadData();
-                        alert(`✅ ${trips.length} Fahrten importiert!`);
+                        showToast(`✅ ${trips.length} Fahrten importiert!`);
                     }
                 } catch (err) {
-                    alert('Fehler beim Import: ' + err.message);
+                    showToast('❌ Import fehler: ' + err.message, 'error');
                 }
             };
             reader.readAsText(file);
             document.getElementById('importFile').value = '';
         }
 
-        function clearAllData() {
-            if (confirm('Alle Daten wirklich löschen? Dies kann nicht rückgängig gemacht werden.')) {
-                localStorage.removeItem('trips');
+        async function clearAllData() {
+            if (!confirm('Alle Daten wirklich löschen?')) return;
+
+            try {
+                if (currentUser) {
+                    const { error } = await supabase.from('trips').delete().neq('id', 0);
+                    if (error) throw error;
+                } else {
+                    localStorage.removeItem('trips');
+                }
+
                 loadData();
                 showToast('🗑️ Alle Daten gelöscht!', 'error');
+            } catch (err) {
+                showToast('❌ Fehler: ' + err.message, 'error');
             }
         }
 
+        // Toast notification
         function showToast(message, type = 'success') {
-            // Remove any existing toasts
             const existingToast = document.querySelector('.toast');
             if (existingToast) {
                 existingToast.remove();
             }
 
-            // Create toast element
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.textContent = message;
             document.body.appendChild(toast);
 
-            // Animate out after 3 seconds
             setTimeout(() => {
                 toast.classList.add('hide');
                 setTimeout(() => {
@@ -777,7 +998,7 @@
         }
 
         // Initial load
-        loadData();
+        checkAuth();
     </script>
 </body>
 </html>

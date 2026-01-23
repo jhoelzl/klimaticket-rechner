@@ -1,161 +1,153 @@
-# 🚆 Klimaticket Rechner - Anleitung
+# Klimaticket Rechner mit Supabase Cloud-Sync ☁️
 
-## Was ist das?
-Eine Web-App zum Verfolgen Deiner Klimaticket-Fahrten und Berechnen Deiner Ersparnisse gegen die €1.400 Ticket-Kosten.
+## ✨ Neue Features
 
----
-
-## 📱 Installation auf dem iPhone
-
-### Schritt 1: App im Safari öffnen
-1. Öffne Safari auf Deinem iPhone
-2. Gehe zu: `file:///Users/jhoelzl/Documents/klimaticket_rechner/index.html`
-   - Oder hoste die Dateien online (siehe unten)
-
-### Schritt 2: "Zum Home-Bildschirm" hinzufügen
-1. Tippe auf das **Share-Symbol** (Kasten mit Pfeil) unten rechts
-2. Scroll nach unten und wähle **"Zum Home-Bildschirm"**
-3. Gib einen Namen ein (z.B. "Klimaticket") oder verwende den Standard
-4. Tippe **"Hinzufügen"**
-
-✅ Die App ist jetzt wie eine echte App auf Deinem iPhone installiert!
-
-### Alternativ: App online hosten
-Falls Du sie auf mehreren Geräten brauchst:
-- GitHub Pages (kostenlos, öffentlich)
-- Netlify (kostenlos, einfach)
-- Vercel (kostenlos)
-- Dropbox (über "Shared Links")
-
-Dann kannst Du einfach über einen Link auf alle Geräten zugreifen.
+✅ **E-Mail-Authentifizierung** (kein Passwort!)
+✅ **Automatischer Cloud-Backup** in Supabase
+✅ **Multi-Device Sync** - Daten auf allen Geräten aktuell
+✅ **Offline-Support** - Funktioniert auch ohne Internet
+✅ **Fallback auf localStorage** - Falls nicht angemeldet
 
 ---
 
-## 💾 Datensicherung - 3 Methoden
+## 🔧 Setup
 
-### 1️⃣ **Automatisch iCloud (empfohlen für iPhone)**
-- Die App speichert Daten **lokal im Browser**
-- iCloud synchronisiert automatisch über Safari
-- Deine Daten bleiben privat auf Deinem iPhone
+### 1. Environment Variables
+```bash
+# Erstelle .env.local (wird NICHT ins Git gepusht)
+cp .env.example .env.local
 
-### 2️⃣ **Manueller Export → Dropbox/iCloud**
-1. Öffne die App
-2. Scrolle nach unten zu "💾 Datensicherung"
-3. Tippe **"📥 JSON Export"** oder **"📊 CSV Export"**
-4. Die Datei wird heruntergeladen
-5. Öffne die Datei in der **Files-App** und verschiebe sie zu:
-   - **iCloud Drive** oder
-   - **Dropbox-App** oder
-   - Eine andere Cloud
-
-**So importierst Du später die Daten zurück:**
-1. Öffne die gespeicherte Datei
-2. Tippe **"Öffnen in..."** → Wähle diese App
-3. Tippe **"📤 Importieren"** in der App
-4. Wähle die Datei
-
-### 3️⃣ **Automatische Cloud-Verbindung** (optional später)
-Falls Du die App erweiterst, könnte sie automatisch mit Cloud speichern.
-
----
-
-## 🎯 So verwendest Du die App
-
-### Schnelle Eingabe (für täglich):
-1. **S-Bahn Sbg** (3,60€) anklicken
-2. Oder **Obus Sbg** (3,00€)
-
-### Längere Fahrten eingeben:
-1. **Datum** wählen
-2. **Route** eingeben (z.B. "Salzburg - Wien")
-3. **Kosten** eingeben (was es ohne Ticket kostet)
-4. Optional: Notiz hinzufügen
-5. **"Fahrt speichern"** tippen
-
-### Statistiken:
-- Oben siehst Du:
-  - Anzahl Fahrten
-  - Gesamtkosten ohne Ticket
-  - Wie viel Du sparst
-  - Progress-Bar zur €1.400
-
----
-
-## 🔍 Deine Daten
-
-### Wo werden sie gespeichert?
-- **Lokal auf Deinem iPhone** (im Browser-Speicher)
-- **Nicht auf meinen Servern**
-- **Du hast 100% Kontrolle**
-
-### Wie sicher sind die Daten?
-- iOS schützt die App-Daten automatisch
-- Wenn Du Dein iPhone verlierst, musst Du die Backup-Datei haben
-- Deswegen: Regelmäßig exportieren! 📥
-
----
-
-## 🛠️ Technische Details
-
-### Dateien
-- `index.html` - Die App selbst
-- `manifest.json` - PWA-Konfiguration
-- `sw.js` - Service Worker (Offline-Support)
-
-### Anforderungen
-- Nur ein moderner Browser (Safari, Chrome, Firefox)
-- Keine Installation nötig (ist ja eine Web-App)
-- Funktioniert auch offline nach dem ersten Laden
-
----
-
-## 📊 CSV/JSON Format für Excel
-
-Wenn Du die Daten in Excel/Sheets analysieren willst:
-
-### CSV (für Excel/Sheets)
-```
-Datum,Route,Kosten (EUR),Notiz
-"2025-01-23","S-Bahn zur Arbeit","3.60",""
-"2025-01-24","Salzburg - Wien","28.00","Dienstreise"
+# Füge Deine Supabase Credentials ein
+VITE_SUPABASE_URL=https://dein-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=dein-publishable-key
 ```
 
-### JSON (für Datenbank/Repräsentation)
-```json
-[
-  {
-    "id": 1234567890,
-    "date": "2025-01-23",
-    "route": "S-Bahn zur Arbeit",
-    "cost": 3.60,
-    "notes": ""
-  }
-]
+### 2. Lokal testen
+```bash
+python3 -m http.server 8000
+# Öffne http://localhost:8000
+```
+
+### 3. Zu GitHub pushen
+```bash
+git add .
+git commit -m "Add Supabase integration"
+git push
 ```
 
 ---
 
-## ❓ FAQs
+## 🔐 Wie Authentifizierung funktioniert
 
-**F: Kann ich die App auf mehreren Geräten verwenden?**
-A: Ja! Wenn Du sie online hostest und verwendest, oder manuell Daten mit JSON exportierst/importierst.
+**Mit Anmeldung (Cloud):**
+- 📧 E-Mail eingeben → Check-Link bekommen
+- ☁️ Daten in Supabase gespeichert
+- 📱 Über alle Geräte synchronisiert
+- 🔒 Row Level Security - nur Deine Daten sichtbar
 
-**F: Was wenn ich die App lösche?**
-A: Deine Daten bleiben im Browser-Speicher, aber es ist sicher, sie vorher zu exportieren!
-
-**F: Kann ich die App bearbeiten/anpassen?**
-A: Ja! Es ist reiner HTML/CSS/JavaScript - öffne die `index.html` mit einem Text-Editor.
-
-**F: Funktioniert es offline?**
-A: Ja! Nach dem ersten Laden cacht die App sich selbst und arbeitet offline.
+**Anonym (lokal):**
+- 💾 Daten nur im Browser-Speicher
+- 🚫 Nicht zwischen Geräten sync
+- ✅ Per Export/Import sicherbar
 
 ---
 
-## 🚀 Nächste Schritte
+## 🎯 Verwendung auf dem iPhone
 
-1. **Testen**: Öffne die App und gib ein paar Fahrten ein
-2. **Sichern**: Exportiere die Daten sofort als Backup
-3. **Installieren**: Adde Sie zum Home-Bildschirm
-4. **Nutzen**: Verfolge Deine Fahrten das ganze Jahr
+1. Safari öffnen → `https://jhoelzl.github.io/klimaticket-rechner/`
+2. Share → "Zum Home-Bildschirm"
+3. **Mit Anmeldung:** Tippe "📧 Anmelden" → E-Mail eingeben
+4. Check-Link aus E-Mail öffnen
+5. Fertig! Daten sind nun in der Cloud ☁️
 
-Viel Erfolg! 🎉
+---
+
+## 📊 Supabase Setup
+
+Falls noch nicht gemacht:
+
+### 1. Projekt erstellen
+- https://supabase.com → Sign Up
+- Neues Projekt: "klimaticket-app"
+- Region: Frankfurt
+
+### 2. Tabelle erstellen
+Settings → SQL Editor → "New Query":
+
+```sql
+CREATE TABLE trips (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id UUID NOT NULL DEFAULT auth.uid(),
+  date TEXT NOT NULL,
+  route TEXT NOT NULL,
+  cost DECIMAL(10,2) NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, id)
+);
+
+ALTER TABLE trips ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own trips"
+  ON trips FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own trips"
+  ON trips FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own trips"
+  ON trips FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own trips"
+  ON trips FOR DELETE
+  USING (auth.uid() = user_id);
+```
+
+### 3. API Keys kopieren
+Settings → API → Project URL + Publishable Key
+
+---
+
+## 🚀 GitHub Pages Deployment
+
+Automatisch deployed, wenn Du pushst:
+
+```bash
+git add .
+git commit -m "Update"
+git push origin main
+```
+
+URL: `https://jhoelzl.github.io/klimaticket-rechner/`
+
+---
+
+## ❓ FAQ
+
+**Q: Muss ich mich anmelden?**
+A: Nein, optional. Ohne Anmeldung → lokal speichern. Mit Anmeldung → Cloud-Backup.
+
+**Q: Sind Daten sicher?**
+A: Ja! Supabase hat encryption & Row Level Security - nur Deine Daten sichtbar.
+
+**Q: Funktioniert offline?**
+A: Ja! Ohne Netz werden Daten lokal gepuffert.
+
+**Q: Kann ich Daten exportieren?**
+A: Ja! JSON/CSV Export jederzeit möglich.
+
+---
+
+## 🐛 Troubleshooting
+
+| Problem | Lösung |
+|---------|--------|
+| "Supabase initialization failed" | Check .env.local - URL & Key korrekt? |
+| Daten laden nicht | Supabase Dashboard → SQL Editor → trips Tabelle existiert? |
+| E-Mail Login funktioniert nicht | Supabase → Auth → Email Templates prüfen |
+
+---
+
+**Made with ❤️ für das Klimaticket!** 🚆
