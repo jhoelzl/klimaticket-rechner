@@ -586,21 +586,32 @@
                 const tokenHash = params.get('token_hash');
                 const type = params.get('type');
                 
-                if (tokenHash && type === 'email_signup') {
+                // Check if we've already processed a token in this session
+                const tokenProcessed = sessionStorage.getItem('tokenProcessed');
+                
+                if (tokenHash && type === 'email_signup' && !tokenProcessed) {
+                    // Mark token as being processed to prevent double-verification
+                    sessionStorage.setItem('tokenProcessed', 'true');
+                    
                     // Verify the token with Supabase
-                    const { error } = await supabase.auth.verifyOtp({
+                    const { data, error } = await supabase.auth.verifyOtp({
                         token_hash: tokenHash,
                         type: 'email'
                     });
                     
                     if (!error) {
                         showToast('✅ Erfolgreich angemeldet!', 'success');
-                        // Clean URL
+                        // Clean URL - remove all auth params
                         window.history.replaceState({}, document.title, window.location.pathname);
                     } else {
+                        sessionStorage.removeItem('tokenProcessed');
                         console.error('Token verification error:', error);
-                        showToast('❌ Link ist ungültig oder abgelaufen', 'error');
+                        const errorMsg = error.message || 'Link ist ungültig oder abgelaufen';
+                        showToast(`❌ ${errorMsg}`, 'error');
                     }
+                } else if (tokenHash && tokenProcessed) {
+                    // Token already processed in this session
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
                 
                 // Also check for fragment-based tokens (fallback)
