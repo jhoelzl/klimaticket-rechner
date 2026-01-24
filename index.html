@@ -582,26 +582,42 @@
         async function checkAuth() {
             try {
                 // Check if there's a token in the URL (from email link)
+                const params = new URLSearchParams(window.location.search);
+                const tokenHash = params.get('token_hash');
+                const type = params.get('type');
+                
+                if (tokenHash && type === 'email_signup') {
+                    // Verify the token with Supabase
+                    const { error } = await supabase.auth.verifyOtp({
+                        token_hash: tokenHash,
+                        type: 'email'
+                    });
+                    
+                    if (!error) {
+                        showToast('✅ Erfolgreich angemeldet!', 'success');
+                        // Clean URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else {
+                        console.error('Token verification error:', error);
+                        showToast('❌ Link ist ungültig oder abgelaufen', 'error');
+                    }
+                }
+                
+                // Also check for fragment-based tokens (fallback)
                 const hash = window.location.hash.substring(1);
                 if (hash && hash.includes('access_token')) {
-                    // Parse the hash for token and type
-                    const params = new URLSearchParams(hash);
-                    const accessToken = params.get('access_token');
-                    const type = params.get('type');
+                    const hashParams = new URLSearchParams(hash);
+                    const accessToken = hashParams.get('access_token');
                     
-                    if (accessToken && type === 'signup') {
-                        // Set the session
+                    if (accessToken) {
                         const { error } = await supabase.auth.setSession({
                             access_token: accessToken,
-                            refresh_token: params.get('refresh_token')
+                            refresh_token: hashParams.get('refresh_token')
                         });
                         
                         if (!error) {
                             showToast('✅ Erfolgreich angemeldet!', 'success');
-                            // Clean URL
                             window.history.replaceState({}, document.title, window.location.pathname);
-                        } else {
-                            console.error('Session set error:', error);
                         }
                     }
                 }
