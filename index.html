@@ -896,6 +896,31 @@
         </div>
     </div>
 
+    <!-- Edit Trip Modal -->
+    <div id="editTripModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px; color: var(--primary);">✏️ Fahrt bearbeiten</h2>
+            <form class="settings-form" onsubmit="submitEditTrip(event)">
+                <label for="editTripDate">Datum:</label>
+                <input type="date" id="editTripDate" required>
+                
+                <label for="editTripRoute" style="margin-top: 12px;">Route:</label>
+                <input type="text" id="editTripRoute" placeholder="z.B. Salzburg - Wien" required>
+                
+                <label for="editTripCost" style="margin-top: 12px;">Kosten (EUR):</label>
+                <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
+                
+                <label for="editTripNotes" style="margin-top: 12px;">Notiz:</label>
+                <input type="text" id="editTripNotes" placeholder="optional">
+                
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn-secondary" onclick="closeEditTripModal()">Abbrechen</button>
+                    <button type="submit" class="modal-btn-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Configuration
         const DEFAULT_TICKET_COST = 1400;
@@ -1320,6 +1345,100 @@
             }
         }
 
+        // Store current trip being edited
+        let currentEditTrip = null;
+
+        // Edit trip
+        async function editTrip(id) {
+            let trip = null;
+
+            if (currentUser) {
+                const { data, error } = await supabase
+                    .from('trips')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                
+                if (error) {
+                    showToast('❌ Fehler beim Laden der Fahrt', 'error');
+                    return;
+                }
+                trip = data;
+            } else {
+                const trips = getLocalTrips();
+                trip = trips.find(t => t.id === id);
+                if (!trip) {
+                    showToast('❌ Fahrt nicht gefunden', 'error');
+                    return;
+                }
+            }
+
+            currentEditTrip = trip;
+            document.getElementById('editTripDate').value = trip.date;
+            document.getElementById('editTripRoute').value = trip.route;
+            document.getElementById('editTripCost').value = trip.cost;
+            document.getElementById('editTripNotes').value = trip.notes || '';
+            document.getElementById('editTripModal').classList.add('active');
+        }
+
+        function closeEditTripModal() {
+            document.getElementById('editTripModal').classList.remove('active');
+            currentEditTrip = null;
+        }
+
+        // Submit edit trip
+        async function submitEditTrip(e) {
+            e.preventDefault();
+
+            if (!currentEditTrip) return;
+
+            const date = document.getElementById('editTripDate').value;
+            const route = document.getElementById('editTripRoute').value.trim();
+            const cost = parseFloat(document.getElementById('editTripCost').value);
+            const notes = document.getElementById('editTripNotes').value.trim();
+
+            if (!date || !route || !cost || cost <= 0) {
+                showToast('❌ Bitte alle Felder ausfüllen!', 'error');
+                return;
+            }
+
+            try {
+                if (currentUser) {
+                    const { error } = await supabase
+                        .from('trips')
+                        .update({
+                            date,
+                            route,
+                            cost: parseFloat(cost.toFixed(2)),
+                            notes
+                        })
+                        .eq('id', currentEditTrip.id);
+                    
+                    if (error) throw error;
+                } else {
+                    const trips = getLocalTrips();
+                    const index = trips.findIndex(t => t.id === currentEditTrip.id);
+                    if (index !== -1) {
+                        trips[index] = {
+                            ...trips[index],
+                            date,
+                            route,
+                            cost: parseFloat(cost.toFixed(2)),
+                            notes
+                        };
+                        localStorage.setItem('trips', JSON.stringify(trips));
+                    }
+                }
+
+                showToast(`✅ Fahrt "${route}" aktualisiert!`);
+                closeEditTripModal();
+                loadData();
+            } catch (err) {
+                console.error('Edit trip error:', err);
+                showToast('❌ Fehler beim Speichern: ' + err.message, 'error');
+            }
+        }
+
         // Display trips
         function displayTrips(trips) {
             const tripsList = document.getElementById('tripsList');
@@ -1340,6 +1459,7 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <div class="trip-cost">€${trip.cost.toFixed(2)}</div>
+                        <button class="trip-delete" style="background: var(--secondary); padding: 6px 10px;" onclick="editTrip(${trip.id})">✏️</button>
                         <button class="trip-delete" onclick="deleteTrip(${trip.id})">✕</button>
                     </div>
                 </div>
