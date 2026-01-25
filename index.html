@@ -739,6 +739,14 @@
                 <input type="number" id="ticketCostInput" placeholder="z.B. 1400" min="0" step="0.01" required>
                 <p class="settings-help">Der Betrag, den dein Klimaticket kostet (z.B. nach Arbeitgeberzuschuss).</p>
                 
+                <label for="startDateInput" style="margin-top: 16px;">Gültig ab (Anfangsdatum)</label>
+                <input type="date" id="startDateInput" required>
+                <p class="settings-help">Der Tag, ab dem dein Klimaticket gültig ist.</p>
+                
+                <label for="endDateInput" style="margin-top: 16px;">Gültig bis (Enddatum)</label>
+                <input type="date" id="endDateInput" required>
+                <p class="settings-help">Der letzte Tag, an dem dein Klimaticket gültig ist.</p>
+                
                 <div class="modal-buttons">
                     <button type="button" class="modal-btn-secondary" onclick="closeSettingsModal()">Abbrechen</button>
                     <button type="submit" class="modal-btn-primary">Speichern</button>
@@ -750,14 +758,16 @@
     <script>
         // Configuration
         const DEFAULT_TICKET_COST = 1400;
-        const START_DATE = new Date(2025, 0, 23);
-        const END_DATE = new Date(2026, 0, 22);
+        const DEFAULT_START_DATE = new Date(2025, 0, 23);
+        const DEFAULT_END_DATE = new Date(2026, 0, 22);
         const SUPABASE_URL = 'https://qfkfcirfwlfjscevxilu.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_REFOWIFpP1IbO5rEARlXUA_Z5Qw--d0';
 
         let supabase = null;
         let currentUser = null;
         let userTicketCost = DEFAULT_TICKET_COST; // Dynamic per user
+        let userStartDate = DEFAULT_START_DATE; // Dynamic per user
+        let userEndDate = DEFAULT_END_DATE; // Dynamic per user
 
         // Initialize Supabase
         try {
@@ -903,6 +913,8 @@
         // Settings Modal functions
         function openSettingsModal() {
             document.getElementById('ticketCostInput').value = userTicketCost;
+            document.getElementById('startDateInput').value = userStartDate.toISOString().split('T')[0];
+            document.getElementById('endDateInput').value = userEndDate.toISOString().split('T')[0];
             document.getElementById('settingsModal').classList.add('active');
         }
 
@@ -913,13 +925,25 @@
         async function submitSettings(e) {
             e.preventDefault();
             const ticketCost = document.getElementById('ticketCostInput').value;
+            const startDate = document.getElementById('startDateInput').value;
+            const endDate = document.getElementById('endDateInput').value;
 
             if (!ticketCost || isNaN(ticketCost) || parseFloat(ticketCost) < 0) {
                 showToast('❌ Bitte gib einen gültigen Betrag ein', 'error');
                 return;
             }
 
-            await saveUserSettings(ticketCost);
+            if (!startDate || !endDate) {
+                showToast('❌ Bitte gib Start- und Enddatum ein', 'error');
+                return;
+            }
+
+            if (new Date(startDate) >= new Date(endDate)) {
+                showToast('❌ Anfangsdatum muss vor dem Enddatum liegen', 'error');
+                return;
+            }
+
+            await saveUserSettings(ticketCost, startDate, endDate);
             closeSettingsModal();
             showToast('✅ Einstellungen gespeichert!', 'success');
         }
@@ -987,25 +1011,31 @@
             try {
                 const { data, error } = await supabase
                     .from('user_settings')
-                    .select('ticket_cost')
+                    .select('ticket_cost, start_date, end_date')
                     .eq('user_id', currentUser.id)
                     .single();
                 
                 if (data) {
                     userTicketCost = data.ticket_cost;
+                    userStartDate = new Date(data.start_date);
+                    userEndDate = new Date(data.end_date);
                 } else {
-                    // Initialize with default if no settings exist
-                    await saveUserSettings(DEFAULT_TICKET_COST);
+                    // Initialize with defaults if no settings exist
+                    await saveUserSettings(DEFAULT_TICKET_COST, DEFAULT_START_DATE, DEFAULT_END_DATE);
                     userTicketCost = DEFAULT_TICKET_COST;
+                    userStartDate = DEFAULT_START_DATE;
+                    userEndDate = DEFAULT_END_DATE;
                 }
             } catch (err) {
                 console.error('Load settings error:', err);
                 userTicketCost = DEFAULT_TICKET_COST;
+                userStartDate = DEFAULT_START_DATE;
+                userEndDate = DEFAULT_END_DATE;
             }
         }
 
         // Save user settings to Supabase
-        async function saveUserSettings(ticketCost) {
+        async function saveUserSettings(ticketCost, startDate, endDate) {
             if (!currentUser) return;
             
             try {
@@ -1014,6 +1044,8 @@
                     .upsert({
                         user_id: currentUser.id,
                         ticket_cost: parseFloat(ticketCost),
+                        start_date: startDate instanceof Date ? startDate.toISOString().split('T')[0] : startDate,
+                        end_date: endDate instanceof Date ? endDate.toISOString().split('T')[0] : endDate,
                         updated_at: new Date().toISOString()
                     }, {
                         onConflict: 'user_id'
@@ -1021,6 +1053,8 @@
                 
                 if (error) throw error;
                 userTicketCost = parseFloat(ticketCost);
+                userStartDate = startDate instanceof Date ? startDate : new Date(startDate);
+                userEndDate = endDate instanceof Date ? endDate : new Date(endDate);
                 await loadData(); // Reload with new settings
             } catch (err) {
                 console.error('Save settings error:', err);
@@ -1197,7 +1231,7 @@
         // Update days remaining
         function updateDaysRemaining() {
             const now = new Date();
-            const daysLeft = Math.max(0, Math.ceil((END_DATE - now) / (1000 * 60 * 60 * 24)));
+            const daysLeft = Math.max(0, Math.ceil((userEndDate - now) / (1000 * 60 * 60 * 24)));
             document.getElementById('daysRemaining').textContent = daysLeft + ' Tage';
         }
 
