@@ -405,6 +405,116 @@
             animation: slideDown 0.3s ease forwards;
         }
 
+        /* Auth Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .modal-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .modal-form {
+            display: none;
+        }
+
+        .modal-form.active {
+            display: block;
+        }
+
+        .modal-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+
+        .modal-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn-primary:active {
+            opacity: 0.9;
+        }
+
+        .modal-btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn-secondary:active {
+            opacity: 0.9;
+        }
+
         @media (max-width: 480px) {
             header h1 {
                 font-size: 24px;
@@ -548,6 +658,37 @@
     <!-- Hidden input for import -->
     <input type="file" id="importFile" accept=".json,.csv" style="display: none;" onchange="handleFileImport()">
 
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchAuthTab('login')">🔐 Anmelden</button>
+                <button class="modal-tab" onclick="switchAuthTab('signup')">✍️ Registrieren</button>
+            </div>
+
+            <!-- Login Form -->
+            <form class="modal-form active" id="loginForm" onsubmit="submitLogin(event)">
+                <input type="email" placeholder="E-Mail" id="loginEmail" required>
+                <input type="password" placeholder="Passwort" id="loginPassword" required>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Abbrechen</button>
+                    <button type="submit" class="modal-btn-primary">Anmelden</button>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form class="modal-form" id="signupForm" onsubmit="submitSignup(event)">
+                <input type="email" placeholder="E-Mail" id="signupEmail" required>
+                <input type="password" placeholder="Passwort (mind. 6 Zeichen)" id="signupPassword" required minlength="6">
+                <input type="password" placeholder="Passwort wiederholen" id="signupPasswordConfirm" required minlength="6">
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Abbrechen</button>
+                    <button type="submit" class="modal-btn-primary">Registrieren</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Configuration
         const TICKET_COST = 1400;
@@ -592,23 +733,72 @@
             }
         }
 
-        // Show login/signup modal
-        function showAuthModal() {
-            const isSignup = prompt('Neuer Account? (ja/nein)', 'nein')?.toLowerCase() === 'ja';
-            const email = prompt('E-Mail-Adresse:');
-            if (!email) return;
-            const password = prompt('Passwort:');
-            if (!password) return;
+        // Show/close auth modal
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
 
-            if (isSignup) {
-                handleSignup(email, password);
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+            // Clear form fields
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('signupPasswordConfirm').value = '';
+        }
+
+        function switchAuthTab(tab) {
+            // Update tabs
+            document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.modal-form').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
             } else {
-                handleLogin(email, password);
+                document.getElementById('signupForm').classList.add('active');
             }
         }
 
-        // Signup with email and password
-        async function handleSignup(email, password) {
+        // Submit login form
+        async function submitLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                showToast('⏳ Anmelden läuft...', 'success');
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                if (error) throw error;
+                showToast('✅ Erfolgreich angemeldet!', 'success');
+                closeAuthModal();
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                updateAuthUI();
+                loadData();
+            } catch (err) {
+                console.error('Login error:', err);
+                showToast('❌ ' + (err.message || 'Login fehlgeschlagen'), 'error');
+            }
+        }
+
+        // Submit signup form
+        async function submitSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+
+            if (password !== passwordConfirm) {
+                showToast('❌ Passwörter stimmen nicht überein', 'error');
+                return;
+            }
+
             if (password.length < 6) {
                 showToast('❌ Passwort muss mindestens 6 Zeichen lang sein', 'error');
                 return;
@@ -622,39 +812,20 @@
                 });
                 if (error) throw error;
                 showToast('✅ Account erfolgreich erstellt! Du bist jetzt angemeldet.', 'success');
+                closeAuthModal();
                 const { data: { user } } = await supabase.auth.getUser();
                 currentUser = user;
                 updateAuthUI();
                 loadData();
             } catch (err) {
                 console.error('Signup error:', err);
-                showToast('❌ ' + (err.message || 'Signup fehlgeschlagen'), 'error');
-            }
-        }
-
-        // Login with email and password
-        async function handleLogin(email, password) {
-            try {
-                showToast('⏳ Anmelden läuft...', 'success');
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                if (error) throw error;
-                showToast('✅ Erfolgreich angemeldet!', 'success');
-                const { data: { user } } = await supabase.auth.getUser();
-                currentUser = user;
-                updateAuthUI();
-                loadData();
-            } catch (err) {
-                console.error('Login error:', err);
-                showToast('❌ ' + (err.message || 'Login fehlgeschlagen'), 'error');
+                showToast('❌ ' + (err.message || 'Registrierung fehlgeschlagen'), 'error');
             }
         }
 
         // Handle authentication button click
         async function handleAuth() {
-            showAuthModal();
+            openAuthModal();
         }
 
         // Logout
