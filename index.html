@@ -792,6 +792,11 @@
             <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
                 Übersicht deiner Fahrten nach Tag und Monat.
             </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <button class="btn-secondary" onclick="previousHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">← Vorheriger</button>
+                <span id="heatmapMonthTitle" style="font-weight: 600; color: var(--dark); font-size: 14px;">Januar 2026</span>
+                <button class="btn-secondary" onclick="nextHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">Nächster →</button>
+            </div>
             <div class="heatmap-container">
                 <div id="heatmapContent" class="heatmap-months"></div>
             </div>
@@ -934,6 +939,8 @@
         let userTicketCost = DEFAULT_TICKET_COST; // Dynamic per user
         let userStartDate = DEFAULT_START_DATE; // Dynamic per user
         let userEndDate = DEFAULT_END_DATE; // Dynamic per user
+        let allTripsForHeatmap = []; // Store all trips for heatmap navigation
+        let currentHeatmapDate = new Date(); // Current month being displayed
 
         // Initialize Supabase
         try {
@@ -1506,13 +1513,20 @@
             return date.toLocaleDateString('de-AT', options);
         }
 
-        // Generate heatmap
+        // Generate heatmap for single month
         function generateHeatmap(trips) {
+            allTripsForHeatmap = trips; // Store for navigation
+            renderHeatmapMonth();
+        }
+
+        // Render current month heatmap
+        function renderHeatmapMonth() {
             const heatmapContent = document.getElementById('heatmapContent');
+            const heatmapMonthTitle = document.getElementById('heatmapMonthTitle');
             
             // Count trips by date
             const tripsByDate = {};
-            trips.forEach(trip => {
+            allTripsForHeatmap.forEach(trip => {
                 tripsByDate[trip.date] = (tripsByDate[trip.date] || 0) + 1;
             });
 
@@ -1521,68 +1535,62 @@
                 return;
             }
 
-            // Get all months to display (from first trip to now, max 12 months)
-            const allDates = Object.keys(tripsByDate).sort();
-            const firstDate = new Date(allDates[0] + 'T00:00:00');
-            const lastDate = new Date();
-            
-            const monthsToShow = [];
-            let currentMonth = new Date(firstDate);
-            currentMonth.setDate(1);
+            const year = currentHeatmapDate.getFullYear();
+            const month = currentHeatmapDate.getMonth();
+            const monthName = currentHeatmapDate.toLocaleDateString('de-AT', { month: 'long', year: 'numeric' });
+            heatmapMonthTitle.textContent = monthName;
 
-            while (currentMonth <= lastDate && monthsToShow.length < 12) {
-                monthsToShow.push(new Date(currentMonth));
-                currentMonth.setMonth(currentMonth.getMonth() + 1);
+            // Get all days in month
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            // Create day cells
+            let dayHeaders = '';
+            const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+            for (let i = 0; i < 7; i++) {
+                dayHeaders += `<div class="heatmap-day-header">${dayNames[i]}</div>`;
             }
 
-            // Generate HTML for each month
-            heatmapContent.innerHTML = monthsToShow.map((monthDate, idx) => {
-                const year = monthDate.getFullYear();
-                const month = monthDate.getMonth();
-                const monthName = monthDate.toLocaleDateString('de-AT', { month: 'long', year: 'numeric' });
+            let dayCells = dayHeaders;
 
-                // Get all days in month
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
-                const daysInMonth = lastDay.getDate();
-                const startingDayOfWeek = firstDay.getDay();
+            // Empty cells before first day
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                dayCells += '<div class="heatmap-day empty"></div>';
+            }
 
-                // Create day cells
-                let dayHeaders = '';
-                const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-                for (let i = 0; i < 7; i++) {
-                    dayHeaders += `<div class="heatmap-day-header">${dayNames[i]}</div>`;
-                }
+            // Day cells
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const count = tripsByDate[dateStr] || 0;
+                let level = 'empty';
+                
+                if (count >= 4) level = 'level-4';
+                else if (count >= 3) level = 'level-3';
+                else if (count >= 2) level = 'level-2';
+                else if (count >= 1) level = 'level-1';
 
-                let dayCells = dayHeaders;
+                const title = count > 0 ? `${count} Fahrt${count !== 1 ? 'en' : ''}` : 'Keine Fahrten';
+                dayCells += `<div class="heatmap-day ${level}" title="${title}">${day}</div>`;
+            }
 
-                // Empty cells before first day
-                for (let i = 0; i < startingDayOfWeek; i++) {
-                    dayCells += '<div class="heatmap-day empty"></div>';
-                }
+            heatmapContent.innerHTML = `
+                <div class="heatmap-month">
+                    <div class="heatmap-days">${dayCells}</div>
+                </div>
+            `;
+        }
 
-                // Day cells
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const count = tripsByDate[dateStr] || 0;
-                    let level = 'empty';
-                    
-                    if (count >= 4) level = 'level-4';
-                    else if (count >= 3) level = 'level-3';
-                    else if (count >= 2) level = 'level-2';
-                    else if (count >= 1) level = 'level-1';
+        // Navigate heatmap months
+        function previousHeatmapMonth() {
+            currentHeatmapDate.setMonth(currentHeatmapDate.getMonth() - 1);
+            renderHeatmapMonth();
+        }
 
-                    const title = count > 0 ? `${count} Fahrt${count !== 1 ? 'en' : ''}` : 'Keine Fahrten';
-                    dayCells += `<div class="heatmap-day ${level}" title="${title}">${day}</div>`;
-                }
-
-                return `
-                    <div class="heatmap-month">
-                        <div class="heatmap-month-title">${monthName}</div>
-                        <div class="heatmap-days">${dayCells}</div>
-                    </div>
-                `;
-            }).join('');
+        function nextHeatmapMonth() {
+            currentHeatmapDate.setMonth(currentHeatmapDate.getMonth() + 1);
+            renderHeatmapMonth();
         }
 
         // Export functions
