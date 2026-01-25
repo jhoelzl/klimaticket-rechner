@@ -578,61 +578,9 @@
             );
         }
 
-        // Check authentication status
+        // Check authentication status on page load
         async function checkAuth() {
             try {
-                // Check if there's a token in the URL (from email link)
-                const params = new URLSearchParams(window.location.search);
-                const tokenHash = params.get('token_hash');
-                const type = params.get('type');
-                
-                // Check if we've already processed a token in this session
-                const tokenProcessed = sessionStorage.getItem('tokenProcessed');
-                
-                if (tokenHash && type === 'email_signup' && !tokenProcessed) {
-                    // Mark token as being processed to prevent double-verification
-                    sessionStorage.setItem('tokenProcessed', 'true');
-                    
-                    // Verify the token with Supabase
-                    const { data, error } = await supabase.auth.verifyOtp({
-                        token_hash: tokenHash,
-                        type: 'email'
-                    });
-                    
-                    if (!error) {
-                        showToast('✅ Erfolgreich angemeldet!', 'success');
-                        // Clean URL - remove all auth params
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else {
-                        sessionStorage.removeItem('tokenProcessed');
-                        console.error('Token verification error:', error);
-                        const errorMsg = error.message || 'Link ist ungültig oder abgelaufen';
-                        showToast(`❌ ${errorMsg}`, 'error');
-                    }
-                } else if (tokenHash && tokenProcessed) {
-                    // Token already processed in this session
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-                
-                // Also check for fragment-based tokens (fallback)
-                const hash = window.location.hash.substring(1);
-                if (hash && hash.includes('access_token')) {
-                    const hashParams = new URLSearchParams(hash);
-                    const accessToken = hashParams.get('access_token');
-                    
-                    if (accessToken) {
-                        const { error } = await supabase.auth.setSession({
-                            access_token: accessToken,
-                            refresh_token: hashParams.get('refresh_token')
-                        });
-                        
-                        if (!error) {
-                            showToast('✅ Erfolgreich angemeldet!', 'success');
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                        }
-                    }
-                }
-                
                 const { data: { user } } = await supabase.auth.getUser();
                 currentUser = user;
                 updateAuthUI();
@@ -644,25 +592,69 @@
             }
         }
 
-        // Handle authentication
-        async function handleAuth() {
-            const email = prompt('Gib Deine E-Mail-Adresse ein:');
+        // Show login/signup modal
+        function showAuthModal() {
+            const isSignup = prompt('Neuer Account? (ja/nein)', 'nein')?.toLowerCase() === 'ja';
+            const email = prompt('E-Mail-Adresse:');
             if (!email) return;
+            const password = prompt('Passwort:');
+            if (!password) return;
+
+            if (isSignup) {
+                handleSignup(email, password);
+            } else {
+                handleLogin(email, password);
+            }
+        }
+
+        // Signup with email and password
+        async function handleSignup(email, password) {
+            if (password.length < 6) {
+                showToast('❌ Passwort muss mindestens 6 Zeichen lang sein', 'error');
+                return;
+            }
 
             try {
-                showToast('⏳ Authentifizierung läuft...', 'success');
-                const { error } = await supabase.auth.signInWithOtp({
+                showToast('⏳ Account wird erstellt...', 'success');
+                const { error } = await supabase.auth.signUp({
                     email,
-                    options: {
-                        emailRedirectTo: 'https://jhoelzl.github.io/klimaticket-rechner/'
-                    }
+                    password
                 });
                 if (error) throw error;
-                showToast('✅ Check-Link wurde an Deine E-Mail gesendet!', 'success');
+                showToast('✅ Account erfolgreich erstellt! Du bist jetzt angemeldet.', 'success');
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                updateAuthUI();
+                loadData();
             } catch (err) {
-                console.error('Auth error:', err);
-                showToast('❌ Authentifizierung fehlgeschlagen: ' + err.message, 'error');
+                console.error('Signup error:', err);
+                showToast('❌ ' + (err.message || 'Signup fehlgeschlagen'), 'error');
             }
+        }
+
+        // Login with email and password
+        async function handleLogin(email, password) {
+            try {
+                showToast('⏳ Anmelden läuft...', 'success');
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                if (error) throw error;
+                showToast('✅ Erfolgreich angemeldet!', 'success');
+                const { data: { user } } = await supabase.auth.getUser();
+                currentUser = user;
+                updateAuthUI();
+                loadData();
+            } catch (err) {
+                console.error('Login error:', err);
+                showToast('❌ ' + (err.message || 'Login fehlgeschlagen'), 'error');
+            }
+        }
+
+        // Handle authentication button click
+        async function handleAuth() {
+            showAuthModal();
         }
 
         // Logout
