@@ -550,6 +550,119 @@
             margin-bottom: 12px;
         }
 
+        /* Heatmap Styles */
+        .heatmap-container {
+            margin-top: 16px;
+            overflow-x: auto;
+        }
+
+        .heatmap-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 12px;
+        }
+
+        .heatmap-months {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .heatmap-month {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            background: var(--light);
+        }
+
+        .heatmap-month-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .heatmap-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .heatmap-day-header {
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            color: #999;
+            padding: 4px;
+        }
+
+        .heatmap-day {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            background: #ebedf0;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .heatmap-day:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .heatmap-day.empty {
+            background: #ebedf0;
+            color: #ccc;
+        }
+
+        .heatmap-day.level-1 {
+            background: #c6e48b;
+        }
+
+        .heatmap-day.level-2 {
+            background: #7bc96f;
+        }
+
+        .heatmap-day.level-3 {
+            background: #239a3b;
+        }
+
+        .heatmap-day.level-4 {
+            background: #196127;
+        }
+
+        .heatmap-legend {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .heatmap-legend-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            border: 1px solid #ddd;
+        }
+
         @media (max-width: 480px) {
             header h1 {
                 font-size: 24px;
@@ -673,7 +786,35 @@
             <div id="message" class="hidden message"></div>
         </div>
 
-        <!-- Fahrten-Liste -->
+        <!-- Heatmap -->
+        <div class="card">
+            <h2>🔥 Fahrten pro Tag</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
+                Übersicht deiner Fahrten nach Tag und Monat.
+            </p>
+            <div class="heatmap-container">
+                <div id="heatmapContent" class="heatmap-months"></div>
+            </div>
+            <div class="heatmap-legend">
+                <span>Weniger</span>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #ebedf0;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #c6e48b;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #7bc96f;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #239a3b;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #196127;"></div>
+                </div>
+                <span>Mehr</span>
+            </div>
+        </div>
         <div class="card">
             <h2>📋 Deine Fahrten</h2>
             <div class="trips-list" id="tripsList">
@@ -1226,6 +1367,10 @@
                 messageEl.className = 'message negative';
                 messageEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um Deine Kosten für das Ticket zu sparen.`;
             }
+
+            // Generate heatmap
+            generateHeatmap(trips);
+        }
         }
 
         // Update days remaining
@@ -1240,6 +1385,85 @@
             const date = new Date(dateStr + 'T00:00:00');
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
             return date.toLocaleDateString('de-AT', options);
+        }
+
+        // Generate heatmap
+        function generateHeatmap(trips) {
+            const heatmapContent = document.getElementById('heatmapContent');
+            
+            // Count trips by date
+            const tripsByDate = {};
+            trips.forEach(trip => {
+                tripsByDate[trip.date] = (tripsByDate[trip.date] || 0) + 1;
+            });
+
+            if (Object.keys(tripsByDate).length === 0) {
+                heatmapContent.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 20px;">Noch keine Fahrten zum Visualisieren</p>';
+                return;
+            }
+
+            // Get all months to display (from first trip to now, max 12 months)
+            const allDates = Object.keys(tripsByDate).sort();
+            const firstDate = new Date(allDates[0] + 'T00:00:00');
+            const lastDate = new Date();
+            
+            const monthsToShow = [];
+            let currentMonth = new Date(firstDate);
+            currentMonth.setDate(1);
+
+            while (currentMonth <= lastDate && monthsToShow.length < 12) {
+                monthsToShow.push(new Date(currentMonth));
+                currentMonth.setMonth(currentMonth.getMonth() + 1);
+            }
+
+            // Generate HTML for each month
+            heatmapContent.innerHTML = monthsToShow.map((monthDate, idx) => {
+                const year = monthDate.getFullYear();
+                const month = monthDate.getMonth();
+                const monthName = monthDate.toLocaleDateString('de-AT', { month: 'long', year: 'numeric' });
+
+                // Get all days in month
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startingDayOfWeek = firstDay.getDay();
+
+                // Create day cells
+                let dayHeaders = '';
+                const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+                for (let i = 0; i < 7; i++) {
+                    dayHeaders += `<div class="heatmap-day-header">${dayNames[i]}</div>`;
+                }
+
+                let dayCells = dayHeaders;
+
+                // Empty cells before first day
+                for (let i = 0; i < startingDayOfWeek; i++) {
+                    dayCells += '<div class="heatmap-day empty"></div>';
+                }
+
+                // Day cells
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const count = tripsByDate[dateStr] || 0;
+                    let level = 'empty';
+                    
+                    if (count >= 4) level = 'level-4';
+                    else if (count >= 3) level = 'level-3';
+                    else if (count >= 2) level = 'level-2';
+                    else if (count >= 1) level = 'level-1';
+
+                    const title = count > 0 ? `${count} Fahrt${count !== 1 ? 'en' : ''}` : 'Keine Fahrten';
+                    dayCells += `<div class="heatmap-day ${level}" title="${title}">${day}</div>`;
+                }
+
+                return `
+                    <div class="heatmap-month">
+                        <div class="heatmap-month-title">${monthName}</div>
+                        <div class="heatmap-days">${dayCells}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Export functions
