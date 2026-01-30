@@ -25,6 +25,11 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 - 🔐 **Authentifizierung** - Email-basiertes Login mit Supabase Auth
 
 ### 🎨 UX/UI
+- � **Mehrsprachig** - Deutsch & English mit:
+  - 🔄 Automatische Browser-Sprachen-Erkennung
+  - 🎛️ Manueller Sprachwechsel in Einstellungen
+  - 💾 Speicherung der Sprach-Präferenz (Cloud & lokal)
+  - ✨ Vollständige Übersetzung aller UI-Elemente
 - 🌓 **Dunkler Modus** - Vollständig implementiert mit:
   - 🔄 Automatische System-Erkennung (prefers-color-scheme)
   - 🎛️ Manueller Toggle in Einstellungen
@@ -38,6 +43,7 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 - 📱 **Responsive Design** - Mobile-first, funktioniert auf allen Geräten
 
 ### 🔧 Konfiguration
+- 🌐 **Spracheinstellung** - Deutsch oder English wählen
 - 💶 **Ticketpreis anpassen** - Dynamische Kostenberechnung
 - 📅 **Gültigkeitsdatum einstellen** - Von/Bis Datum für Ticket-Validität
 - ⏰ **Automatische Berechnung** - Verbleibende Tage bis Ablauf
@@ -91,13 +97,14 @@ CREATE INDEX idx_user_date ON trips(user_id, date);
 CREATE INDEX idx_user_route ON trips(user_id, route);
 ```
 
-### user_settings Tabelle
+### users Tabelle
 ```sql
-CREATE TABLE user_settings (
+CREATE TABLE users (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   ticket_cost DECIMAL(10,2) DEFAULT 1400.00,
-  ticket_start_date DATE,
-  ticket_end_date DATE,
+  start_date DATE,
+  end_date DATE,
+  language VARCHAR(5) DEFAULT 'en',      -- Spracheinstellung: 'en', 'de'
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -107,7 +114,7 @@ CREATE TABLE user_settings (
 
 ```sql
 ALTER TABLE trips ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Trips: User können nur ihre eigenen sehen/ändern
 CREATE POLICY "Users can view own trips" ON trips FOR SELECT
@@ -119,8 +126,8 @@ CREATE POLICY "Users can update own trips" ON trips FOR UPDATE
 CREATE POLICY "Users can delete own trips" ON trips FOR DELETE
   USING (auth.uid() = user_id);
 
--- Settings: User können nur ihre eigenen sehen/ändern
-CREATE POLICY "Users can manage own settings" ON user_settings
+-- Users: User können nur ihre eigenen Einstellungen sehen/ändern
+CREATE POLICY "Users can manage own settings" ON users
   FOR ALL USING (auth.uid() = user_id);
 ```
 
