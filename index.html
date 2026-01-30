@@ -701,7 +701,8 @@
                 <div style="display: flex; gap: 6px; align-items: center;">
                     <button onclick="reloadData()" id="reloadBtn" title="Daten aktualisieren" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🔄</button>
                     <button onclick="openSettingsModal()" id="settingsBtn" title="Einstellungen" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">⚙️</button>
-                    <button onclick="handleAuthToggle()" id="profileBtn" title="Profil" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; display: none;">👤</button>
+                    <button onclick="handleAuthToggle()" id="profileBtn" title="Profil" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">👤</button>
+                    <button onclick="handleAuth()" id="authBtn" style="background: rgba(255,255,255,0.9); color: var(--primary); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">📧 Anmelden</button>
                 </div>
             </div>
         </header>
@@ -1247,14 +1248,16 @@
         // Update auth UI
         function updateAuthUI() {
             const profileBtn = document.getElementById('profileBtn');
+            const authBtn = document.getElementById('authBtn');
             const settingsBtn = document.getElementById('settingsBtn');
 
             if (currentUser) {
-                profileBtn.style.display = 'block';
-                profileBtn.title = 'Profil (Klick zum Abmelden)';
+                profileBtn.classList.remove('hidden');
+                authBtn.classList.add('hidden');
                 settingsBtn.classList.remove('hidden');
             } else {
-                profileBtn.style.display = 'none';
+                profileBtn.classList.add('hidden');
+                authBtn.classList.remove('hidden');
                 settingsBtn.classList.add('hidden');
             }
         }
