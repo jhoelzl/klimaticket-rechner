@@ -1285,6 +1285,10 @@
             <div style="margin-top: 16px; padding: 12px; background: var(--light); border-radius: 8px; font-size: 12px;">
                 <div style="font-weight: 600; margin-bottom: 8px;" id="carbonComparisonLabel">Comparison</div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span id="carbonPublicTransportKmLabel">Public transport km</span>
+                    <span id="carbonPublicTransportKmValue" style="font-weight: 600;">0 km</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                     <span id="carbonVsCarLabel">vs. Car:</span>
                     <span id="carbonVsCarValue" style="font-weight: 600;">0 km</span>
                 </div>
@@ -1771,6 +1775,7 @@
                 carbonPerTrip: 'CO₂ per trip',
                 totalCarbonSavings: 'Total CO₂ saved',
                 carbonComparison: 'Comparison',
+                carbonPublicTransportKmLabel: 'Public transport km',
                 carbonVsCarLabel: 'vs. Car',
                 carbonVsPlaneLabel: 'vs. Flight',
                 carbonKgUnit: 'kg CO₂',
@@ -1925,6 +1930,7 @@
                 carbonPerTrip: 'CO₂ pro Fahrt',
                 totalCarbonSavings: 'Gesamte CO₂-Ersparnis',
                 carbonComparison: 'Vergleich',
+                carbonPublicTransportKmLabel: 'Öffi‑km',
                 carbonVsCarLabel: 'vs. Auto',
                 carbonVsPlaneLabel: 'vs. Flugzeug',
                 carbonKgUnit: 'kg CO₂',
@@ -1994,6 +2000,7 @@
             setText('carbonPerTripLabel', t('carbonPerTrip'));
             setText('totalCarbonSavingsLabel', t('totalCarbonSavings'));
             setText('carbonComparisonLabel', t('carbonComparison'));
+            setText('carbonPublicTransportKmLabel', t('carbonPublicTransportKmLabel'));
             setText('carbonVsCarLabel', t('carbonVsCarLabel'));
             setText('carbonVsPlaneLabel', t('carbonVsPlaneLabel'));
             setText('achievementsHeading', t('achievementsHeading'));
@@ -3440,11 +3447,13 @@
 
         function updateCarbonStats(trips) {
             const carbonStats = calculateCarbonStats(trips);
+            const totalKm = trips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
             
             document.getElementById('carbonPerTrip').textContent = carbonStats.averageCarbonPerTrip.toFixed(1) + ' kg';
             document.getElementById('totalCarbonSavings').textContent = carbonStats.totalCarbonSavings.toFixed(1) + ' kg';
             
             // Show comparisons
+            document.getElementById('carbonPublicTransportKmValue').textContent = totalKm.toFixed(0) + ' km';
             document.getElementById('carbonVsCarValue').textContent = carbonStats.carEquivalentKm.toFixed(0) + ' km';
             document.getElementById('carbonVsPlaneValue').textContent = carbonStats.planeEquivalentKm.toFixed(0) + ' km';
             
