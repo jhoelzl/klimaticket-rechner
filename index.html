@@ -2259,15 +2259,21 @@
         
         // Generate Bundeslands heatmap
         function generateBundeslandsHeatmap(trips) {
-            const bundeslaender = [
-                'Burgenland', 'Kärnten', 'Niederösterreich', 
-                'Oberösterreich', 'Salzburg', 'Steiermark', 
-                'Tirol', 'Vorarlberg', 'Wien'
+            const bundeslaenderWithEmoji = [
+                { name: 'Vorarlberg', emoji: '🏔️' },
+                { name: 'Tirol', emoji: '⛷️' },
+                { name: 'Salzburg', emoji: '🎼' },
+                { name: 'Oberösterreich', emoji: '🚂' },
+                { name: 'Niederösterreich', emoji: '🌾' },
+                { name: 'Wien', emoji: '🏛️' },
+                { name: 'Burgenland', emoji: '🍷' },
+                { name: 'Steiermark', emoji: '🏰' },
+                { name: 'Kärnten', emoji: '🏖️' }
             ];
             
             // Count trips per Bundesland
             const countsByBundesland = {};
-            bundeslaender.forEach(bl => countsByBundesland[bl] = 0);
+            bundeslaenderWithEmoji.forEach(bl => countsByBundesland[bl.name] = 0);
             
             trips.forEach(trip => {
                 if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
@@ -2282,31 +2288,39 @@
             // Find max count for scaling
             const maxCount = Math.max(...Object.values(countsByBundesland), 1);
             
-            // Update SVG map colors
-            bundeslaender.forEach(bl => {
-                const count = countsByBundesland[bl];
-                const level = maxCount === 0 ? 0 : Math.ceil((count / maxCount) * 4);
-                const colors = ['#e8f5e9', '#c8e6c9', '#81c784', '#4caf50', '#2e7d32'];
-                const color = colors[level];
-                
-                const element = document.getElementById(bl.toLowerCase());
-                if (element) {
-                    element.setAttribute('fill', color);
-                }
-            });
+            // Render cards with emojis
+            const grid = document.getElementById('bundeslanderGrid');
+            grid.innerHTML = bundeslaenderWithEmoji.map(bl => {
+                const count = countsByBundesland[bl.name];
+                const hasTrips = count > 0;
+                return `<div class="bundesland-card ${!hasTrips ? 'no-trips' : ''}">
+                    <span class="bundesland-icon">${bl.emoji}</span>
+                    <div class="bundesland-name">${bl.name}</div>
+                    <div class="bundesland-count">${count}</div>
+                    <div class="bundesland-label">Fahrt${count !== 1 ? 'en' : ''}</div>
+                </div>`;
+            }).join('');
             
-            // Update stats list
+            // Stats with bars
             const bundeslandsStats = document.getElementById('bundeslandsStats');
-            bundeslandsStats.innerHTML = bundeslaender
-                .sort((a, b) => countsByBundesland[b] - countsByBundesland[a])
-                .map(bl => {
-                    const count = countsByBundesland[bl];
-                    return `<div style="padding: 8px; background: #f8f9fa; border-radius: 4px; text-align: center;">
-                        <div style="font-weight: 600; color: var(--dark);">${count}</div>
-                        <div style="color: #666; font-size: 11px;">${bl}</div>
+            const visited = bundeslaenderWithEmoji.filter(bl => countsByBundesland[bl.name] > 0)
+                .sort((a, b) => countsByBundesland[b.name] - countsByBundesland[a.name]);
+            
+            if (visited.length === 0) {
+                bundeslandsStats.innerHTML = '<p style="grid-column: 1/-1; color: #999; text-align: center; padding: 20px;">Noch keine Bundesländer besucht</p>';
+            } else {
+                bundeslandsStats.innerHTML = visited.map(bl => {
+                    const count = countsByBundesland[bl.name];
+                    const barWidth = (count / maxCount) * 100;
+                    return `<div style="padding: 10px; background: #f8f9fa; border-radius: 6px; border-left: 4px solid var(--primary);">
+                        <div style="font-weight: 600; color: var(--dark); margin-bottom: 4px; font-size: 13px;">${bl.name} ${bl.emoji}</div>
+                        <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 6px;">${count}</div>
+                        <div style="height: 4px; background: #e0e0e0; border-radius: 2px; overflow: hidden;">
+                            <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: ${barWidth}%;"></div>
+                        </div>
                     </div>`;
-                })
-                .join('');
+                }).join('');
+            }
         }
 
         // Year overview
