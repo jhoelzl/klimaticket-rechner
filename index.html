@@ -3164,7 +3164,11 @@
                 // Format states
                 let statesText = '';
                 if (trip.states && Array.isArray(trip.states) && trip.states.length > 0) {
-                    statesText = `<div style="font-size: 11px; color: #888; margin-top: 3px;">📍 ${trip.states.join(', ')}</div>`;
+                    statesText = `<div style="font-size: 11px; color: #888; margin-top: 3px;">📍 ${trip.states.join(', ')}`;
+                    if (trip.distance) {
+                        statesText += ` • 📏 ${trip.distance} km`;
+                    }
+                    statesText += `</div>`;
                 }
                 
                 return `
