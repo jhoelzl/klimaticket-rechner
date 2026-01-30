@@ -721,7 +721,74 @@
             </div>
         </header>
 
-        <!-- Eingabe-Bereich -->
+        <!-- Heatmap - oben für schnelle Fahrteinträge -->
+        <div class="card">
+            <h2>🔥 Fahrten pro Tag</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
+                Klick auf einen Tag, um schnell eine Fahrt hinzuzufügen.
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <button class="btn-secondary" onclick="previousHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">← Vorheriger</button>
+                <span id="heatmapMonthTitle" style="font-weight: 600; color: var(--dark); font-size: 14px;">Januar 2026</span>
+                <button class="btn-secondary" onclick="nextHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">Nächster →</button>
+            </div>
+            <div class="heatmap-container">
+                <div id="heatmapContent" class="heatmap-months"></div>
+            </div>
+            <div class="heatmap-legend">
+                <span>Weniger</span>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #ebedf0;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #c6e48b;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #7bc96f;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #239a3b;"></div>
+                </div>
+                <div class="heatmap-legend-item">
+                    <div class="heatmap-legend-box" style="background: #196127;"></div>
+                </div>
+                <span>Mehr</span>
+            </div>
+        </div>
+
+        <!-- Statistiken -->
+        <div class="card">
+            <h2>📊 Übersicht</h2>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="label">Anzahl Fahrten</div>
+                    <div class="value" id="tripCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Gesamtkosten (ohne Ticket)</div>
+                    <div class="value" id="totalCost">0€</div>
+                </div>
+                <div class="stat-box stat-savings">
+                    <div class="label">Ersparnis mit Klimaticket</div>
+                    <div class="value" id="savings">0€</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="message" class="hidden message"></div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Deine Fahrten</h2>
+            <div class="trips-list" id="tripsList">
+                <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
+            </div>
+        </div>
+
+        <!-- Eingabe-Bereich - unten als Alternative -->
         <div class="card">
             <h2>📝 Fahrt hinzufügen</h2>
             
@@ -762,72 +829,6 @@
             <button class="btn-primary" onclick="addTrip()" style="width: 100%;">
                 ➕ Fahrt speichern
             </button>
-        </div>
-
-        <!-- Statistiken -->
-        <div class="card">
-            <h2>📊 Übersicht</h2>
-            
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="label">Anzahl Fahrten</div>
-                    <div class="value" id="tripCount">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Gesamtkosten (ohne Ticket)</div>
-                    <div class="value" id="totalCost">0€</div>
-                </div>
-                <div class="stat-box stat-savings">
-                    <div class="label">Ersparnis mit Klimaticket</div>
-                    <div class="value" id="savings">0€</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="message" class="hidden message"></div>
-        </div>
-
-        <!-- Heatmap -->
-        <div class="card">
-            <h2>🔥 Fahrten pro Tag</h2>
-            <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
-                Übersicht deiner Fahrten nach Tag und Monat.
-            </p>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <button class="btn-secondary" onclick="previousHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">← Vorheriger</button>
-                <span id="heatmapMonthTitle" style="font-weight: 600; color: var(--dark); font-size: 14px;">Januar 2026</span>
-                <button class="btn-secondary" onclick="nextHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">Nächster →</button>
-            </div>
-            <div class="heatmap-container">
-                <div id="heatmapContent" class="heatmap-months"></div>
-            </div>
-            <div class="heatmap-legend">
-                <span>Weniger</span>
-                <div class="heatmap-legend-item">
-                    <div class="heatmap-legend-box" style="background: #ebedf0;"></div>
-                </div>
-                <div class="heatmap-legend-item">
-                    <div class="heatmap-legend-box" style="background: #c6e48b;"></div>
-                </div>
-                <div class="heatmap-legend-item">
-                    <div class="heatmap-legend-box" style="background: #7bc96f;"></div>
-                </div>
-                <div class="heatmap-legend-item">
-                    <div class="heatmap-legend-box" style="background: #239a3b;"></div>
-                </div>
-                <div class="heatmap-legend-item">
-                    <div class="heatmap-legend-box" style="background: #196127;"></div>
-                </div>
-                <span>Mehr</span>
-            </div>
-        </div>
-        <div class="card">
-            <h2>📋 Deine Fahrten</h2>
-            <div class="trips-list" id="tripsList">
-                <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
-            </div>
         </div>
 
         <!-- Export/Backup -->
