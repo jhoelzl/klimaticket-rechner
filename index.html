@@ -767,7 +767,7 @@
                     <div class="value" id="totalCost">0€</div>
                 </div>
                 <div class="stat-box stat-savings">
-                    <div class="label">Ersparnis mit Klimaticket</div>
+                    <div class="label" id="savingsLabel">Ersparnis mit Klimaticket</div>
                     <div class="value" id="savings">0€</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
@@ -1897,6 +1897,14 @@
             document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
             document.getElementById('progressFill').style.width = progressPercent + '%';
 
+            // Update label based on savings status
+            const savingsLabel = document.getElementById('savingsLabel');
+            if (savings >= 0) {
+                savingsLabel.textContent = 'Ersparnis mit Klimaticket';
+            } else {
+                savingsLabel.textContent = 'Noch benötigte Fahrkosten';
+            }
+
             const messageEl = document.getElementById('message');
             if (validTrips.length === 0) {
                 messageEl.classList.add('hidden');
@@ -1905,7 +1913,7 @@
                 messageEl.textContent = `✅ Glückwunsch! Du sparst ${Math.abs(savings).toFixed(2)}€ mit dem Klimaticket.`;
             } else {
                 messageEl.className = 'message negative';
-                messageEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um Deine Kosten für das Ticket zu sparen.`;
+                messageEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um das Ticket auszugleichen.`;
             }
 
             // Generate heatmap
