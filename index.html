@@ -868,7 +868,10 @@
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <h2 style="margin: 0;">📋 Deine Fahrten</h2>
-                <button id="filterNoBundeslandBtn" class="btn-secondary" onclick="toggleNoBundeslandFilter()" style="font-size: 12px; padding: 6px 12px;">🔍 Ohne Bundesland</button>
+                <div style="display: flex; gap: 8px;">
+                    <button id="filterNoBundeslandBtn" class="btn-secondary" onclick="toggleNoBundeslandFilter()" style="font-size: 12px; padding: 6px 12px;">🔍 Ohne Bundesland</button>
+                    <button id="filterOutOfRangeBtn" class="btn-secondary" onclick="toggleOutOfRangeFilter()" style="font-size: 12px; padding: 6px 12px;">⚠️ Außerhalb</button>
+                </div>
             </div>
             <div class="trips-list" id="tripsList">
                 <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
@@ -1110,6 +1113,7 @@
         let userStartDate = DEFAULT_START_DATE; // Dynamic per user
         let userEndDate = DEFAULT_END_DATE; // Dynamic per user
         let showOnlyNoBundesland = false; // Filter for trips without Bundesland
+        let showOnlyOutOfRange = false; // Filter for trips outside validity range
         let allTripsForHeatmap = []; // Store all trips for heatmap navigation
         let currentHeatmapDate = new Date(); // Current month being displayed
 
@@ -1409,6 +1413,20 @@
             }
         }
 
+        // Update out-of-range filter count
+        function updateOutOfRangeFilterCount(trips) {
+            const btn = document.getElementById('filterOutOfRangeBtn');
+            if (!btn) return;
+
+            const count = trips.filter(trip => !isValidTrip(trip)).length;
+            btn.dataset.count = String(count);
+            if (showOnlyOutOfRange) {
+                btn.textContent = `✓ Außerhalb (${count})`;
+            } else {
+                btn.textContent = `⚠️ Außerhalb (${count})`;
+            }
+        }
+
         // Toggle filter for trips without Bundesland
         function toggleNoBundeslandFilter() {
             showOnlyNoBundesland = !showOnlyNoBundesland;
@@ -1421,6 +1439,21 @@
                 btn.style.background = '';
                 btn.style.color = '';
                 btn.textContent = `🔍 Ohne Bundesland (${btn.dataset.count || 0})`;
+            }
+            loadData();
+        }
+
+        function toggleOutOfRangeFilter() {
+            showOnlyOutOfRange = !showOnlyOutOfRange;
+            const btn = document.getElementById('filterOutOfRangeBtn');
+            if (showOnlyOutOfRange) {
+                btn.style.background = '#4caf50';
+                btn.style.color = 'white';
+                btn.textContent = `✓ Außerhalb (${btn.dataset.count || 0})`;
+            } else {
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.textContent = `⚠️ Außerhalb (${btn.dataset.count || 0})`;
             }
             loadData();
         }
@@ -1450,6 +1483,7 @@
                 }
 
                 updateNoBundeslandFilterCount(trips);
+                updateOutOfRangeFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
                 updateDaysRemaining();
@@ -1458,6 +1492,7 @@
                 // Fallback to localStorage
                 const trips = getLocalTrips();
                 updateNoBundeslandFilterCount(trips);
+                updateOutOfRangeFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
             }
@@ -1905,6 +1940,14 @@
                 filtered = trips.filter(trip => !trip.bundeslaender || trip.bundeslaender.length === 0);
                 if (filtered.length === 0) {
                     tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ Alle Fahrten haben ein Bundesland!</p>';
+                    return;
+                }
+            }
+
+            if (showOnlyOutOfRange) {
+                filtered = filtered.filter(trip => !isValidTrip(trip));
+                if (filtered.length === 0) {
+                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ Keine Fahrten außerhalb des Gültigkeitsbereichs!</p>';
                     return;
                 }
             }
