@@ -639,6 +639,12 @@
             background: #196127;
         }
 
+        .heatmap-day.level-invalid {
+            background: #cfcfcf;
+            color: #666;
+            border-color: #bdbdbd;
+        }
+
         .heatmap-legend {
             font-size: 12px;
             color: #666;
@@ -1950,7 +1956,7 @@
             }
 
             // Generate heatmap
-            generateHeatmap(validTrips);
+            generateHeatmap(trips);
             
             // Generate Bundeslands heatmap
             generateBundeslandsHeatmap(validTrips);
@@ -2037,13 +2043,23 @@
             const heatmapContent = document.getElementById('heatmapContent');
             const heatmapMonthTitle = document.getElementById('heatmapMonthTitle');
             
-            // Count trips by date
+            // Count trips by date (valid and invalid)
             const tripsByDate = {};
+            const invalidTripsByDate = {};
             allTripsForHeatmap.forEach(trip => {
-                tripsByDate[trip.date] = (tripsByDate[trip.date] || 0) + 1;
+                if (isValidTrip(trip)) {
+                    tripsByDate[trip.date] = (tripsByDate[trip.date] || 0) + 1;
+                } else {
+                    invalidTripsByDate[trip.date] = (invalidTripsByDate[trip.date] || 0) + 1;
+                }
             });
 
-            if (Object.keys(tripsByDate).length === 0) {
+            const totalDates = new Set([
+                ...Object.keys(tripsByDate),
+                ...Object.keys(invalidTripsByDate)
+            ]);
+
+            if (totalDates.size === 0) {
                 heatmapContent.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 20px;">Noch keine Fahrten zum Visualisieren</p>';
                 return;
             }
@@ -2076,19 +2092,28 @@
             // Day cells
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const count = tripsByDate[dateStr] || 0;
+                const validCount = tripsByDate[dateStr] || 0;
+                const invalidCount = invalidTripsByDate[dateStr] || 0;
                 let level = 'empty';
                 
-                if (count >= 4) level = 'level-4';
-                else if (count >= 3) level = 'level-3';
-                else if (count >= 2) level = 'level-2';
-                else if (count >= 1) level = 'level-1';
+                if (validCount >= 4) level = 'level-4';
+                else if (validCount >= 3) level = 'level-3';
+                else if (validCount >= 2) level = 'level-2';
+                else if (validCount >= 1) level = 'level-1';
+                else if (invalidCount > 0) level = 'level-invalid';
 
                 // Check if this is today
                 const isToday = dateStr === today;
                 const todayStyle = isToday ? 'border: 2px solid #ff5722; box-shadow: 0 0 8px rgba(255, 87, 34, 0.5); font-weight: bold;' : '';
 
-                const title = count > 0 ? `${count} Fahrt${count !== 1 ? 'en' : ''}` : 'Keine Fahrten';
+                let title = 'Keine Fahrten';
+                if (validCount > 0 && invalidCount > 0) {
+                    title = `${validCount} Fahrt${validCount !== 1 ? 'en' : ''} (${invalidCount} außerhalb)`;
+                } else if (validCount > 0) {
+                    title = `${validCount} Fahrt${validCount !== 1 ? 'en' : ''}`;
+                } else if (invalidCount > 0) {
+                    title = `${invalidCount} Fahrt${invalidCount !== 1 ? 'en' : ''} außerhalb des Gültigkeitsbereichs`;
+                }
                 dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer; ${todayStyle}" onclick="openQuickAddFromCalendar('${dateStr}')">${day}</div>`;
             }
 
