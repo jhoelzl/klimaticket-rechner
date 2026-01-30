@@ -1945,7 +1945,13 @@
 
         function t(key) {
             const set = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
-            return set[key] || TRANSLATIONS.en[key] || key;
+            if (Object.prototype.hasOwnProperty.call(set, key)) {
+                return set[key];
+            }
+            if (Object.prototype.hasOwnProperty.call(TRANSLATIONS.en, key)) {
+                return TRANSLATIONS.en[key];
+            }
+            return key;
         }
 
         function setText(id, value) {
