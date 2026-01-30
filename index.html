@@ -2476,15 +2476,15 @@
                 .sort((a, b) => countsByBundesland[b.name] - countsByBundesland[a.name]);
             
             if (visited.length === 0) {
-                bundeslandsStats.innerHTML = '<p style="grid-column: 1/-1; color: #999; text-align: center; padding: 20px;">Noch keine Bundesländer besucht</p>';
+                bundeslandsStats.innerHTML = '<p style="grid-column: 1/-1; color: var(--text-tertiary); text-align: center; padding: 20px;">Noch keine Bundesländer besucht</p>';
             } else {
                 bundeslandsStats.innerHTML = visited.map(bl => {
                     const count = countsByBundesland[bl.name];
                     const barWidth = (count / maxCount) * 100;
-                    return `<div style="padding: 10px; background: #f8f9fa; border-radius: 6px; border-left: 4px solid var(--primary);">
-                        <div style="font-weight: 600; color: var(--dark); margin-bottom: 4px; font-size: 13px;">${bl.name} ${bl.emoji}</div>
+                    return `<div style="padding: 10px; background: var(--card-bg); border-radius: 6px; border-left: 4px solid var(--primary); transition: background-color 0.3s ease;">
+                        <div style="font-weight: 600; color: var(--text-color); margin-bottom: 4px; font-size: 13px;">${bl.name} ${bl.emoji}</div>
                         <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 6px;">${count}</div>
-                        <div style="height: 4px; background: #e0e0e0; border-radius: 2px; overflow: hidden;">
+                        <div style="height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
                             <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: ${barWidth}%;"></div>
                         </div>
                     </div>`;
