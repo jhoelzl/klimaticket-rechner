@@ -1225,6 +1225,37 @@
             </div>
         </div>
 
+        <!-- Carbon Tracking -->
+        <div class="card">
+            <h2 id="carbonTrackingTitle">🌍 Carbon Impact</h2>
+            <p id="carbonTrackingSubtitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Your environmental contribution</p>
+            
+            <div class="stats">
+                <div class="stat-box" style="background: linear-gradient(135deg, #4caf50, #45a049); color: white; border-radius: 8px;">
+                    <div class="label" id="carbonPerTripLabel" style="color: rgba(255,255,255,0.8);">CO₂ per trip</div>
+                    <div class="value" id="carbonPerTrip" style="color: white;">0 kg</div>
+                </div>
+                <div class="stat-box" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: white; border-radius: 8px;">
+                    <div class="label" id="totalCarbonSavingsLabel" style="color: rgba(255,255,255,0.8);">Total CO₂ saved</div>
+                    <div class="value" id="totalCarbonSavings" style="color: white;">0 kg</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px; padding: 12px; background: var(--light); border-radius: 8px; font-size: 12px;">
+                <div style="font-weight: 600; margin-bottom: 8px;" id="carbonComparisonLabel">Comparison</div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span id="carbonVsCarLabel">vs. Car:</span>
+                    <span id="carbonVsCarValue" style="font-weight: 600;">0 km</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span id="carbonVsPlaneLabel">vs. Flight:</span>
+                    <span id="carbonVsPlaneValue" style="font-weight: 600;">0 km</span>
+                </div>
+            </div>
+
+            <div id="carbonFootprintMessage" style="margin-top: 12px; padding: 12px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; color: #2e7d32; font-size: 12px; line-height: 1.4; display: none;"></div>
+        </div>
+
         <!-- Achievements/Badges -->
         <div class="card">
             <h2 id="achievementsHeading">🏆 Achievements</h2>
@@ -1645,7 +1676,17 @@
                 quickTripNotesLabel: 'Notes (optional):',
                 quickTripNotesPlaceholder: 'optional',
                 quickAddCancelBtn: 'Cancel',
-                quickAddSubmitBtn: 'Add'
+                quickAddSubmitBtn: 'Add',
+                carbonTrackingTitle: '🌍 Carbon Impact',
+                carbonTrackingSubtitle: 'Your environmental contribution',
+                carbonPerTrip: 'CO₂ per trip',
+                totalCarbonSavings: 'Total CO₂ saved',
+                carbonComparison: 'Comparison',
+                carbonVsCarLabel: 'vs. Car',
+                carbonVsPlaneLabel: 'vs. Flight',
+                carbonKgUnit: 'kg CO₂',
+                carbonFootprint: 'Environmental footprint',
+                carbonEquivalent: '{value} kg CO₂ equivalent saved vs car travel'
             },
             de: {
                 appTitle: '🚆 Klimaticket Rechner',
@@ -1764,7 +1805,17 @@
                 quickTripNotesLabel: 'Notiz (optional):',
                 quickTripNotesPlaceholder: 'optional',
                 quickAddCancelBtn: 'Abbrechen',
-                quickAddSubmitBtn: 'Hinzufügen'
+                quickAddSubmitBtn: 'Hinzufügen',
+                carbonTrackingTitle: '🌍 CO₂-Bilanz',
+                carbonTrackingSubtitle: 'Dein Umweltbeitrag',
+                carbonPerTrip: 'CO₂ pro Fahrt',
+                totalCarbonSavings: 'Gesamte CO₂-Ersparnis',
+                carbonComparison: 'Vergleich',
+                carbonVsCarLabel: 'vs. Auto',
+                carbonVsPlaneLabel: 'vs. Flugzeug',
+                carbonKgUnit: 'kg CO₂',
+                carbonFootprint: 'Umweltfußabdruck',
+                carbonEquivalent: '{value} kg CO₂ Äquivalent gespart vs. Autofahrt'
             }
         };
 
@@ -1820,6 +1871,13 @@
             setText('totalCostLabel', t('totalCostLabel'));
             setText('statesOverviewHeading', t('statesOverviewHeading'));
             setText('statesOverviewSubtitle', t('statesOverviewSubtitle'));
+            setText('carbonTrackingTitle', t('carbonTrackingTitle'));
+            setText('carbonTrackingSubtitle', t('carbonTrackingSubtitle'));
+            setText('carbonPerTripLabel', t('carbonPerTrip'));
+            setText('totalCarbonSavingsLabel', t('totalCarbonSavings'));
+            setText('carbonComparisonLabel', t('carbonComparison'));
+            setText('carbonVsCarLabel', t('carbonVsCarLabel'));
+            setText('carbonVsPlaneLabel', t('carbonVsPlaneLabel'));
             setText('achievementsHeading', t('achievementsHeading'));
             setText('achievementsSubtitle', t('achievementsSubtitle'));
             setText('yearOverviewHeading', t('yearOverviewHeading'));
@@ -3102,6 +3160,88 @@
         }
 
         // Update stats
+        // Carbon tracking constants
+        // Average CO₂ emissions per km for different transport modes
+        const CARBON_CONFIG = {
+            publicTransport: 0.089,  // kg CO₂ per km (average for trains/buses)
+            car: 0.192,              // kg CO₂ per km (average car)
+            plane: 0.285             // kg CO₂ per km (per seat)
+        };
+
+        // Estimate distance per route (conservative estimate: 40-60km average)
+        function estimateDistance(route) {
+            // Simple heuristic: count commas + 1 as number of segments, estimate 50km per segment
+            const segments = (route.match(/,/g) || []).length + 1;
+            return Math.max(30, segments * 50 + Math.random() * 30);
+        }
+
+        function calculateCarbonStats(trips) {
+            const validTrips = trips.filter(trip => isValidTrip(trip));
+            
+            if (validTrips.length === 0) {
+                return {
+                    averageCarbonPerTrip: 0,
+                    totalCarbonSavings: 0,
+                    carEquivalent: 0,
+                    planeEquivalent: 0
+                };
+            }
+
+            // Calculate CO₂ per trip
+            let totalCarbon = 0;
+            validTrips.forEach(trip => {
+                const distance = estimateDistance(trip.route);
+                const carbon = distance * CARBON_CONFIG.publicTransport;
+                totalCarbon += carbon;
+            });
+
+            const averageCarbonPerTrip = validTrips.length > 0 ? totalCarbon / validTrips.length : 0;
+            
+            // Calculate what would be emitted with car or plane instead
+            const carEmissions = validTrips.length * averageCarbonPerTrip * (CARBON_CONFIG.car / CARBON_CONFIG.publicTransport);
+            const planeEmissions = validTrips.length * averageCarbonPerTrip * (CARBON_CONFIG.plane / CARBON_CONFIG.publicTransport);
+            
+            // Savings by using public transport
+            const carbonSavingsVsCar = carEmissions - totalCarbon;
+            const carbonSavingsVsPlane = planeEmissions - totalCarbon;
+
+            // Convert to distance equivalents (km with car/plane)
+            const carEquivalentKm = carbonSavingsVsCar / CARBON_CONFIG.car;
+            const planeEquivalentKm = carbonSavingsVsPlane / CARBON_CONFIG.plane;
+
+            return {
+                averageCarbonPerTrip: averageCarbonPerTrip,
+                totalCarbonSavings: totalCarbon,
+                carEmissions: carEmissions,
+                planeEmissions: planeEmissions,
+                carbonSavingsVsCar: carbonSavingsVsCar,
+                carbonSavingsVsPlane: carbonSavingsVsPlane,
+                carEquivalentKm: carEquivalentKm,
+                planeEquivalentKm: planeEquivalentKm
+            };
+        }
+
+        function updateCarbonStats(trips) {
+            const carbonStats = calculateCarbonStats(trips);
+            
+            document.getElementById('carbonPerTrip').textContent = carbonStats.averageCarbonPerTrip.toFixed(1) + ' kg';
+            document.getElementById('totalCarbonSavings').textContent = carbonStats.totalCarbonSavings.toFixed(1) + ' kg';
+            
+            // Show comparisons
+            document.getElementById('carbonVsCarValue').textContent = carbonStats.carEquivalentKm.toFixed(0) + ' km';
+            document.getElementById('carbonVsPlaneValue').textContent = carbonStats.planeEquivalentKm.toFixed(0) + ' km';
+            
+            // Update carbon footprint message
+            const footprintMessage = document.getElementById('carbonFootprintMessage');
+            if (carbonStats.totalCarbonSavings > 0) {
+                const message = t('carbonEquivalent').replace('{value}', carbonStats.carbonSavingsVsCar.toFixed(1));
+                footprintMessage.textContent = '✅ ' + message;
+                footprintMessage.style.display = 'block';
+            } else {
+                footprintMessage.style.display = 'none';
+            }
+        }
+
         function updateStats(trips) {
             // Filter only valid trips (within validity range)
             const validTrips = trips.filter(trip => isValidTrip(trip));
@@ -3155,6 +3295,9 @@
             
             // Generate state heatmap
             generateStatesHeatmap(validTrips);
+            
+            // Update carbon statistics
+            updateCarbonStats(trips);
         }
 
         // Update days remaining
