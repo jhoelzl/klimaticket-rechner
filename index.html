@@ -3614,7 +3614,9 @@
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'normal');
                 for (let i = 0; i < 12; i++) {
-                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} (EUR ${monthStats[i].cost.toFixed(2)})`, 20, yPos);
+                    const monthCost = monthStats[i].cost;
+                    const costText = monthCost > 0 ? ` (EUR ${monthCost.toFixed(2)})` : '';
+                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} ${t('pdfTripsWord')}${costText}`, 20, yPos);
                     yPos += 5;
                 }
                 yPos += 7;
