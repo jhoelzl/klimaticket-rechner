@@ -2281,6 +2281,7 @@
             document.getElementById('ticketCostInput').value = userTicketCost;
             document.getElementById('startDateInput').value = userStartDate.toISOString().split('T')[0];
             document.getElementById('endDateInput').value = userEndDate.toISOString().split('T')[0];
+            document.getElementById('languageSelect').value = currentLanguage;
             
             // Update dark mode toggle state
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -2298,6 +2299,7 @@
             const ticketCost = document.getElementById('ticketCostInput').value;
             const startDate = document.getElementById('startDateInput').value;
             const endDate = document.getElementById('endDateInput').value;
+            const language = document.getElementById('languageSelect').value;
 
             if (!ticketCost || isNaN(ticketCost) || parseFloat(ticketCost) < 0) {
                 showToast('❌ Please enter a valid amount', 'error');
@@ -2314,7 +2316,8 @@
                 return;
             }
 
-            await saveUserSettings(ticketCost, startDate, endDate);
+            await saveUserSettings(ticketCost, startDate, endDate, language);
+            applyLanguage(language);
             closeSettingsModal();
             showToast('✅ Settings saved!', 'success');
         }
@@ -2446,7 +2449,7 @@
             try {
                 const { data, error } = await supabase
                     .from('users')
-                    .select('ticket_cost, start_date, end_date')
+                    .select('ticket_cost, start_date, end_date, language')
                     .eq('user_id', currentUser.id)
                     .maybeSingle();
                 
@@ -2454,6 +2457,10 @@
                     userTicketCost = data.ticket_cost;
                     userStartDate = new Date(data.start_date);
                     userEndDate = new Date(data.end_date);
+                    if (data.language) {
+                        currentLanguage = data.language;
+                        applyLanguage(currentLanguage);
+                    }
                 } else if (!error) {
                     // No data but no error - create initial settings
                     await saveUserSettings(DEFAULT_TICKET_COST, DEFAULT_START_DATE, DEFAULT_END_DATE);
@@ -2468,6 +2475,10 @@
                         userTicketCost = settings.ticket_cost || DEFAULT_TICKET_COST;
                         userStartDate = new Date(settings.start_date || DEFAULT_START_DATE);
                         userEndDate = new Date(settings.end_date || DEFAULT_END_DATE);
+                        if (settings.language) {
+                            currentLanguage = settings.language;
+                            applyLanguage(currentLanguage);
+                        }
                     } else {
                         userTicketCost = DEFAULT_TICKET_COST;
                         userStartDate = DEFAULT_START_DATE;
@@ -2483,6 +2494,10 @@
                     userTicketCost = settings.ticket_cost || DEFAULT_TICKET_COST;
                     userStartDate = new Date(settings.start_date || DEFAULT_START_DATE);
                     userEndDate = new Date(settings.end_date || DEFAULT_END_DATE);
+                    if (settings.language) {
+                        currentLanguage = settings.language;
+                        applyLanguage(currentLanguage);
+                    }
                 } else {
                     userTicketCost = DEFAULT_TICKET_COST;
                     userStartDate = DEFAULT_START_DATE;
@@ -2492,19 +2507,25 @@
         }
 
         // Save user settings to Supabase (users table)
-        async function saveUserSettings(ticketCost, startDate, endDate) {
+        async function saveUserSettings(ticketCost, startDate, endDate, language = null) {
             if (!currentUser) return;
             
             try {
+                const settingsData = {
+                    user_id: currentUser.id,
+                    ticket_cost: parseFloat(ticketCost),
+                    start_date: startDate instanceof Date ? startDate.toISOString().split('T')[0] : startDate,
+                    end_date: endDate instanceof Date ? endDate.toISOString().split('T')[0] : endDate,
+                    updated_at: new Date().toISOString()
+                };
+                
+                if (language !== null) {
+                    settingsData.language = language;
+                }
+                
                 const { error } = await supabase
                     .from('users')
-                    .upsert({
-                        user_id: currentUser.id,
-                        ticket_cost: parseFloat(ticketCost),
-                        start_date: startDate instanceof Date ? startDate.toISOString().split('T')[0] : startDate,
-                        end_date: endDate instanceof Date ? endDate.toISOString().split('T')[0] : endDate,
-                        updated_at: new Date().toISOString()
-                    });
+                    .upsert(settingsData);
                 
                 if (error) {
                     console.error('Supabase error details:', error);
@@ -2522,6 +2543,11 @@
                     start_date: startDate instanceof Date ? startDate.toISOString().split('T')[0] : startDate,
                     end_date: endDate instanceof Date ? endDate.toISOString().split('T')[0] : endDate
                 };
+                
+                if (language !== null) {
+                    settingsData.language = language;
+                }
+                
                 localStorage.setItem('user_settings', JSON.stringify(settingsData));
                 userTicketCost = parseFloat(ticketCost);
                 userStartDate = startDate instanceof Date ? startDate : new Date(startDate);
