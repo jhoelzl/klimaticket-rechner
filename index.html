@@ -1366,7 +1366,7 @@
 
             <div class="form-group">
                 <label class="required-field" id="tripRouteLabel" for="tripRoute">Route:</label>
-                <input type="text" id="tripRoute" placeholder="e.g. Salzburg - Vienna" required>
+                <input type="text" id="tripRoute" placeholder="Salzburg - Vienna" required>
             </div>
 
             <div class="form-group">
@@ -1392,7 +1392,7 @@
                 </div>
                 <div class="form-group">
                     <label id="tripDistanceLabel" for="tripDistance">Distance (km):</label>
-                    <input type="number" id="tripDistance" placeholder="e.g. 45" step="0.1" min="0">
+                    <input type="number" id="tripDistance" placeholder="100" step="0.1" min="0">
                 </div>
             </div>
 
@@ -1490,7 +1490,7 @@
                 <p id="languageHelp" class="settings-help">Choose the app language.</p>
                 
                 <label class="required-field" id="ticketCostLabel" for="ticketCostInput">Klimaticket cost (€)</label>
-                <input type="number" id="ticketCostInput" placeholder="e.g. 1400" min="0" step="0.01" required>
+                <input type="number" id="ticketCostInput" placeholder="1400" min="0" step="0.01" required>
                 <p id="ticketCostHelp" class="settings-help">The amount your Klimaticket costs (e.g. after employer subsidy).</p>
                 
                 <label class="required-field" id="startDateLabel" for="startDateInput" style="margin-top: 16px;">Valid from (start date)</label>
@@ -1519,7 +1519,7 @@
                 <input type="date" id="editTripDate" required>
                 
                 <label class="required-field" id="editTripRouteLabel" for="editTripRoute" style="margin-top: 12px;">Route:</label>
-                <input type="text" id="editTripRoute" placeholder="e.g. Salzburg - Vienna" required>
+                <input type="text" id="editTripRoute" placeholder="Salzburg - Vienna" required>
 
                 <label class="required-field" id="editTripStatesLabel" for="editTripStates" style="margin-top: 12px;">State(s):</label>
                 <select id="editTripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;" required>
@@ -1538,7 +1538,7 @@
                 <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
                 <label id="editTripDistanceLabel" for="editTripDistance" style="margin-top: 12px;">Distance (km):</label>
-                <input type="number" id="editTripDistance" placeholder="e.g. 45" step="0.1" min="0">
+                <input type="number" id="editTripDistance" placeholder="45" step="0.1" min="0">
                 
                 <label id="editTripNotesLabel" for="editTripNotes" style="margin-top: 12px;">Notes:</label>
                 <input type="text" id="editTripNotes" placeholder="">
@@ -1573,7 +1573,7 @@
 
             <form class="settings-form" onsubmit="submitCustomQuickAddTrip(event)">
                 <label id="quickTripRouteLabel" for="quickTripRoute">Route:</label>
-                <input type="text" id="quickTripRoute" placeholder="e.g. Salzburg - Vienna">
+                <input type="text" id="quickTripRoute" placeholder="Salzburg - Vienna">
 
                 <label class="required-field" id="quickTripStatesLabel" for="quickTripStates" style="margin-top: 12px;">State(s):</label>
                 <select id="quickTripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;" required>
@@ -1592,7 +1592,7 @@
                 <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
                 <label id="quickTripDistanceLabel" for="quickTripDistance" style="margin-top: 12px;">Distance (km):</label>
-                <input type="number" id="quickTripDistance" placeholder="e.g. 45" step="0.1" min="0">
+                <input type="number" id="quickTripDistance" placeholder="45" step="0.1" min="0">
                 <small id="quickTripDistanceHelp" style="display: block; color: #999; font-size: 12px; margin-top: 4px;">Approximate distance for accurate CO₂ calculation</small>
                 
                 <label id="quickTripNotesLabel" for="quickTripNotes" style="margin-top: 12px;">Notes:</label>
@@ -1677,7 +1677,7 @@
                 editTripCancelBtn: 'Cancel',
                 editTripSaveBtn: 'Save',
                 tripDateLabel: 'Date:',
-                tripRouteLabel: 'Route (e.g., Salzburg - Vienna):',
+                tripRouteLabel: 'Route (Salzburg - Vienna):',
                 tripRoutePlaceholder: 'From - To',
                 tripStatesLabel: 'State(s) involved:',
                 tripStatesHelp: 'Multi-select with Ctrl/Cmd + click',
@@ -1711,7 +1711,7 @@
                 languageLabel: 'Language',
                 languageHelp: 'Choose the app language.',
                 ticketCostLabel: 'Klimaticket cost (€)',
-                ticketCostPlaceholder: 'e.g. 1400',
+                ticketCostPlaceholder: '1400',
                 ticketCostHelp: 'The amount your Klimaticket costs (e.g. after employer subsidy).',
                 startDateLabel: 'Valid from (start date)',
                 startDateHelp: 'The day your Klimaticket becomes valid.',
@@ -1760,7 +1760,7 @@
                 quickAddTitle: '⚡ Add Trip',
                 quickAddQuickButtonsLabel: 'Quick Buttons:',
                 quickTripRouteLabel: 'Route:',
-                quickTripRoutePlaceholder: 'e.g. Salzburg - Vienna',
+                quickTripRoutePlaceholder: 'Salzburg - Vienna',
                 quickTripStatesLabel: 'State(s):',
                 quickTripCostLabel: 'Cost (EUR):',
                 quickTripDistanceLabel: 'Distance (km):',
