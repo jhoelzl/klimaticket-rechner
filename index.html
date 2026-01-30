@@ -829,6 +829,52 @@
             color: var(--primary);
         }
 
+        .bundesland-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .bundesland-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(8, 126, 139, 0.2);
+        }
+
+        .bundesland-card.no-trips {
+            opacity: 0.5;
+            background: #f5f5f5;
+        }
+
+        .bundesland-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .bundesland-name {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .bundesland-count {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .bundesland-label {
+            font-size: 10px;
+            color: #999;
+        }
+
         @media (max-width: 480px) {
             header h1 {
                 font-size: 24px;
@@ -953,51 +999,16 @@
             <h2>🗺️ Bundeslands-Übersicht</h2>
             <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Fahrten pro Bundesland (nur gültige Fahrten)</p>
             
-            <div id="austriaMapContainer" style="background: #f5f5f5; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                <svg id="austriaMap" viewBox="0 0 900 400" style="max-width: 100%; height: auto;">
-                    <!-- Vorarlberg (ganz links, klein) -->
-                    <path id="vorarlberg" d="M 20,180 L 25,165 L 35,155 L 50,150 L 60,152 L 68,160 L 72,175 L 70,190 L 62,202 L 50,208 L 38,205 L 28,195 L 22,185 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Vorarlberg</title>
-                    </path>
-                    
-                    <!-- Tirol (lang gestreckt von links bis mitte) -->
-                    <path id="tirol" d="M 70,190 L 80,182 L 100,175 L 130,170 L 165,168 L 200,167 L 240,168 L 280,170 L 315,175 L 340,182 L 355,192 L 360,205 L 355,220 L 342,232 L 320,240 L 290,245 L 255,246 L 220,244 L 185,240 L 150,234 L 115,225 L 85,213 L 72,200 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Tirol</title>
-                    </path>
-                    
-                    <!-- Salzburg (kompakt, nördlich von Kärnten) -->
-                    <path id="salzburg" d="M 355,192 L 370,188 L 390,186 L 410,188 L 428,195 L 438,208 L 440,225 L 435,240 L 422,250 L 405,254 L 385,252 L 368,245 L 358,230 L 355,215 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Salzburg</title>
-                    </path>
-                    
-                    <!-- Oberösterreich (nördlich der Mitte) -->
-                    <path id="oberösterreich" d="M 440,160 L 465,155 L 495,152 L 525,151 L 555,153 L 580,158 L 600,167 L 612,180 L 618,195 L 615,212 L 605,228 L 588,238 L 565,243 L 540,243 L 515,240 L 490,234 L 468,225 L 448,212 L 438,195 L 438,175 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Oberösterreich</title>
-                    </path>
-                    
-                    <!-- Niederösterreich (groß, um Wien herum) -->
-                    <path id="niederösterreich" d="M 618,195 L 645,188 L 675,185 L 705,186 L 735,190 L 760,197 L 780,207 L 795,220 L 805,238 L 808,258 L 803,278 L 790,295 L 770,307 L 745,313 L 715,315 L 685,312 L 655,305 L 628,295 L 605,282 L 590,265 L 583,245 L 585,225 L 595,208 L 608,198 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Niederösterreich</title>
-                    </path>
-                    
-                    <!-- Wien (kleiner Kreis in Niederösterreich) -->
-                    <circle id="wien" cx="795" cy="235" r="15" fill="#e8f5e9" stroke="#555" stroke-width="1.2" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Wien</title>
-                    </circle>
-                    
-                    <!-- Burgenland (schmaler Streifen rechts) -->
-                    <path id="burgenland" d="M 808,258 L 820,265 L 830,278 L 837,295 L 840,315 L 837,335 L 828,352 L 815,365 L 802,370 L 792,365 L 788,348 L 790,330 L 795,310 L 800,290 L 803,275 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Burgenland</title>
-                    </path>
-                    
-                    <!-- Steiermark (groß, südöstlich) -->
-                    <path id="steiermark" d="M 440,250 L 465,258 L 495,265 L 530,270 L 565,273 L 600,274 L 635,276 L 670,280 L 700,288 L 720,298 L 735,312 L 742,328 L 740,345 L 728,360 L 708,370 L 680,376 L 645,378 L 610,376 L 575,370 L 540,362 L 505,350 L 470,335 L 442,318 L 425,298 L 418,278 L 420,260 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Steiermark</title>
-                    </path>
-                    
-                    <!-- Kärnten (südlich, unter Salzburg/Tirol) -->
-                    <path id="kärnten" d="M 320,240 L 345,248 L 375,255 L 405,260 L 435,262 L 460,260 L 480,255 L 495,247 L 505,260 L 508,278 L 502,295 L 488,308 L 465,318 L 435,323 L 405,324 L 375,320 L 345,312 L 315,300 L 290,285 L 275,268 L 268,252 L 270,240 L 285,238 Z" fill="#e8f5e9" stroke="#555" stroke-width="1" stroke-linejoin="round" style="cursor: pointer; transition: all 0.2s;">
-                        <title>Kärnten</title>
+            <div id="austriaMapContainer" style="background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%); border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                <div id="bundeslanderGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                    <!-- Will be filled by JavaScript -->
+                </div>
+            </div>
+            
+            <div id="bundeslandsStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; font-size: 12px;">
+                <!-- Will be filled by JavaScript -->
+            </div>
+        </div>
                     </path>
                     
                     <!-- Labels -->
