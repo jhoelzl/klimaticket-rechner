@@ -1462,7 +1462,7 @@
     <div id="editTripModal" class="modal">
         <div class="modal-content">
             <button type="button" class="modal-close-btn" onclick="closeEditTripModal()" title="Close (ESC)">✕</button>
-            <h2 style="margin-bottom: 20px; color: var(--primary);">✏️ Edit Trip</h2>
+            <h2 id="editTripHeading" style="margin-bottom: 20px; color: var(--primary);">✏️ Edit Trip</h2>
             <form class="settings-form" onsubmit="submitEditTrip(event)">
                 <label for="editTripDate">Date:</label>
                 <input type="date" id="editTripDate" required>
@@ -1604,6 +1604,7 @@
                 filterNoDistance: '📏 Without distance',
                 filterNoDistanceActive: '✓ Without distance',
                 addTripHeading: '📝 Add Trip',
+                editTripHeading: '✏️ Edit Trip',
                 quickButtonsTitle: '⚡ Quick Buttons:',
                 quickButtonsHelp: "Click a button to instantly add a trip (with today's date).",
                 tripDateLabel: 'Date:',
@@ -1735,6 +1736,7 @@
                 filterNoDistance: '📏 Ohne km Angaben',
                 filterNoDistanceActive: '✓ Ohne km Angaben',
                 addTripHeading: '📝 Fahrt hinzufügen',
+                editTripHeading: '✏️ Fahrt bearbeiten',
                 quickButtonsTitle: '⚡ Quick Buttons:',
                 quickButtonsHelp: 'Klick einen Button, um sofort eine Fahrt hinzuzufügen (mit heutigem Datum).',
                 tripDateLabel: 'Datum:',
@@ -1908,6 +1910,7 @@
             setText('filterOutOfRangeBtn', t('filterOutOfRange'));
             setText('filterNoDistanceBtn', t('filterNoDistance'));
             setText('addTripHeading', t('addTripHeading'));
+            setText('editTripHeading', t('editTripHeading'));
             setText('quickButtonsTitle', t('quickButtonsTitle'));
             setText('quickButtonsHelp', t('quickButtonsHelp'));
             setText('tripDateLabel', t('tripDateLabel'));
