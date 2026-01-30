@@ -701,9 +701,7 @@
                 <div style="display: flex; gap: 6px; align-items: center;">
                     <button onclick="reloadData()" id="reloadBtn" title="Daten aktualisieren" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🔄</button>
                     <button onclick="openSettingsModal()" id="settingsBtn" title="Einstellungen" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">⚙️</button>
-                    <button onclick="logout()" id="logoutBtn" title="Abmelden" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🚪</button>
-                    <button onclick="handleAuth()" id="authBtn" style="background: rgba(255,255,255,0.9); color: var(--primary); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">📧 Anmelden</button>
-                    <div id="authStatus" class="auth-status">⏳ Laden...</div>
+                    <button onclick="handleAuthToggle()" id="profileBtn" title="Profil" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; display: none;">👤</button>
                 </div>
             </div>
         </header>
@@ -1186,6 +1184,15 @@
             openAuthModal();
         }
 
+        // Handle profile button toggle (login/logout)
+        async function handleAuthToggle() {
+            if (currentUser) {
+                await logout();
+            } else {
+                openAuthModal();
+            }
+        }
+
         // Logout
         async function logout() {
             try {
@@ -1239,23 +1246,16 @@
 
         // Update auth UI
         function updateAuthUI() {
-            const authStatus = document.getElementById('authStatus');
-            const authBtn = document.getElementById('authBtn');
+            const profileBtn = document.getElementById('profileBtn');
             const settingsBtn = document.getElementById('settingsBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
 
             if (currentUser) {
-                authStatus.className = 'auth-status online';
-                authStatus.textContent = '✅ Angemeldet';
-                authBtn.classList.add('hidden');
+                profileBtn.style.display = 'block';
+                profileBtn.title = 'Profil (Klick zum Abmelden)';
                 settingsBtn.classList.remove('hidden');
-                logoutBtn.classList.remove('hidden');
             } else {
-                authStatus.className = 'auth-status offline';
-                authStatus.textContent = '⏳ Anonym (lokal)';
-                authBtn.classList.remove('hidden');
+                profileBtn.style.display = 'none';
                 settingsBtn.classList.add('hidden');
-                logoutBtn.classList.add('hidden');
             }
         }
 
