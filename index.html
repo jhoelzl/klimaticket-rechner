@@ -322,6 +322,16 @@
             margin-top: 16px;
         }
 
+        .stats-overview {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .stats-overview .stats-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .stat-box {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -1110,6 +1120,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+
             .states-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -1194,22 +1208,26 @@
                 </div>
             </div>
             
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="label" id="tripCountLabel">Trip count</div>
-                    <div class="value" id="tripCount">0</div>
+            <div class="stats stats-overview">
+                <div class="stats-column stats-average">
+                    <div class="stat-box">
+                        <div class="label" id="averageKmLabel">Average per trip</div>
+                        <div class="value" id="averageKm">0 km</div>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <div class="label" id="totalCostLabel">Total cost (without ticket)</div>
-                    <div class="value" id="totalCost">0€</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label" id="totalKmLabel">Total distance</div>
-                    <div class="value" id="totalKm">0 km</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label" id="averageKmLabel">Average per trip</div>
-                    <div class="value" id="averageKm">0 km</div>
+                <div class="stats-column stats-total">
+                    <div class="stat-box">
+                        <div class="label" id="tripCountLabel">Trip count</div>
+                        <div class="value" id="tripCount">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label" id="totalCostLabel">Total cost (without ticket)</div>
+                        <div class="value" id="totalCost">0€</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label" id="totalKmLabel">Total distance</div>
+                        <div class="value" id="totalKm">0 km</div>
+                    </div>
                 </div>
                 <div class="stat-box stat-savings">
                     <div class="label" id="savingsLabel">Savings with Klimaticket</div>
