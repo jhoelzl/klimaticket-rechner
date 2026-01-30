@@ -2084,8 +2084,12 @@
                 else if (count >= 2) level = 'level-2';
                 else if (count >= 1) level = 'level-1';
 
+                // Check if this is today
+                const isToday = dateStr === today;
+                const todayStyle = isToday ? 'border: 2px solid #ff5722; box-shadow: 0 0 8px rgba(255, 87, 34, 0.5); font-weight: bold;' : '';
+
                 const title = count > 0 ? `${count} Fahrt${count !== 1 ? 'en' : ''}` : 'Keine Fahrten';
-                dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer;" onclick="openQuickAddFromCalendar('${dateStr}')">${day}</div>`;
+                dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer; ${todayStyle}" onclick="openQuickAddFromCalendar('${dateStr}')">${day}</div>`;
             }
 
             heatmapContent.innerHTML = `
