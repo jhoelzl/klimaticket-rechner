@@ -964,6 +964,9 @@
         // Check authentication status on page load
         async function checkAuth() {
             try {
+                // Handle email confirmation from sign-up link
+                await handleEmailConfirmation();
+                
                 const { data: { user } } = await supabase.auth.getUser();
                 currentUser = user;
                 updateAuthUI();
@@ -972,6 +975,34 @@
                 console.error('Auth check failed:', err);
                 updateAuthUI();
                 loadData();
+            }
+        }
+
+        // Handle email confirmation from sign-up link
+        async function handleEmailConfirmation() {
+            const params = new URLSearchParams(window.location.search);
+            const tokenHash = params.get('token_hash');
+            const type = params.get('type');
+
+            if (tokenHash && type === 'email_signup') {
+                try {
+                    showToast('⏳ E-Mail wird bestätigt...', 'success');
+                    const { error } = await supabase.auth.verifyOtp({
+                        token_hash: tokenHash,
+                        type: 'email_signup'
+                    });
+
+                    if (error) throw error;
+
+                    // Clear URL parameters
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    showToast('✅ E-Mail bestätigt! Du bist jetzt angemeldet.', 'success');
+                } catch (err) {
+                    console.error('Email confirmation error:', err);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    showToast('❌ E-Mail-Bestätigung fehlgeschlagen: ' + err.message, 'error');
+                }
             }
         }
 
