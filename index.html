@@ -1540,6 +1540,10 @@
                 <label id="quickTripCostLabel" for="quickTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
+                <label id="quickTripDistanceLabel" for="quickTripDistance" style="margin-top: 12px;">Distance (km) - optional:</label>
+                <input type="number" id="quickTripDistance" placeholder="e.g. 45" step="0.1" min="0">
+                <small id="quickTripDistanceHelp" style="display: block; color: #999; font-size: 12px; margin-top: 4px;">Approximate distance for accurate CO₂ calculation</small>
+                
                 <label id="quickTripNotesLabel" for="quickTripNotes" style="margin-top: 12px;">Notes (optional):</label>
                 <input type="text" id="quickTripNotes" placeholder="optional">
                 
@@ -1690,6 +1694,9 @@
                 quickTripRoutePlaceholder: 'e.g. Salzburg - Vienna',
                 quickTripStatesLabel: 'State(s):',
                 quickTripCostLabel: 'Cost (EUR):',
+                quickTripDistanceLabel: 'Distance (km) - optional:',
+                quickTripDistancePlaceholder: 'e.g. 45',
+                quickTripDistanceHelp: 'Approximate distance for accurate CO₂ calculation',
                 quickTripNotesLabel: 'Notes (optional):',
                 quickTripNotesPlaceholder: 'optional',
                 quickAddCancelBtn: 'Cancel',
@@ -1825,6 +1832,9 @@
                 quickTripRoutePlaceholder: 'z.B. Salzburg - Wien',
                 quickTripStatesLabel: 'Bundesland(er):',
                 quickTripCostLabel: 'Kosten (EUR):',
+                quickTripDistanceLabel: 'Distanz (km) - optional:',
+                quickTripDistancePlaceholder: 'z.B. 45',
+                quickTripDistanceHelp: 'Ungefähre Entfernung für genaue CO₂-Berechnung',
                 quickTripNotesLabel: 'Notiz (optional):',
                 quickTripNotesPlaceholder: 'optional',
                 quickAddCancelBtn: 'Abbrechen',
@@ -1963,6 +1973,9 @@
             setPlaceholder('quickTripRoute', t('quickTripRoutePlaceholder'));
             setText('quickTripStatesLabel', t('quickTripStatesLabel'));
             setText('quickTripCostLabel', t('quickTripCostLabel'));
+            setText('quickTripDistanceLabel', t('quickTripDistanceLabel'));
+            setPlaceholder('quickTripDistance', t('quickTripDistancePlaceholder'));
+            setText('quickTripDistanceHelp', t('quickTripDistanceHelp'));
             setText('quickTripNotesLabel', t('quickTripNotesLabel'));
             setPlaceholder('quickTripNotes', t('quickTripNotesPlaceholder'));
             setText('quickAddCancelBtn', t('quickAddCancelBtn'));
@@ -2928,12 +2941,22 @@
             document.getElementById('quickAddDate').textContent = formatDate(dateStr);
             document.getElementById('quickTripRoute').value = '';
             document.getElementById('quickTripCost').value = '';
+            document.getElementById('quickTripDistance').value = '';
             document.getElementById('quickTripNotes').value = '';
             document.getElementById('quickAddModal').classList.add('active');
             document.getElementById('quickAddModal').dataset.selectedDate = dateStr;
         }
 
         function closeQuickAddModal() {
+            // Reset form fields
+            document.getElementById('quickTripRoute').value = '';
+            document.getElementById('quickTripCost').value = '';
+            document.getElementById('quickTripDistance').value = '';
+            document.getElementById('quickTripNotes').value = '';
+            // Reset selected states
+            const statesSelect = document.getElementById('quickTripStates');
+            Array.from(statesSelect.options).forEach(opt => opt.selected = opt.value === 'Salzburg');
+            // Close modal
             document.getElementById('quickAddModal').classList.remove('active');
         }
 
@@ -2981,6 +3004,9 @@
             const dateStr = document.getElementById('quickAddModal').dataset.selectedDate;
             const route = document.getElementById('quickTripRoute').value.trim() || 'Trip';
             const cost = parseFloat(document.getElementById('quickTripCost').value);
+            const distance = document.getElementById('quickTripDistance').value.trim() 
+                ? parseFloat(document.getElementById('quickTripDistance').value) 
+                : null;
             const notes = document.getElementById('quickTripNotes').value.trim();
             
             // Get selected states (defaults to Salzburg if none selected)
@@ -2996,6 +3022,7 @@
                 date: dateStr,
                 route,
                 cost,
+                distance,
                 notes,
                 states: states.length > 0 ? states : ['Salzburg']
             };
