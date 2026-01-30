@@ -673,6 +673,59 @@
             border: 1px solid #ddd;
         }
 
+        /* Trip Tooltip */
+        .trip-tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 10000;
+            pointer-events: none;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .trip-tooltip.visible {
+            display: block;
+        }
+
+        .trip-tooltip-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .trip-tooltip-item {
+            padding: 4px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .trip-tooltip-route {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .trip-tooltip-cost {
+            font-weight: bold;
+            color: #4caf50;
+            white-space: nowrap;
+        }
+
+        .trip-tooltip-invalid {
+            opacity: 0.6;
+        }
+
+        .trip-tooltip-invalid .trip-tooltip-cost {
+            color: #ff9800;
+        }
+
         @media (max-width: 480px) {
             header h1 {
                 font-size: 24px;
@@ -704,6 +757,9 @@
     </style>
 </head>
 <body>
+    <!-- Trip Tooltip -->
+    <div id="tripTooltip" class="trip-tooltip"></div>
+
     <div class="container">
         <header>
             <div class="header-top">
@@ -2121,6 +2177,75 @@
                 .join('');
         }
 
+        // Show trip tooltip on hover
+        function showTripTooltip(event, dateStr) {
+            const tooltip = document.getElementById('tripTooltip');
+            const trips = allTripsForHeatmap.filter(trip => trip.date === dateStr);
+            
+            if (trips.length === 0) {
+                tooltip.classList.remove('visible');
+                return;
+            }
+
+            // Build tooltip content
+            const validTrips = trips.filter(trip => isValidTrip(trip));
+            const invalidTrips = trips.filter(trip => !isValidTrip(trip));
+            
+            let content = `<div class="trip-tooltip-header">${dateStr}</div>`;
+            
+            if (validTrips.length > 0) {
+                validTrips.forEach(trip => {
+                    content += `
+                        <div class="trip-tooltip-item">
+                            <span class="trip-tooltip-route">${trip.route}</span>
+                            <span class="trip-tooltip-cost">€${trip.cost.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (invalidTrips.length > 0) {
+                invalidTrips.forEach(trip => {
+                    content += `
+                        <div class="trip-tooltip-item trip-tooltip-invalid">
+                            <span class="trip-tooltip-route">${trip.route} ⚠️</span>
+                            <span class="trip-tooltip-cost">€${trip.cost.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            tooltip.innerHTML = content;
+            
+            // Position tooltip near cursor
+            const x = event.clientX;
+            const y = event.clientY;
+            const tooltipWidth = 300;
+            const tooltipHeight = tooltip.offsetHeight || 100;
+            
+            // Adjust position to keep tooltip on screen
+            let left = x + 10;
+            let top = y + 10;
+            
+            if (left + tooltipWidth > window.innerWidth) {
+                left = x - tooltipWidth - 10;
+            }
+            
+            if (top + tooltipHeight > window.innerHeight) {
+                top = y - tooltipHeight - 10;
+            }
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        // Hide trip tooltip
+        function hideTripTooltip() {
+            const tooltip = document.getElementById('tripTooltip');
+            tooltip.classList.remove('visible');
+        }
+
         // Render current month heatmap
         function renderHeatmapMonth() {
             const heatmapContent = document.getElementById('heatmapContent');
@@ -2197,7 +2322,7 @@
                 } else if (invalidCount > 0) {
                     title = `${invalidCount} Fahrt${invalidCount !== 1 ? 'en' : ''} außerhalb des Gültigkeitsbereichs`;
                 }
-                dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer; ${todayStyle}" onclick="openQuickAddFromCalendar('${dateStr}')">${day}</div>`;
+                dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer; ${todayStyle}" onclick="openQuickAddFromCalendar('${dateStr}')" onmouseover="showTripTooltip(event, '${dateStr}')" onmouseout="hideTripTooltip()">${day}</div>`;
             }
 
             heatmapContent.innerHTML = `
