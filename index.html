@@ -1260,18 +1260,40 @@
                     userTicketCost = data.ticket_cost;
                     userStartDate = new Date(data.start_date);
                     userEndDate = new Date(data.end_date);
-                } else {
-                    // Initialize with defaults if no settings exist
+                } else if (!error) {
+                    // No data but no error - create initial settings
                     await saveUserSettings(DEFAULT_TICKET_COST, DEFAULT_START_DATE, DEFAULT_END_DATE);
                     userTicketCost = DEFAULT_TICKET_COST;
                     userStartDate = DEFAULT_START_DATE;
                     userEndDate = DEFAULT_END_DATE;
+                } else {
+                    // Error occurred - use defaults and try localStorage
+                    const localSettings = localStorage.getItem('user_settings');
+                    if (localSettings) {
+                        const settings = JSON.parse(localSettings);
+                        userTicketCost = settings.ticket_cost || DEFAULT_TICKET_COST;
+                        userStartDate = new Date(settings.start_date || DEFAULT_START_DATE);
+                        userEndDate = new Date(settings.end_date || DEFAULT_END_DATE);
+                    } else {
+                        userTicketCost = DEFAULT_TICKET_COST;
+                        userStartDate = DEFAULT_START_DATE;
+                        userEndDate = DEFAULT_END_DATE;
+                    }
                 }
             } catch (err) {
                 console.error('Load settings error:', err);
-                userTicketCost = DEFAULT_TICKET_COST;
-                userStartDate = DEFAULT_START_DATE;
-                userEndDate = DEFAULT_END_DATE;
+                // Fallback to localStorage
+                const localSettings = localStorage.getItem('user_settings');
+                if (localSettings) {
+                    const settings = JSON.parse(localSettings);
+                    userTicketCost = settings.ticket_cost || DEFAULT_TICKET_COST;
+                    userStartDate = new Date(settings.start_date || DEFAULT_START_DATE);
+                    userEndDate = new Date(settings.end_date || DEFAULT_END_DATE);
+                } else {
+                    userTicketCost = DEFAULT_TICKET_COST;
+                    userStartDate = DEFAULT_START_DATE;
+                    userEndDate = DEFAULT_END_DATE;
+                }
             }
         }
 
@@ -1288,18 +1310,29 @@
                         start_date: startDate instanceof Date ? startDate.toISOString().split('T')[0] : startDate,
                         end_date: endDate instanceof Date ? endDate.toISOString().split('T')[0] : endDate,
                         updated_at: new Date().toISOString()
-                    }, {
-                        onConflict: 'user_id'
                     });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error details:', error);
+                    throw error;
+                }
                 userTicketCost = parseFloat(ticketCost);
                 userStartDate = startDate instanceof Date ? startDate : new Date(startDate);
                 userEndDate = endDate instanceof Date ? endDate : new Date(endDate);
                 await loadData(); // Reload with new settings
             } catch (err) {
                 console.error('Save settings error:', err);
-                showToast('❌ Fehler beim Speichern der Einstellungen', 'error');
+                // Fallback to localStorage for offline support
+                const settingsData = {
+                    ticket_cost: parseFloat(ticketCost),
+                    start_date: startDate instanceof Date ? startDate.toISOString().split('T')[0] : startDate,
+                    end_date: endDate instanceof Date ? endDate.toISOString().split('T')[0] : endDate
+                };
+                localStorage.setItem('user_settings', JSON.stringify(settingsData));
+                userTicketCost = parseFloat(ticketCost);
+                userStartDate = startDate instanceof Date ? startDate : new Date(startDate);
+                userEndDate = endDate instanceof Date ? endDate : new Date(endDate);
+                showToast('⚠️ Einstellungen lokal gespeichert (kein Cloud-Zugriff)', 'success');
             }
         }
 
