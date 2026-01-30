@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Klimaticket Rechner">
-    <meta name="description" content="Verfolge Deine Klimaticket-Fahrten und berechne Deine Ersparnisse">
+    <meta name="apple-mobile-web-app-title" content="Klimaticket Calculator">
+    <meta name="description" content="Track your Klimaticket trips and calculate your savings">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192'/><text x='96' y='140' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>€</text></svg>">
-    <title>Klimaticket Rechner</title>
+    <title>Klimaticket Calculator</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -936,7 +936,7 @@
             color: var(--primary);
         }
 
-        .bundesland-map-container {
+        .state-map-container {
             background: var(--bg-color);
             border-radius: 8px;
             padding: 16px;
@@ -944,11 +944,11 @@
             transition: background-color 0.3s ease;
         }
 
-        [data-theme="dark"] .bundesland-map-container {
+        [data-theme="dark"] .state-map-container {
             background: linear-gradient(135deg, rgba(30, 30, 30, 0.5) 0%, rgba(30, 30, 30, 0.3) 100%);
         }
 
-        .bundesland-card {
+        .state-card {
             background: var(--card-bg);
             border: 2px solid var(--border);
             border-radius: 8px;
@@ -959,37 +959,37 @@
             box-shadow: 0 1px 3px var(--shadow);
         }
 
-        .bundesland-card:hover {
+        .state-card:hover {
             transform: translateY(-3px);
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(15, 164, 179, 0.2);
         }
 
-        .bundesland-card.no-trips {
+        .state-card.no-trips {
             opacity: 0.5;
             background: var(--bg-color);
         }
 
-        .bundesland-icon {
+        .state-icon {
             font-size: 28px;
             margin-bottom: 8px;
         }
 
-        .bundesland-name {
+        .state-name {
             font-weight: 600;
             font-size: 12px;
             color: var(--text-color);
             margin-bottom: 4px;
         }
 
-        .bundesland-count {
+        .state-count {
             font-size: 18px;
             font-weight: bold;
             color: var(--primary);
             margin-bottom: 4px;
         }
 
-        .bundesland-label {
+        .state-label {
             font-size: 10px;
             color: var(--text-tertiary);
         }
@@ -1117,32 +1117,32 @@
     <div class="container">
         <header>
             <div class="header-top">
-                <h1>🚆 Klimaticket Rechner</h1>
+                <h1 id="appTitle">🚆 Klimaticket Calculator</h1>
                 <div style="display: flex; gap: 6px; align-items: center;">
-                    <button onclick="reloadData()" id="reloadBtn" title="Daten aktualisieren" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🔄</button>
-                    <button onclick="openSettingsModal()" id="settingsBtn" title="Einstellungen" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">⚙️</button>
-                    <button onclick="handleAuthToggle()" id="profileBtn" title="Profil" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">👤</button>
-                    <button onclick="handleAuth()" id="authBtn" style="background: rgba(255,255,255,0.9); color: var(--primary); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">📧 Anmelden</button>
+                    <button onclick="reloadData()" id="reloadBtn" title="Refresh data" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🔄</button>
+                    <button onclick="openSettingsModal()" id="settingsBtn" title="Settings" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">⚙️</button>
+                    <button onclick="handleAuthToggle()" id="profileBtn" title="Profile" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">👤</button>
+                    <button onclick="handleAuth()" id="authBtn" style="background: rgba(255,255,255,0.9); color: var(--primary); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">📧 Sign in</button>
                 </div>
             </div>
         </header>
 
-        <!-- Heatmap - oben für schnelle Fahrteinträge -->
+        <!-- Heatmap - quick trip entry at the top -->
         <div class="card">
-            <h2>🔥 Fahrten pro Tag</h2>
-            <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
-                Klick auf einen Tag, um schnell eine Fahrt hinzuzufügen.
+            <h2 id="heatmapTitle">🔥 Trips per Day</h2>
+            <p id="heatmapSubtitle" style="font-size: 14px; color: #666; margin-bottom: 16px;">
+                Click a day to quickly add a trip.
             </p>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <button class="btn-secondary" onclick="previousHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">← Vorheriger</button>
-                <span id="heatmapMonthTitle" style="font-weight: 600; color: var(--dark); font-size: 14px;">Januar 2026</span>
-                <button class="btn-secondary" onclick="nextHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">Nächster →</button>
+                <button id="heatmapPrevBtn" class="btn-secondary" onclick="previousHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">← Previous</button>
+                <span id="heatmapMonthTitle" style="font-weight: 600; color: var(--dark); font-size: 14px;">January 2026</span>
+                <button id="heatmapNextBtn" class="btn-secondary" onclick="nextHeatmapMonth()" style="padding: 8px 12px; font-size: 13px;">Next →</button>
             </div>
             <div class="heatmap-container">
                 <div id="heatmapContent" class="heatmap-months"></div>
             </div>
             <div class="heatmap-legend">
-                <span>Weniger</span>
+                <span id="heatmapLegendLess">Less</span>
                 <div class="heatmap-legend-item">
                     <div class="heatmap-legend-box" style="background: #ebedf0;"></div>
                 </div>
@@ -1158,36 +1158,36 @@
                 <div class="heatmap-legend-item">
                     <div class="heatmap-legend-box" style="background: #196127;"></div>
                 </div>
-                <span>Mehr</span>
+                <span id="heatmapLegendMore">More</span>
             </div>
         </div>
 
-        <!-- Statistiken -->
+        <!-- Statistics -->
         <div class="card">
-            <h2>📊 Übersicht</h2>
+            <h2 id="statsTitle">📊 Overview</h2>
             
             <div style="display: flex; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); font-size: 13px;">
                 <div style="flex: 1;">
-                    <div style="color: #999; margin-bottom: 4px;">Gültig bis</div>
-                    <div style="font-weight: 600; color: var(--dark);" id="expiryDate">22. Jän. 2026</div>
+                    <div id="validUntilLabel" style="color: #999; margin-bottom: 4px;">Valid until</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="expiryDate">22 Jan 2026</div>
                 </div>
                 <div style="flex: 1;">
-                    <div style="color: #999; margin-bottom: 4px;">Gültigkeit</div>
+                    <div id="validityLabel" style="color: #999; margin-bottom: 4px;">Validity</div>
                     <div style="font-weight: 600; color: var(--dark);" id="daysRemaining">-</div>
                 </div>
             </div>
             
             <div class="stats">
                 <div class="stat-box">
-                    <div class="label">Anzahl Fahrten</div>
+                    <div class="label" id="tripCountLabel">Trip count</div>
                     <div class="value" id="tripCount">0</div>
                 </div>
                 <div class="stat-box">
-                    <div class="label">Gesamtkosten (ohne Ticket)</div>
+                    <div class="label" id="totalCostLabel">Total cost (without ticket)</div>
                     <div class="value" id="totalCost">0€</div>
                 </div>
                 <div class="stat-box stat-savings">
-                    <div class="label" id="savingsLabel">Ersparnis mit Klimaticket</div>
+                    <div class="label" id="savingsLabel">Savings with Klimaticket</div>
                     <div class="value" id="savings">0€</div>
                     <div id="savingsSummary" style="margin-top: 8px; font-size: 12px; line-height: 1.4;"></div>
                     <div class="progress-bar">
@@ -1199,18 +1199,18 @@
             <div id="message" class="hidden message"></div>
         </div>
 
-        <!-- Austria Bundeslands Map -->
+        <!-- Austria states overview -->
         <div class="card">
-            <h2>🗺️ Bundeslands-Übersicht</h2>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Fahrten pro Bundesland</p>
+            <h2>🗺️ States Overview</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Trips per state</p>
             
-            <div id="austriaMapContainer" class="bundesland-map-container">
-                <div id="bundeslanderGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div id="austriaStatesContainer" class="state-map-container">
+                <div id="statesGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
                     <!-- Will be filled by JavaScript -->
                 </div>
             </div>
             
-            <div id="bundeslandsStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; font-size: 12px;">
+            <div id="statesStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; font-size: 12px;">
                 <!-- Will be filled by JavaScript -->
             </div>
         </div>
@@ -1218,7 +1218,7 @@
         <!-- Achievements/Badges -->
         <div class="card">
             <h2>🏆 Achievements</h2>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Deine Öffi-Erfolge</p>
+            <p id="achievementsSubtitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Your transit achievements</p>
             
             <div id="achievementsGrid" class="achievements-grid">
                 <!-- Will be filled by JavaScript -->
@@ -1227,8 +1227,8 @@
 
         <!-- Year Overview -->
         <div class="card">
-            <h2>📅 Jahresübersicht</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Fahrten und Kosten nach Monat</p>
+            <h2 id="yearOverviewHeading">📅 Year Overview</h2>
+            <p id="yearOverviewSubtitle" style="font-size: 13px; color: #666; margin-bottom: 12px;">Trips and costs by month</p>
             
             <div class="year-selector">
                 <button onclick="changeYear(-1)">← {{previousYear}}</button>
@@ -1243,47 +1243,48 @@
 
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h2 style="margin: 0;">📋 Deine Fahrten</h2>
+                <h2 id="tripsHeading" style="margin: 0;">📋 Your Trips</h2>
                 <div style="display: flex; gap: 8px;">
-                    <button id="filterNoBundeslandBtn" class="btn-secondary" onclick="toggleNoBundeslandFilter()" style="font-size: 12px; padding: 6px 12px;">🔍 Ohne Bundesland</button>
-                    <button id="filterOutOfRangeBtn" class="btn-secondary" onclick="toggleOutOfRangeFilter()" style="font-size: 12px; padding: 6px 12px;">⚠️ Außerhalb</button>
+                    <button id="filterNoStateBtn" class="btn-secondary" onclick="toggleNoStateFilter()" style="font-size: 12px; padding: 6px 12px;">🔍 Without state</button>
+                    <button id="filterOutOfRangeBtn" class="btn-secondary" onclick="toggleOutOfRangeFilter()" style="font-size: 12px; padding: 6px 12px;">⚠️ Out of range</button>
                 </div>
             </div>
             <div class="trips-list" id="tripsList">
-                <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
+                <p style="color: #999; text-align: center; padding: 20px;">No trips added yet</p>
             </div>
         </div>
 
-        <!-- Eingabe-Bereich - unten als Alternative -->
+        <!-- Entry area - alternative at the bottom -->
         <div class="card">
-            <h2>📝 Fahrt hinzufügen</h2>
+            <h2 id="addTripHeading">📝 Add Trip</h2>
             
             <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
-                <strong>⚡ Quick Buttons:</strong> Klick einen Button, um sofort eine Fahrt hinzuzufügen (mit heutigem Datum).
+                <strong id="quickButtonsTitle">⚡ Quick Buttons:</strong>
+                <span id="quickButtonsHelp">Click a button to instantly add a trip (with today's date).</span>
             </p>
             
             <div class="quick-buttons">
                 <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn Sbg')">
-                    🚇 S-Bahn Sbg<br>(3,60€)
+                    🚇 S-Bahn Sbg<br>(€3.60)
                 </button>
                 <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Sbg')">
-                    🚌 Obus Sbg<br>(3,00€)
+                    🚌 Obus Sbg<br>(€3.00)
                 </button>
             </div>
 
             <div class="form-group">
-                <label for="tripDate">Datum:</label>
+                <label id="tripDateLabel" for="tripDate">Date:</label>
                 <input type="date" id="tripDate">
             </div>
 
             <div class="form-group">
-                <label for="tripRoute">Route (z.B. Salzburg - Wien):</label>
-                <input type="text" id="tripRoute" placeholder="Von - Nach">
+                <label id="tripRouteLabel" for="tripRoute">Route (e.g., Salzburg - Vienna):</label>
+                <input type="text" id="tripRoute" placeholder="From - To">
             </div>
 
             <div class="form-group">
-                <label for="tripBundeslaender">Bundesland(er) betroffen:</label>
-                <select id="tripBundeslaender" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                <label id="tripStatesLabel" for="tripStates">State(s) involved:</label>
+                <select id="tripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
                     <option value="Salzburg">Salzburg</option>
                     <option value="Wien">Wien</option>
                     <option value="Niederösterreich">Niederösterreich</option>
@@ -1294,37 +1295,37 @@
                     <option value="Burgenland">Burgenland</option>
                     <option value="Kärnten">Kärnten</option>
                 </select>
-                <p style="font-size: 12px; color: #999; margin-top: 4px;">Mehrfachauswahl mit Ctrl/Cmd + Klick</p>
+                <p id="tripStatesHelp" style="font-size: 12px; color: #999; margin-top: 4px;">Multi-select with Ctrl/Cmd + click</p>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="tripCost">Kosten ohne Ticket (EUR):</label>
+                    <label id="tripCostLabel" for="tripCost">Cost without ticket (EUR):</label>
                     <input type="number" id="tripCost" placeholder="5.00" step="0.01" min="0">
                 </div>
                 <div class="form-group">
-                    <label for="tripNotes">Notiz:</label>
+                    <label id="tripNotesLabel" for="tripNotes">Notes:</label>
                     <input type="text" id="tripNotes" placeholder="optional">
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="addTrip()" style="width: 100%;">
-                ➕ Fahrt speichern
+            <button id="saveTripBtn" class="btn-primary" onclick="addTrip()" style="width: 100%;">
+                ➕ Save trip
             </button>
         </div>
 
         <!-- Export/Backup -->
         <div class="card">
-            <h2>💾 Datensicherung</h2>
+            <h2 id="backupHeading">💾 Backup</h2>
             <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
-                Exportiere Deine Daten als JSON oder CSV für Backup.
+                <span id="backupSubtitle">Export your data as JSON or CSV for backup.</span>
             </p>
             <div class="export-buttons">
-                <button class="btn-secondary" onclick="exportJSON()">📥 JSON Export</button>
-                <button class="btn-secondary" onclick="exportCSV()">📊 CSV Export</button>
-                <button class="btn-primary" onclick="exportPDF()">📄 PDF Zusammenfassung</button>
-                <button class="btn-secondary" onclick="importData()">📤 Importieren</button>
-                <button class="btn-danger" onclick="clearAllData()">🗑️ Löschen</button>
+                <button id="exportJsonBtn" class="btn-secondary" onclick="exportJSON()">📥 JSON Export</button>
+                <button id="exportCsvBtn" class="btn-secondary" onclick="exportCSV()">📊 CSV Export</button>
+                <button id="exportPdfBtn" class="btn-primary" onclick="exportPDF()">📄 PDF Summary</button>
+                <button id="importBtn" class="btn-secondary" onclick="importData()">📤 Import</button>
+                <button id="deleteBtn" class="btn-danger" onclick="clearAllData()">🗑️ Delete</button>
             </div>
         </div>
     </div>
@@ -1335,30 +1336,30 @@
     <!-- Auth Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
-            <button type="button" class="modal-close-btn" onclick="closeAuthModal()" title="Schließen (ESC)">✕</button>
+            <button type="button" class="modal-close-btn" onclick="closeAuthModal()" title="Close (ESC)">✕</button>
             <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchAuthTab('login')">🔐 Anmelden</button>
-                <button class="modal-tab" onclick="switchAuthTab('signup')">✍️ Registrieren</button>
+                <button id="loginTab" class="modal-tab active" onclick="switchAuthTab('login')">🔐 Sign in</button>
+                <button id="signupTab" class="modal-tab" onclick="switchAuthTab('signup')">✍️ Sign up</button>
             </div>
 
             <!-- Login Form -->
             <form class="modal-form active" id="loginForm" onsubmit="submitLogin(event)">
-                <input type="email" placeholder="E-Mail" id="loginEmail" required>
-                <input type="password" placeholder="Passwort" id="loginPassword" required>
+                <input type="email" placeholder="Email" id="loginEmail" required>
+                <input type="password" placeholder="Password" id="loginPassword" required>
                 <div class="modal-buttons">
-                    <button type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Abbrechen</button>
-                    <button type="submit" class="modal-btn-primary">Anmelden</button>
+                    <button id="loginCancelBtn" type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Cancel</button>
+                    <button id="loginSubmitBtn" type="submit" class="modal-btn-primary">Sign in</button>
                 </div>
             </form>
 
             <!-- Signup Form -->
             <form class="modal-form" id="signupForm" onsubmit="submitSignup(event)">
-                <input type="email" placeholder="E-Mail" id="signupEmail" required>
-                <input type="password" placeholder="Passwort (mind. 6 Zeichen)" id="signupPassword" required minlength="6">
-                <input type="password" placeholder="Passwort wiederholen" id="signupPasswordConfirm" required minlength="6">
+                <input type="email" placeholder="Email" id="signupEmail" required>
+                <input type="password" placeholder="Password (min. 6 characters)" id="signupPassword" required minlength="6">
+                <input type="password" placeholder="Repeat password" id="signupPasswordConfirm" required minlength="6">
                 <div class="modal-buttons">
-                    <button type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Abbrechen</button>
-                    <button type="submit" class="modal-btn-primary">Registrieren</button>
+                    <button id="signupCancelBtn" type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Cancel</button>
+                    <button id="signupSubmitBtn" type="submit" class="modal-btn-primary">Sign up</button>
                 </div>
             </form>
         </div>
@@ -1367,33 +1368,40 @@
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <button type="button" class="modal-close-btn" onclick="closeSettingsModal()" title="Schließen (ESC)">✕</button>
-            <h2 style="margin-bottom: 20px; color: var(--primary);">⚙️ Einstellungen</h2>
+            <button type="button" class="modal-close-btn" onclick="closeSettingsModal()" title="Close (ESC)">✕</button>
+            <h2 id="settingsTitle" style="margin-bottom: 20px; color: var(--primary);">⚙️ Settings</h2>
             <form class="settings-form" onsubmit="submitSettings(event)">
                 <!-- Dark Mode Toggle -->
                 <div class="theme-toggle">
-                    <label for="darkModeToggle">🌓 Dunkler Modus</label>
+                    <label id="darkModeLabel" for="darkModeToggle">🌓 Dark mode</label>
                     <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()">
                         <div class="toggle-slider"></div>
                     </div>
                 </div>
-                <p class="settings-help" style="margin-top: -4px;">Automatische Erkennung der System-Einstellung</p>
+                <p id="darkModeHelp" class="settings-help" style="margin-top: -4px;">Automatically follow system setting</p>
+
+                <label id="languageLabel" for="languageSelect" style="margin-top: 16px;">Language</label>
+                <select id="languageSelect" required>
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                </select>
+                <p id="languageHelp" class="settings-help">Choose the app language.</p>
                 
-                <label for="ticketCostInput">Klimaticket Kostenbetrag (€)</label>
-                <input type="number" id="ticketCostInput" placeholder="z.B. 1400" min="0" step="0.01" required>
-                <p class="settings-help">Der Betrag, den dein Klimaticket kostet (z.B. nach Arbeitgeberzuschuss).</p>
+                <label id="ticketCostLabel" for="ticketCostInput">Klimaticket cost (€)</label>
+                <input type="number" id="ticketCostInput" placeholder="e.g. 1400" min="0" step="0.01" required>
+                <p id="ticketCostHelp" class="settings-help">The amount your Klimaticket costs (e.g. after employer subsidy).</p>
                 
-                <label for="startDateInput" style="margin-top: 16px;">Gültig ab (Anfangsdatum)</label>
+                <label id="startDateLabel" for="startDateInput" style="margin-top: 16px;">Valid from (start date)</label>
                 <input type="date" id="startDateInput" required>
-                <p class="settings-help">Der Tag, ab dem dein Klimaticket gültig ist.</p>
+                <p id="startDateHelp" class="settings-help">The day your Klimaticket becomes valid.</p>
                 
-                <label for="endDateInput" style="margin-top: 16px;">Gültig bis (Enddatum)</label>
+                <label id="endDateLabel" for="endDateInput" style="margin-top: 16px;">Valid until (end date)</label>
                 <input type="date" id="endDateInput" required>
-                <p class="settings-help">Der letzte Tag, an dem dein Klimaticket gültig ist.</p>
+                <p id="endDateHelp" class="settings-help">The last day your Klimaticket is valid.</p>
                 
                 <div class="modal-buttons">
-                    <button type="button" class="modal-btn-secondary" onclick="closeSettingsModal()">Abbrechen</button>
-                    <button type="submit" class="modal-btn-primary">Speichern</button>
+                    <button id="settingsCancelBtn" type="button" class="modal-btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                    <button id="settingsSaveBtn" type="submit" class="modal-btn-primary">Save</button>
                 </div>
             </form>
         </div>
@@ -1402,17 +1410,17 @@
     <!-- Edit Trip Modal -->
     <div id="editTripModal" class="modal">
         <div class="modal-content">
-            <button type="button" class="modal-close-btn" onclick="closeEditTripModal()" title="Schließen (ESC)">✕</button>
-            <h2 style="margin-bottom: 20px; color: var(--primary);">✏️ Fahrt bearbeiten</h2>
+            <button type="button" class="modal-close-btn" onclick="closeEditTripModal()" title="Close (ESC)">✕</button>
+            <h2 style="margin-bottom: 20px; color: var(--primary);">✏️ Edit Trip</h2>
             <form class="settings-form" onsubmit="submitEditTrip(event)">
-                <label for="editTripDate">Datum:</label>
+                <label for="editTripDate">Date:</label>
                 <input type="date" id="editTripDate" required>
                 
                 <label for="editTripRoute" style="margin-top: 12px;">Route:</label>
-                <input type="text" id="editTripRoute" placeholder="z.B. Salzburg - Wien" required>
+                <input type="text" id="editTripRoute" placeholder="e.g. Salzburg - Vienna" required>
 
-                <label for="editTripBundeslaender" style="margin-top: 12px;">Bundesland(er):</label>
-                <select id="editTripBundeslaender" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                <label for="editTripStates" style="margin-top: 12px;">State(s):</label>
+                <select id="editTripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
                     <option value="Salzburg">Salzburg</option>
                     <option value="Wien">Wien</option>
                     <option value="Niederösterreich">Niederösterreich</option>
@@ -1424,15 +1432,15 @@
                     <option value="Kärnten">Kärnten</option>
                 </select>
                 
-                <label for="editTripCost" style="margin-top: 12px;">Kosten (EUR):</label>
+                <label for="editTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
-                <label for="editTripNotes" style="margin-top: 12px;">Notiz:</label>
+                <label for="editTripNotes" style="margin-top: 12px;">Notes:</label>
                 <input type="text" id="editTripNotes" placeholder="optional">
                 
                 <div class="modal-buttons">
-                    <button type="button" class="modal-btn-secondary" onclick="closeEditTripModal()">Abbrechen</button>
-                    <button type="submit" class="modal-btn-primary">Speichern</button>
+                    <button type="button" class="modal-btn-secondary" onclick="closeEditTripModal()">Cancel</button>
+                    <button type="submit" class="modal-btn-primary">Save</button>
                 </div>
             </form>
         </div>
@@ -1441,17 +1449,17 @@
     <!-- Quick Add Trip Modal (from Calendar) -->
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
-            <button type="button" class="modal-close-btn" onclick="closeQuickAddModal()" title="Schließen (ESC)">✕</button>
-            <h2 style="margin-bottom: 20px; color: var(--primary);">⚡ Fahrt hinzufügen - <span id="quickAddDate"></span></h2>
+            <button type="button" class="modal-close-btn" onclick="closeQuickAddModal()" title="Close (ESC)">✕</button>
+            <h2 style="margin-bottom: 20px; color: var(--primary);">⚡ Add Trip - <span id="quickAddDate"></span></h2>
             
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 14px; color: #666; margin-bottom: 12px;"><strong>Quick Buttons:</strong></label>
                 <div class="quick-buttons">
                     <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.60, 'S-Bahn Sbg')">
-                        🚇 S-Bahn Sbg<br>(3,60€)
+                        🚇 S-Bahn Sbg<br>(€3.60)
                     </button>
                     <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.00, 'Obus Sbg')">
-                        🚌 Obus Sbg<br>(3,00€)
+                        🚌 Obus Sbg<br>(€3.00)
                     </button>
                 </div>
             </div>
@@ -1460,10 +1468,10 @@
 
             <form class="settings-form" onsubmit="submitCustomQuickAddTrip(event)">
                 <label for="quickTripRoute">Route (optional):</label>
-                <input type="text" id="quickTripRoute" placeholder="z.B. Salzburg - Wien">
+                <input type="text" id="quickTripRoute" placeholder="e.g. Salzburg - Vienna">
 
-                <label for="quickTripBundeslaender" style="margin-top: 12px;">Bundesland(er):</label>
-                <select id="quickTripBundeslaender" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                <label for="quickTripStates" style="margin-top: 12px;">State(s):</label>
+                <select id="quickTripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
                     <option value="Salzburg" selected>Salzburg</option>
                     <option value="Wien">Wien</option>
                     <option value="Niederösterreich">Niederösterreich</option>
@@ -1475,15 +1483,15 @@
                     <option value="Kärnten">Kärnten</option>
                 </select>
                 
-                <label for="quickTripCost" style="margin-top: 12px;">Kosten (EUR):</label>
+                <label for="quickTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
-                <label for="quickTripNotes" style="margin-top: 12px;">Notiz (optional):</label>
+                <label for="quickTripNotes" style="margin-top: 12px;">Notes (optional):</label>
                 <input type="text" id="quickTripNotes" placeholder="optional">
                 
                 <div class="modal-buttons" style="margin-top: 20px;">
-                    <button type="button" class="modal-btn-secondary" onclick="closeQuickAddModal()">Abbrechen</button>
-                    <button type="submit" class="modal-btn-primary">Hinzufügen</button>
+                    <button type="button" class="modal-btn-secondary" onclick="closeQuickAddModal()">Cancel</button>
+                    <button type="submit" class="modal-btn-primary">Add</button>
                 </div>
             </form>
         </div>
@@ -1496,109 +1504,382 @@
         const DEFAULT_END_DATE = new Date(2026, 0, 22);
         const SUPABASE_URL = 'https://qfkfcirfwlfjscevxilu.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_REFOWIFpP1IbO5rEARlXUA_Z5Qw--d0';
+        const DEFAULT_LANGUAGE = 'en';
 
         let supabase = null;
         let currentUser = null;
         let userTicketCost = DEFAULT_TICKET_COST; // Dynamic per user
         let userStartDate = DEFAULT_START_DATE; // Dynamic per user
         let userEndDate = DEFAULT_END_DATE; // Dynamic per user
-        let showOnlyNoBundesland = false; // Filter for trips without Bundesland
+        let showOnlyNoState = false; // Filter for trips without a state
         let showOnlyOutOfRange = false; // Filter for trips outside validity range
         let allTripsForHeatmap = []; // Store all trips for heatmap navigation
         let currentHeatmapDate = new Date(); // Current month being displayed
+        let currentLanguage = DEFAULT_LANGUAGE;
+
+        const TRANSLATIONS = {
+            en: {
+                appTitle: '🚆 Klimaticket Calculator',
+                reloadTitle: 'Refresh data',
+                settingsTitle: 'Settings',
+                profileTitle: 'Profile',
+                authBtn: '📧 Sign in',
+                heatmapTitle: '🔥 Trips per Day',
+                heatmapSubtitle: 'Click a day to quickly add a trip.',
+                heatmapPrevBtn: '← Previous',
+                heatmapNextBtn: 'Next →',
+                heatmapLegendLess: 'Less',
+                heatmapLegendMore: 'More',
+                statsTitle: '📊 Overview',
+                validUntilLabel: 'Valid until',
+                validityLabel: 'Validity',
+                tripCountLabel: 'Trip count',
+                totalCostLabel: 'Total cost (without ticket)',
+                savingsLabelPositive: 'Savings with Klimaticket',
+                savingsLabelNegative: 'Remaining travel costs',
+                achievementsSubtitle: 'Your transit achievements',
+                yearOverviewHeading: '📅 Year Overview',
+                yearOverviewSubtitle: 'Trips and costs by month',
+                tripsHeading: '📋 Your Trips',
+                filterNoState: '🔍 Without state',
+                filterNoStateActive: '✓ Without state',
+                filterOutOfRange: '⚠️ Out of range',
+                filterOutOfRangeActive: '✓ Out of range',
+                addTripHeading: '📝 Add Trip',
+                quickButtonsTitle: '⚡ Quick Buttons:',
+                quickButtonsHelp: "Click a button to instantly add a trip (with today's date).",
+                tripDateLabel: 'Date:',
+                tripRouteLabel: 'Route (e.g., Salzburg - Vienna):',
+                tripRoutePlaceholder: 'From - To',
+                tripStatesLabel: 'State(s) involved:',
+                tripStatesHelp: 'Multi-select with Ctrl/Cmd + click',
+                tripCostLabel: 'Cost without ticket (EUR):',
+                tripNotesLabel: 'Notes:',
+                tripNotesPlaceholder: 'optional',
+                saveTripBtn: '➕ Save trip',
+                backupHeading: '💾 Backup',
+                backupSubtitle: 'Export your data as JSON or CSV for backup.',
+                exportJsonBtn: '📥 JSON Export',
+                exportCsvBtn: '📊 CSV Export',
+                exportPdfBtn: '📄 PDF Summary',
+                importBtn: '📤 Import',
+                deleteBtn: '🗑️ Delete',
+                loginTab: '🔐 Sign in',
+                signupTab: '✍️ Sign up',
+                loginEmailPlaceholder: 'Email',
+                loginPasswordPlaceholder: 'Password',
+                loginCancelBtn: 'Cancel',
+                loginSubmitBtn: 'Sign in',
+                signupEmailPlaceholder: 'Email',
+                signupPasswordPlaceholder: 'Password (min. 6 characters)',
+                signupPasswordConfirmPlaceholder: 'Repeat password',
+                signupCancelBtn: 'Cancel',
+                signupSubmitBtn: 'Sign up',
+                settingsTitleHeading: '⚙️ Settings',
+                darkModeLabel: '🌓 Dark mode',
+                darkModeHelp: 'Automatically follow system setting',
+                languageLabel: 'Language',
+                languageHelp: 'Choose the app language.',
+                ticketCostLabel: 'Klimaticket cost (€)',
+                ticketCostPlaceholder: 'e.g. 1400',
+                ticketCostHelp: 'The amount your Klimaticket costs (e.g. after employer subsidy).',
+                startDateLabel: 'Valid from (start date)',
+                startDateHelp: 'The day your Klimaticket becomes valid.',
+                endDateLabel: 'Valid until (end date)',
+                endDateHelp: 'The last day your Klimaticket is valid.',
+                settingsCancelBtn: 'Cancel',
+                settingsSaveBtn: 'Save',
+                noTrips: 'No trips added yet',
+                allTripsHaveState: '✓ All trips have a state!',
+                noOutOfRangeTrips: '✓ No trips outside the valid date range!',
+                outOfRangeBadge: '⚠️ Out of range',
+                noTripsToVisualize: 'No trips to visualize yet',
+                noTripsTitle: 'No trips',
+                tripTitle: 'trip',
+                tripsTitle: 'trips',
+                outOfRangeShort: 'out of range'
+            },
+            de: {
+                appTitle: '🚆 Klimaticket Rechner',
+                reloadTitle: 'Daten aktualisieren',
+                settingsTitle: 'Einstellungen',
+                profileTitle: 'Profil',
+                authBtn: '📧 Anmelden',
+                heatmapTitle: '🔥 Fahrten pro Tag',
+                heatmapSubtitle: 'Klick auf einen Tag, um schnell eine Fahrt hinzuzufügen.',
+                heatmapPrevBtn: '← Vorheriger',
+                heatmapNextBtn: 'Nächster →',
+                heatmapLegendLess: 'Weniger',
+                heatmapLegendMore: 'Mehr',
+                statsTitle: '📊 Übersicht',
+                validUntilLabel: 'Gültig bis',
+                validityLabel: 'Gültigkeit',
+                tripCountLabel: 'Anzahl Fahrten',
+                totalCostLabel: 'Gesamtkosten (ohne Ticket)',
+                savingsLabelPositive: 'Ersparnis mit Klimaticket',
+                savingsLabelNegative: 'Noch benötigte Fahrkosten',
+                achievementsSubtitle: 'Deine Öffi-Erfolge',
+                yearOverviewHeading: '📅 Jahresübersicht',
+                yearOverviewSubtitle: 'Fahrten und Kosten nach Monat',
+                tripsHeading: '📋 Deine Fahrten',
+                filterNoState: '🔍 Ohne Bundesland',
+                filterNoStateActive: '✓ Ohne Bundesland',
+                filterOutOfRange: '⚠️ Außerhalb',
+                filterOutOfRangeActive: '✓ Außerhalb',
+                addTripHeading: '📝 Fahrt hinzufügen',
+                quickButtonsTitle: '⚡ Quick Buttons:',
+                quickButtonsHelp: 'Klick einen Button, um sofort eine Fahrt hinzuzufügen (mit heutigem Datum).',
+                tripDateLabel: 'Datum:',
+                tripRouteLabel: 'Route (z.B. Salzburg - Wien):',
+                tripRoutePlaceholder: 'Von - Nach',
+                tripStatesLabel: 'Bundesland(er) betroffen:',
+                tripStatesHelp: 'Mehrfachauswahl mit Ctrl/Cmd + Klick',
+                tripCostLabel: 'Kosten ohne Ticket (EUR):',
+                tripNotesLabel: 'Notiz:',
+                tripNotesPlaceholder: 'optional',
+                saveTripBtn: '➕ Fahrt speichern',
+                backupHeading: '💾 Datensicherung',
+                backupSubtitle: 'Exportiere Deine Daten als JSON oder CSV für Backup.',
+                exportJsonBtn: '📥 JSON Export',
+                exportCsvBtn: '📊 CSV Export',
+                exportPdfBtn: '📄 PDF Zusammenfassung',
+                importBtn: '📤 Importieren',
+                deleteBtn: '🗑️ Löschen',
+                loginTab: '🔐 Anmelden',
+                signupTab: '✍️ Registrieren',
+                loginEmailPlaceholder: 'E-Mail',
+                loginPasswordPlaceholder: 'Passwort',
+                loginCancelBtn: 'Abbrechen',
+                loginSubmitBtn: 'Anmelden',
+                signupEmailPlaceholder: 'E-Mail',
+                signupPasswordPlaceholder: 'Passwort (mind. 6 Zeichen)',
+                signupPasswordConfirmPlaceholder: 'Passwort wiederholen',
+                signupCancelBtn: 'Abbrechen',
+                signupSubmitBtn: 'Registrieren',
+                settingsTitleHeading: '⚙️ Einstellungen',
+                darkModeLabel: '🌓 Dunkler Modus',
+                darkModeHelp: 'Automatische Erkennung der System-Einstellung',
+                languageLabel: 'Sprache',
+                languageHelp: 'Wähle die App-Sprache.',
+                ticketCostLabel: 'Klimaticket Kostenbetrag (€)',
+                ticketCostPlaceholder: 'z.B. 1400',
+                ticketCostHelp: 'Der Betrag, den dein Klimaticket kostet (z.B. nach Arbeitgeberzuschuss).',
+                startDateLabel: 'Gültig ab (Anfangsdatum)',
+                startDateHelp: 'Der Tag, ab dem dein Klimaticket gültig ist.',
+                endDateLabel: 'Gültig bis (Enddatum)',
+                endDateHelp: 'Der letzte Tag, an dem dein Klimaticket gültig ist.',
+                settingsCancelBtn: 'Abbrechen',
+                settingsSaveBtn: 'Speichern',
+                noTrips: 'Noch keine Fahrten hinzugefügt',
+                allTripsHaveState: '✓ Alle Fahrten haben ein Bundesland!',
+                noOutOfRangeTrips: '✓ Keine Fahrten außerhalb des Gültigkeitsbereichs!',
+                outOfRangeBadge: '⚠️ Außerhalb',
+                noTripsToVisualize: 'Noch keine Fahrten zum Visualisieren',
+                noTripsTitle: 'Keine Fahrten',
+                tripTitle: 'Fahrt',
+                tripsTitle: 'Fahrten',
+                outOfRangeShort: 'außerhalb'
+            }
+        };
+
+        function getLocale() {
+            return currentLanguage === 'de' ? 'de-AT' : 'en-GB';
+        }
+
+        function t(key) {
+            const set = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+            return set[key] || TRANSLATIONS.en[key] || key;
+        }
+
+        function setText(id, value) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = value;
+            }
+        }
+
+        function setPlaceholder(id, value) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.setAttribute('placeholder', value);
+            }
+        }
+
+        function setTitle(id, value) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.setAttribute('title', value);
+            }
+        }
+
+        function applyLanguage(language) {
+            currentLanguage = language;
+            document.documentElement.lang = language;
+
+            setText('appTitle', t('appTitle'));
+            setTitle('reloadBtn', t('reloadTitle'));
+            setTitle('settingsBtn', t('settingsTitle'));
+            setTitle('profileBtn', t('profileTitle'));
+            setText('authBtn', t('authBtn'));
+            setText('heatmapTitle', t('heatmapTitle'));
+            setText('heatmapSubtitle', t('heatmapSubtitle'));
+            setText('heatmapPrevBtn', t('heatmapPrevBtn'));
+            setText('heatmapNextBtn', t('heatmapNextBtn'));
+            setText('heatmapLegendLess', t('heatmapLegendLess'));
+            setText('heatmapLegendMore', t('heatmapLegendMore'));
+            setText('statsTitle', t('statsTitle'));
+            setText('validUntilLabel', t('validUntilLabel'));
+            setText('validityLabel', t('validityLabel'));
+            setText('tripCountLabel', t('tripCountLabel'));
+            setText('totalCostLabel', t('totalCostLabel'));
+            setText('achievementsSubtitle', t('achievementsSubtitle'));
+            setText('yearOverviewHeading', t('yearOverviewHeading'));
+            setText('yearOverviewSubtitle', t('yearOverviewSubtitle'));
+            setText('tripsHeading', t('tripsHeading'));
+            setText('filterNoStateBtn', t('filterNoState'));
+            setText('filterOutOfRangeBtn', t('filterOutOfRange'));
+            setText('addTripHeading', t('addTripHeading'));
+            setText('quickButtonsTitle', t('quickButtonsTitle'));
+            setText('quickButtonsHelp', t('quickButtonsHelp'));
+            setText('tripDateLabel', t('tripDateLabel'));
+            setText('tripRouteLabel', t('tripRouteLabel'));
+            setPlaceholder('tripRoute', t('tripRoutePlaceholder'));
+            setText('tripStatesLabel', t('tripStatesLabel'));
+            setText('tripStatesHelp', t('tripStatesHelp'));
+            setText('tripCostLabel', t('tripCostLabel'));
+            setText('tripNotesLabel', t('tripNotesLabel'));
+            setPlaceholder('tripNotes', t('tripNotesPlaceholder'));
+            setText('saveTripBtn', t('saveTripBtn'));
+            setText('backupHeading', t('backupHeading'));
+            setText('backupSubtitle', t('backupSubtitle'));
+            setText('exportJsonBtn', t('exportJsonBtn'));
+            setText('exportCsvBtn', t('exportCsvBtn'));
+            setText('exportPdfBtn', t('exportPdfBtn'));
+            setText('importBtn', t('importBtn'));
+            setText('deleteBtn', t('deleteBtn'));
+            setText('loginTab', t('loginTab'));
+            setText('signupTab', t('signupTab'));
+            setPlaceholder('loginEmail', t('loginEmailPlaceholder'));
+            setPlaceholder('loginPassword', t('loginPasswordPlaceholder'));
+            setText('loginCancelBtn', t('loginCancelBtn'));
+            setText('loginSubmitBtn', t('loginSubmitBtn'));
+            setPlaceholder('signupEmail', t('signupEmailPlaceholder'));
+            setPlaceholder('signupPassword', t('signupPasswordPlaceholder'));
+            setPlaceholder('signupPasswordConfirm', t('signupPasswordConfirmPlaceholder'));
+            setText('signupCancelBtn', t('signupCancelBtn'));
+            setText('signupSubmitBtn', t('signupSubmitBtn'));
+            setText('settingsTitle', t('settingsTitleHeading'));
+            setText('darkModeLabel', t('darkModeLabel'));
+            setText('darkModeHelp', t('darkModeHelp'));
+            setText('languageLabel', t('languageLabel'));
+            setText('languageHelp', t('languageHelp'));
+            setText('ticketCostLabel', t('ticketCostLabel'));
+            setPlaceholder('ticketCostInput', t('ticketCostPlaceholder'));
+            setText('ticketCostHelp', t('ticketCostHelp'));
+            setText('startDateLabel', t('startDateLabel'));
+            setText('startDateHelp', t('startDateHelp'));
+            setText('endDateLabel', t('endDateLabel'));
+            setText('endDateHelp', t('endDateHelp'));
+            setText('settingsCancelBtn', t('settingsCancelBtn'));
+            setText('settingsSaveBtn', t('settingsSaveBtn'));
+
+            updateDaysRemaining();
+            renderHeatmapMonth();
+            renderYearOverview();
+        }
 
         // Achievement definitions
         const ACHIEVEMENTS = [
             {
                 id: 'obus_fan',
-                name: 'Obus-Fan',
-                description: '20 Fahrten mit dem Obus',
+                name: 'Obus Fan',
+                description: '20 trips with the Obus',
                 icon: '🚎',
                 requirement: (trips) => trips.filter(t => t.route && t.route.toLowerCase().includes('obus')).length >= 20,
                 progress: (trips) => Math.min(20, trips.filter(t => t.route && t.route.toLowerCase().includes('obus')).length),
                 total: 20
             },
             {
-                id: 's_bahn_profi',
-                name: 'S-Bahn Profi',
-                description: '50 Fahrten mit der S-Bahn',
+                id: 's_bahn_pro',
+                name: 'S-Bahn Pro',
+                description: '50 trips with the S-Bahn',
                 icon: '🚈',
                 requirement: (trips) => trips.filter(t => t.route && t.route.toLowerCase().includes('s-bahn')).length >= 50,
                 progress: (trips) => Math.min(50, trips.filter(t => t.route && t.route.toLowerCase().includes('s-bahn')).length),
                 total: 50
             },
             {
-                id: 'bundesland_hopper',
-                name: 'Bundesland-Hopper',
-                description: '10 bundeslandübergreifende Fahrten',
+                id: 'state_hopper',
+                name: 'State Hopper',
+                description: '10 cross-state trips',
                 icon: '🗺️',
-                requirement: (trips) => trips.filter(t => t.bundeslaender && t.bundeslaender.length > 1).length >= 10,
-                progress: (trips) => Math.min(10, trips.filter(t => t.bundeslaender && t.bundeslaender.length > 1).length),
+                requirement: (trips) => trips.filter(t => t.states && t.states.length > 1).length >= 10,
+                progress: (trips) => Math.min(10, trips.filter(t => t.states && t.states.length > 1).length),
                 total: 10
             },
             {
                 id: 'salzburg_local',
-                name: 'Salzburg Lokalheld',
-                description: '100 Fahrten in Salzburg',
+                name: 'Salzburg Local Hero',
+                description: '100 trips in Salzburg',
                 icon: '🏔️',
-                requirement: (trips) => trips.filter(t => t.bundeslaender && t.bundeslaender.includes('Salzburg')).length >= 100,
-                progress: (trips) => Math.min(100, trips.filter(t => t.bundeslaender && t.bundeslaender.includes('Salzburg')).length),
+                requirement: (trips) => trips.filter(t => t.states && t.states.includes('Salzburg')).length >= 100,
+                progress: (trips) => Math.min(100, trips.filter(t => t.states && t.states.includes('Salzburg')).length),
                 total: 100
             },
             {
                 id: 'austria_explorer',
-                name: 'Österreich-Explorer',
-                description: 'Besuche 5 verschiedene Bundesländer',
+                name: 'Austria Explorer',
+                description: 'Visit 5 different states',
                 icon: '🇦🇹',
                 requirement: (trips) => {
-                    const uniqueBundeslaender = new Set();
+                    const uniqueStates = new Set();
                     trips.forEach(t => {
-                        if (t.bundeslaender) {
-                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        if (t.states) {
+                            t.states.forEach(state => uniqueStates.add(state));
                         }
                     });
-                    return uniqueBundeslaender.size >= 5;
+                    return uniqueStates.size >= 5;
                 },
                 progress: (trips) => {
-                    const uniqueBundeslaender = new Set();
+                    const uniqueStates = new Set();
                     trips.forEach(t => {
-                        if (t.bundeslaender) {
-                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        if (t.states) {
+                            t.states.forEach(state => uniqueStates.add(state));
                         }
                     });
-                    return Math.min(5, uniqueBundeslaender.size);
+                    return Math.min(5, uniqueStates.size);
                 },
                 total: 5
             },
             {
                 id: 'austria_master',
-                name: 'Österreich-Meister',
-                description: 'Besuche alle 9 Bundesländer',
+                name: 'Austria Master',
+                description: 'Visit all 9 states',
                 icon: '👑',
                 requirement: (trips) => {
-                    const uniqueBundeslaender = new Set();
+                    const uniqueStates = new Set();
                     trips.forEach(t => {
-                        if (t.bundeslaender) {
-                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        if (t.states) {
+                            t.states.forEach(state => uniqueStates.add(state));
                         }
                     });
-                    return uniqueBundeslaender.size >= 9;
+                    return uniqueStates.size >= 9;
                 },
                 progress: (trips) => {
-                    const uniqueBundeslaender = new Set();
+                    const uniqueStates = new Set();
                     trips.forEach(t => {
-                        if (t.bundeslaender) {
-                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        if (t.states) {
+                            t.states.forEach(state => uniqueStates.add(state));
                         }
                     });
-                    return Math.min(9, uniqueBundeslaender.size);
+                    return Math.min(9, uniqueStates.size);
                 },
                 total: 9
             },
             {
                 id: 'route_collector',
-                name: 'Strecken-Sammler',
-                description: '15 unterschiedliche Routen',
+                name: 'Route Collector',
+                description: '15 unique routes',
                 icon: '🧭',
                 requirement: (trips) => {
                     const uniqueRoutes = new Set();
@@ -1622,8 +1903,8 @@
             },
             {
                 id: 'month_champion',
-                name: 'Monats-Champion',
-                description: 'Fahrten in 6 verschiedenen Monaten',
+                name: 'Monthly Champion',
+                description: 'Trips in 6 different months',
                 icon: '🗓️',
                 requirement: (trips) => {
                     const uniqueMonths = new Set();
@@ -1649,8 +1930,8 @@
             },
             {
                 id: 'weekend_warrior',
-                name: 'Wochenend-Krieger',
-                description: '20 Fahrten am Wochenende',
+                name: 'Weekend Warrior',
+                description: '20 weekend trips',
                 icon: '🎉',
                 requirement: (trips) => trips.filter(t => {
                     const date = new Date(t.date);
@@ -1666,8 +1947,8 @@
             },
             {
                 id: 'first_savings',
-                name: 'Erste Einsparung',
-                description: 'Ticket amortisiert!',
+                name: 'First Break-Even',
+                description: 'Ticket paid off!',
                 icon: '💰',
                 requirement: (trips) => {
                     const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
@@ -1681,8 +1962,8 @@
             },
             {
                 id: 'eco_champion',
-                name: 'Klima-Champion',
-                description: '500€ an Einsparungen',
+                name: 'Climate Champion',
+                description: '€500 in savings',
                 icon: '🌱',
                 requirement: (trips) => {
                     const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
@@ -1697,8 +1978,8 @@
             },
             {
                 id: 'century_club',
-                name: 'Öffi-Profi',
-                description: '100 Fahrten gesamt',
+                name: 'Transit Pro',
+                description: '100 trips total',
                 icon: '💯',
                 requirement: (trips) => trips.filter(t => isValidTrip(t)).length >= 100,
                 progress: (trips) => Math.min(100, trips.filter(t => isValidTrip(t)).length),
@@ -1780,10 +2061,10 @@
             
             try {
                 await loadData();
-                showToast('✅ Daten aktualisiert!', 'success');
+                showToast('✅ Data refreshed!', 'success');
             } catch (err) {
                 console.error('Reload error:', err);
-                showToast('❌ Fehler beim Aktualisieren', 'error');
+                showToast('❌ Refresh failed', 'error');
             } finally {
                 setTimeout(() => {
                     reloadBtn.style.opacity = '1';
@@ -1858,7 +2139,7 @@
 
             if (tokenHash && type === 'email_signup') {
                 try {
-                    showToast('⏳ E-Mail wird bestätigt...', 'success');
+                    showToast('⏳ Confirming email...', 'success');
                     const { error } = await supabase.auth.verifyOtp({
                         token_hash: tokenHash,
                         type: 'email'
@@ -1869,11 +2150,11 @@
                     // Clear URL parameters
                     window.history.replaceState({}, document.title, window.location.pathname);
                     
-                    showToast('✅ E-Mail bestätigt! Du bist jetzt angemeldet.', 'success');
+                    showToast('✅ Email confirmed! You are now signed in.', 'success');
                 } catch (err) {
                     console.error('Email confirmation error:', err);
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    showToast('❌ E-Mail-Bestätigung fehlgeschlagen: ' + err.message, 'error');
+                    showToast('❌ Email confirmation failed: ' + err.message, 'error');
                 }
             }
         }
@@ -1914,13 +2195,13 @@
             const password = document.getElementById('loginPassword').value;
 
             try {
-                showToast('⏳ Anmelden läuft...', 'success');
+                showToast('⏳ Signing in...', 'success');
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password
                 });
                 if (error) throw error;
-                showToast('✅ Erfolgreich angemeldet!', 'success');
+                showToast('✅ Signed in successfully!', 'success');
                 closeAuthModal();
                 const { data: { user } } = await supabase.auth.getUser();
                 currentUser = user;
@@ -1928,7 +2209,7 @@
                 loadData();
             } catch (err) {
                 console.error('Login error:', err);
-                showToast('❌ ' + (err.message || 'Login fehlgeschlagen'), 'error');
+                showToast('❌ ' + (err.message || 'Login failed'), 'error');
             }
         }
 
@@ -1940,23 +2221,23 @@
             const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
 
             if (password !== passwordConfirm) {
-                showToast('❌ Passwörter stimmen nicht überein', 'error');
+                showToast('❌ Passwords do not match', 'error');
                 return;
             }
 
             if (password.length < 6) {
-                showToast('❌ Passwort muss mindestens 6 Zeichen lang sein', 'error');
+                showToast('❌ Password must be at least 6 characters', 'error');
                 return;
             }
 
             try {
-                showToast('⏳ Account wird erstellt...', 'success');
+                showToast('⏳ Creating account...', 'success');
                 const { error } = await supabase.auth.signUp({
                     email,
                     password
                 });
                 if (error) throw error;
-                showToast('✅ Account erfolgreich erstellt! Du bist jetzt angemeldet.', 'success');
+                showToast('✅ Account created! You are now signed in.', 'success');
                 closeAuthModal();
                 const { data: { user } } = await supabase.auth.getUser();
                 currentUser = user;
@@ -1964,7 +2245,7 @@
                 loadData();
             } catch (err) {
                 console.error('Signup error:', err);
-                showToast('❌ ' + (err.message || 'Registrierung fehlgeschlagen'), 'error');
+                showToast('❌ ' + (err.message || 'Sign up failed'), 'error');
             }
         }
 
@@ -1989,7 +2270,7 @@
                 currentUser = null;
                 userTicketCost = DEFAULT_TICKET_COST;
                 updateAuthUI();
-                showToast('👋 Abgemeldet', 'success');
+                showToast('👋 Signed out', 'success');
             } catch (err) {
                 console.error('Logout error:', err);
             }
@@ -2019,23 +2300,23 @@
             const endDate = document.getElementById('endDateInput').value;
 
             if (!ticketCost || isNaN(ticketCost) || parseFloat(ticketCost) < 0) {
-                showToast('❌ Bitte gib einen gültigen Betrag ein', 'error');
+                showToast('❌ Please enter a valid amount', 'error');
                 return;
             }
 
             if (!startDate || !endDate) {
-                showToast('❌ Bitte gib Start- und Enddatum ein', 'error');
+                showToast('❌ Please enter start and end dates', 'error');
                 return;
             }
 
             if (new Date(startDate) >= new Date(endDate)) {
-                showToast('❌ Anfangsdatum muss vor dem Enddatum liegen', 'error');
+                showToast('❌ Start date must be before end date', 'error');
                 return;
             }
 
             await saveUserSettings(ticketCost, startDate, endDate);
             closeSettingsModal();
-            showToast('✅ Einstellungen gespeichert!', 'success');
+            showToast('✅ Settings saved!', 'success');
         }
 
         // Update auth UI
@@ -2056,18 +2337,18 @@
         }
 
         // Update filter button count
-        function updateNoBundeslandFilterCount(trips) {
-            const btn = document.getElementById('filterNoBundeslandBtn');
+        function updateNoStateFilterCount(trips) {
+            const btn = document.getElementById('filterNoStateBtn');
             if (!btn) return;
 
-            const count = trips.filter(trip => !trip.bundeslaender || trip.bundeslaender.length === 0).length;
+            const count = trips.filter(trip => !trip.states || trip.states.length === 0).length;
             // Show button if count > 0 OR filter is active
-            btn.style.display = (count > 0 || showOnlyNoBundesland) ? '' : 'none';
+            btn.style.display = (count > 0 || showOnlyNoState) ? '' : 'none';
             btn.dataset.count = String(count);
-            if (showOnlyNoBundesland) {
-                btn.textContent = `✓ Ohne Bundesland (${count})`;
+            if (showOnlyNoState) {
+                btn.textContent = `${t('filterNoStateActive')} (${count})`;
             } else {
-                btn.textContent = `🔍 Ohne Bundesland (${count})`;
+                btn.textContent = `${t('filterNoState')} (${count})`;
             }
         }
 
@@ -2081,24 +2362,24 @@
             btn.style.display = (count > 0 || showOnlyOutOfRange) ? '' : 'none';
             btn.dataset.count = String(count);
             if (showOnlyOutOfRange) {
-                btn.textContent = `✓ Außerhalb (${count})`;
+                btn.textContent = `${t('filterOutOfRangeActive')} (${count})`;
             } else {
-                btn.textContent = `⚠️ Außerhalb (${count})`;
+                btn.textContent = `${t('filterOutOfRange')} (${count})`;
             }
         }
 
-        // Toggle filter for trips without Bundesland
-        function toggleNoBundeslandFilter() {
-            showOnlyNoBundesland = !showOnlyNoBundesland;
-            const btn = document.getElementById('filterNoBundeslandBtn');
-            if (showOnlyNoBundesland) {
+        // Toggle filter for trips without a state
+        function toggleNoStateFilter() {
+            showOnlyNoState = !showOnlyNoState;
+            const btn = document.getElementById('filterNoStateBtn');
+            if (showOnlyNoState) {
                 btn.style.background = '#4caf50';
                 btn.style.color = 'white';
-                btn.textContent = `✓ Ohne Bundesland (${btn.dataset.count || 0})`;
+                btn.textContent = `${t('filterNoStateActive')} (${btn.dataset.count || 0})`;
             } else {
                 btn.style.background = '';
                 btn.style.color = '';
-                btn.textContent = `🔍 Ohne Bundesland (${btn.dataset.count || 0})`;
+                btn.textContent = `${t('filterNoState')} (${btn.dataset.count || 0})`;
             }
             loadData();
         }
@@ -2109,11 +2390,11 @@
             if (showOnlyOutOfRange) {
                 btn.style.background = '#4caf50';
                 btn.style.color = 'white';
-                btn.textContent = `✓ Außerhalb (${btn.dataset.count || 0})`;
+                btn.textContent = `${t('filterOutOfRangeActive')} (${btn.dataset.count || 0})`;
             } else {
                 btn.style.background = '';
                 btn.style.color = '';
-                btn.textContent = `⚠️ Außerhalb (${btn.dataset.count || 0})`;
+                btn.textContent = `${t('filterOutOfRange')} (${btn.dataset.count || 0})`;
             }
             loadData();
         }
@@ -2136,13 +2417,13 @@
                         .order('date', { ascending: false });
                     
                     if (error) throw error;
-                    trips = data || [];
+                    trips = normalizeTrips(data || []);
                 } else {
                     // Load from localStorage
                     trips = getLocalTrips();
                 }
 
-                updateNoBundeslandFilterCount(trips);
+                updateNoStateFilterCount(trips);
                 updateOutOfRangeFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
@@ -2152,7 +2433,7 @@
                 console.error('Load error:', err);
                 // Fallback to localStorage
                 const trips = getLocalTrips();
-                updateNoBundeslandFilterCount(trips);
+                updateNoStateFilterCount(trips);
                 updateOutOfRangeFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
@@ -2245,13 +2526,35 @@
                 userTicketCost = parseFloat(ticketCost);
                 userStartDate = startDate instanceof Date ? startDate : new Date(startDate);
                 userEndDate = endDate instanceof Date ? endDate : new Date(endDate);
-                showToast('⚠️ Einstellungen lokal gespeichert (kein Cloud-Zugriff)', 'success');
+                showToast('⚠️ Settings saved locally (no cloud access)', 'success');
             }
+        }
+
+        function normalizeTrip(trip) {
+            const states = Array.isArray(trip.states)
+                ? trip.states
+                : Array.isArray(trip.bundeslaender)
+                    ? trip.bundeslaender
+                    : [];
+            return { ...trip, states };
+        }
+
+        function normalizeTrips(trips) {
+            return trips.map(normalizeTrip);
+        }
+
+        function prepareTripForStorage(trip) {
+            const { states, ...rest } = trip;
+            return {
+                ...rest,
+                bundeslaender: Array.isArray(states) && states.length > 0 ? states : ['Salzburg']
+            };
         }
 
         function getLocalTrips() {
             const data = localStorage.getItem('trips');
-            return data ? JSON.parse(data) : [];
+            const trips = data ? JSON.parse(data) : [];
+            return normalizeTrips(trips);
         }
 
         // Add trip
@@ -2261,12 +2564,12 @@
             const cost = parseFloat(document.getElementById('tripCost').value);
             const notes = document.getElementById('tripNotes').value.trim();
             
-            // Get selected Bundesländer
-            const bundeslaenderSelect = document.getElementById('tripBundeslaender');
-            const bundeslaender = Array.from(bundeslaenderSelect.selectedOptions).map(opt => opt.value);
+            // Get selected states
+            const statesSelect = document.getElementById('tripStates');
+            const states = Array.from(statesSelect.selectedOptions).map(opt => opt.value);
 
             if (!date || !route || !cost || cost <= 0) {
-                showToast('❌ Bitte alle Felder ausfüllen!', 'error');
+                showToast('❌ Please fill in all required fields!', 'error');
                 return;
             }
 
@@ -2275,25 +2578,27 @@
                 route,
                 cost: parseFloat(cost.toFixed(2)),
                 notes,
-                bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
+                states: states.length > 0 ? states : ['Salzburg']
             };
+
+            const storageTrip = prepareTripForStorage(trip);
 
             try {
                 if (currentUser) {
                     // Save to Supabase
                     const { error } = await supabase
                         .from('trips')
-                        .insert([trip]);
+                        .insert([storageTrip]);
                     
                     if (error) throw error;
                 } else {
                     // Save to localStorage
                     const trips = getLocalTrips();
-                    trips.push({ ...trip, id: Date.now(), timestamp: new Date().toISOString() });
+                    trips.push({ ...storageTrip, id: Date.now(), timestamp: new Date().toISOString() });
                     localStorage.setItem('trips', JSON.stringify(trips));
                 }
 
-                showToast(`✅ Fahrt "${route}" (+€${cost.toFixed(2)}) hinzugefügt!`);
+                showToast(`✅ Trip "${route}" (+€${cost.toFixed(2)}) added!`);
 
                 // Clear form
                 document.getElementById('tripRoute').value = '';
@@ -2309,7 +2614,7 @@
                 }, 300);
             } catch (err) {
                 console.error('Add trip error:', err);
-                showToast('❌ Fehler beim Speichern: ' + err.message, 'error');
+                showToast('❌ Save failed: ' + err.message, 'error');
             }
         }
 
@@ -2319,23 +2624,25 @@
                 date: today,
                 route,
                 cost,
-                bundeslaender: ['Salzburg']
+                states: ['Salzburg']
             };
+
+            const storageTrip = prepareTripForStorage(trip);
 
             try {
                 if (currentUser) {
                     const { error } = await supabase
                         .from('trips')
-                        .insert([trip]);
+                        .insert([storageTrip]);
                     
                     if (error) throw error;
                 } else {
                     const trips = getLocalTrips();
-                    trips.push({ ...trip, id: Date.now(), notes: '', timestamp: new Date().toISOString() });
+                    trips.push({ ...storageTrip, id: Date.now(), notes: '', timestamp: new Date().toISOString() });
                     localStorage.setItem('trips', JSON.stringify(trips));
                 }
 
-                showToast(`✅ ${route} (+€${cost.toFixed(2)}) hinzugefügt!`);
+                showToast(`✅ ${route} (+€${cost.toFixed(2)}) added!`);
                 loadData();
 
                 setTimeout(() => {
@@ -2343,7 +2650,7 @@
                 }, 300);
             } catch (err) {
                 console.error('Quick trip error:', err);
-                showToast('❌ Fehler: ' + err.message, 'error');
+                showToast('❌ Error: ' + err.message, 'error');
             }
         }
 
@@ -2371,28 +2678,30 @@
                 route,
                 cost,
                 notes,
-                bundeslaender: ['Salzburg']
+                states: ['Salzburg']
             };
+
+            const storageTrip = prepareTripForStorage(trip);
 
             try {
                 if (currentUser) {
                     const { error } = await supabase
                         .from('trips')
-                        .insert([trip]);
+                        .insert([storageTrip]);
                     
                     if (error) throw error;
                 } else {
                     const trips = getLocalTrips();
-                    trips.push({ ...trip, id: Date.now(), timestamp: new Date().toISOString() });
+                    trips.push({ ...storageTrip, id: Date.now(), timestamp: new Date().toISOString() });
                     localStorage.setItem('trips', JSON.stringify(trips));
                 }
 
-                showToast(`✅ ${route} (+€${cost.toFixed(2)}) am ${formatDate(dateStr)} hinzugefügt!`);
+                showToast(`✅ ${route} (+€${cost.toFixed(2)}) on ${formatDate(dateStr)} added!`);
                 closeQuickAddModal();
                 loadData();
             } catch (err) {
                 console.error('Quick add error:', err);
-                showToast('❌ Fehler: ' + err.message, 'error');
+                showToast('❌ Error: ' + err.message, 'error');
             }
         }
 
@@ -2400,16 +2709,16 @@
         async function submitCustomQuickAddTrip(event) {
             event.preventDefault();
             const dateStr = document.getElementById('quickAddModal').dataset.selectedDate;
-            const route = document.getElementById('quickTripRoute').value.trim() || 'Fahrt';
+            const route = document.getElementById('quickTripRoute').value.trim() || 'Trip';
             const cost = parseFloat(document.getElementById('quickTripCost').value);
             const notes = document.getElementById('quickTripNotes').value.trim();
             
-            // Get selected Bundesländer (defaults to Salzburg if none selected)
-            const bundeslaenderSelect = document.getElementById('quickTripBundeslaender');
-            const bundeslaender = Array.from(bundeslaenderSelect.selectedOptions).map(opt => opt.value);
+            // Get selected states (defaults to Salzburg if none selected)
+            const statesSelect = document.getElementById('quickTripStates');
+            const states = Array.from(statesSelect.selectedOptions).map(opt => opt.value);
 
             if (!cost || cost <= 0) {
-                showToast('❌ Bitte Kosten eingeben!', 'error');
+                showToast('❌ Please enter a cost!', 'error');
                 return;
             }
 
@@ -2418,34 +2727,36 @@
                 route,
                 cost,
                 notes,
-                bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
+                states: states.length > 0 ? states : ['Salzburg']
             };
+
+            const storageTrip = prepareTripForStorage(trip);
 
             try {
                 if (currentUser) {
                     const { error } = await supabase
                         .from('trips')
-                        .insert([trip]);
+                        .insert([storageTrip]);
                     
                     if (error) throw error;
                 } else {
                     const trips = getLocalTrips();
-                    trips.push({ ...trip, id: Date.now(), timestamp: new Date().toISOString() });
+                    trips.push({ ...storageTrip, id: Date.now(), timestamp: new Date().toISOString() });
                     localStorage.setItem('trips', JSON.stringify(trips));
                 }
 
-                showToast(`✅ ${route} (+€${cost.toFixed(2)}) am ${formatDate(dateStr)} hinzugefügt!`);
+                showToast(`✅ ${route} (+€${cost.toFixed(2)}) on ${formatDate(dateStr)} added!`);
                 closeQuickAddModal();
                 loadData();
             } catch (err) {
                 console.error('Custom quick add error:', err);
-                showToast('❌ Fehler: ' + err.message, 'error');
+                showToast('❌ Error: ' + err.message, 'error');
             }
         }
 
         // Delete trip
         async function deleteTrip(id) {
-            if (!confirm('Fahrt wirklich löschen?')) return;
+            if (!confirm('Delete this trip?')) return;
 
             try {
                 if (currentUser) {
@@ -2464,7 +2775,7 @@
                 loadData();
             } catch (err) {
                 console.error('Delete error:', err);
-                showToast('❌ Fehler beim Löschen: ' + err.message, 'error');
+                showToast('❌ Delete failed: ' + err.message, 'error');
             }
         }
 
@@ -2483,15 +2794,15 @@
                     .single();
                 
                 if (error) {
-                    showToast('❌ Fehler beim Laden der Fahrt', 'error');
+                    showToast('❌ Failed to load trip', 'error');
                     return;
                 }
-                trip = data;
+                trip = normalizeTrip(data);
             } else {
                 const trips = getLocalTrips();
                 trip = trips.find(t => t.id === id);
                 if (!trip) {
-                    showToast('❌ Fahrt nicht gefunden', 'error');
+                    showToast('❌ Trip not found', 'error');
                     return;
                 }
             }
@@ -2502,16 +2813,16 @@
             document.getElementById('editTripCost').value = trip.cost;
             document.getElementById('editTripNotes').value = trip.notes || '';
             
-            // Load Bundesländer
-            const bundeslaenderSelect = document.getElementById('editTripBundeslaender');
-            bundeslaenderSelect.value = '';
-            if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
-                Array.from(bundeslaenderSelect.options).forEach(option => {
-                    option.selected = trip.bundeslaender.includes(option.value);
+            // Load states
+            const statesSelect = document.getElementById('editTripStates');
+            statesSelect.value = '';
+            if (trip.states && Array.isArray(trip.states)) {
+                Array.from(statesSelect.options).forEach(option => {
+                    option.selected = trip.states.includes(option.value);
                 });
             } else {
-                // Default to Salzburg if no bundeslaender
-                document.querySelector('#editTripBundeslaender option[value="Salzburg"]').selected = true;
+                // Default to Salzburg if no states
+                document.querySelector('#editTripStates option[value="Salzburg"]').selected = true;
             }
             
             document.getElementById('editTripModal').classList.add('active');
@@ -2533,26 +2844,30 @@
             const cost = parseFloat(document.getElementById('editTripCost').value);
             const notes = document.getElementById('editTripNotes').value.trim();
             
-            // Get selected Bundesländer
-            const bundeslaenderSelect = document.getElementById('editTripBundeslaender');
-            const bundeslaender = Array.from(bundeslaenderSelect.selectedOptions).map(opt => opt.value);
+            // Get selected states
+            const statesSelect = document.getElementById('editTripStates');
+            const states = Array.from(statesSelect.selectedOptions).map(opt => opt.value);
 
             if (!date || !route || !cost || cost <= 0) {
-                showToast('❌ Bitte alle Felder ausfüllen!', 'error');
+                showToast('❌ Please fill in all required fields!', 'error');
                 return;
             }
+
+            const updatedTrip = {
+                date,
+                route,
+                cost: parseFloat(cost.toFixed(2)),
+                notes,
+                states: states.length > 0 ? states : ['Salzburg']
+            };
+
+            const storageTrip = prepareTripForStorage(updatedTrip);
 
             try {
                 if (currentUser) {
                     const { error } = await supabase
                         .from('trips')
-                        .update({
-                            date,
-                            route,
-                            cost: parseFloat(cost.toFixed(2)),
-                            notes,
-                            bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
-                        })
+                        .update(storageTrip)
                         .eq('id', currentEditTrip.id);
                     
                     if (error) throw error;
@@ -2562,22 +2877,18 @@
                     if (index !== -1) {
                         trips[index] = {
                             ...trips[index],
-                            date,
-                            route,
-                            cost: parseFloat(cost.toFixed(2)),
-                            notes,
-                            bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
+                            ...storageTrip
                         };
                         localStorage.setItem('trips', JSON.stringify(trips));
                     }
                 }
 
-                showToast(`✅ Fahrt "${route}" aktualisiert!`);
+                showToast(`✅ Trip "${route}" updated!`);
                 closeEditTripModal();
                 loadData();
             } catch (err) {
                 console.error('Edit trip error:', err);
-                showToast('❌ Fehler beim Speichern: ' + err.message, 'error');
+                showToast('❌ Save failed: ' + err.message, 'error');
             }
         }
 
@@ -2592,16 +2903,16 @@
             const tripsList = document.getElementById('tripsList');
             
             if (trips.length === 0) {
-                tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>';
+                tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No trips added yet</p>';
                 return;
             }
 
             // Filter trips if needed
             let filtered = trips;
-            if (showOnlyNoBundesland) {
-                filtered = trips.filter(trip => !trip.bundeslaender || trip.bundeslaender.length === 0);
+            if (showOnlyNoState) {
+                filtered = trips.filter(trip => !trip.states || trip.states.length === 0);
                 if (filtered.length === 0) {
-                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ Alle Fahrten haben ein Bundesland!</p>';
+                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ All trips have a state!</p>';
                     return;
                 }
             }
@@ -2609,7 +2920,7 @@
             if (showOnlyOutOfRange) {
                 filtered = filtered.filter(trip => !isValidTrip(trip));
                 if (filtered.length === 0) {
-                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ Keine Fahrten außerhalb des Gültigkeitsbereichs!</p>';
+                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ No trips outside the valid date range!</p>';
                     return;
                 }
             }
@@ -2618,12 +2929,12 @@
 
             tripsList.innerHTML = sorted.map(trip => {
                 const valid = isValidTrip(trip);
-                const badge = valid ? '' : '<span style="display: inline-block; background: #f44336; color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;">⚠️ Außerhalb</span>';
+                const badge = valid ? '' : '<span style="display: inline-block; background: #f44336; color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;">⚠️ Out of range</span>';
                 
-                // Format Bundesländer
-                let bundeslaenderText = '';
-                if (trip.bundeslaender && Array.isArray(trip.bundeslaender) && trip.bundeslaender.length > 0) {
-                    bundeslaenderText = `<div style="font-size: 11px; color: #888; margin-top: 3px;">📍 ${trip.bundeslaender.join(', ')}</div>`;
+                // Format states
+                let statesText = '';
+                if (trip.states && Array.isArray(trip.states) && trip.states.length > 0) {
+                    statesText = `<div style="font-size: 11px; color: #888; margin-top: 3px;">📍 ${trip.states.join(', ')}</div>`;
                 }
                 
                 return `
@@ -2632,7 +2943,7 @@
                         <div class="trip-date">${formatDate(trip.date)}${badge}</div>
                         <div><strong>${trip.route}</strong></div>
                         ${trip.notes ? `<div style="font-size: 12px; color: #666;">${trip.notes}</div>` : ''}
-                        ${bundeslaenderText}
+                        ${statesText}
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <div class="trip-cost">€${trip.cost.toFixed(2)}</div>
@@ -2661,12 +2972,12 @@
             const savingsLabel = document.getElementById('savingsLabel');
             const savingsBox = document.querySelector('.stat-savings');
             if (savings >= 0) {
-                savingsLabel.textContent = 'Ersparnis mit Klimaticket';
+                savingsLabel.textContent = 'Savings with Klimaticket';
                 if (savingsBox) {
                     savingsBox.classList.remove('negative');
                 }
             } else {
-                savingsLabel.textContent = 'Noch benötigte Fahrkosten';
+                savingsLabel.textContent = 'Remaining travel costs';
                 if (savingsBox) {
                     savingsBox.classList.add('negative');
                 }
@@ -2683,37 +2994,37 @@
                 }
             } else if (savings >= 0) {
                 if (summaryEl) {
-                    summaryEl.textContent = `✅ Glückwunsch! Du sparst €${Math.abs(savings).toFixed(2)} mit dem Klimaticket.`;
+                    summaryEl.textContent = `✅ Congrats! You save €${Math.abs(savings).toFixed(2)} with the Klimaticket.`;
                 }
             } else {
                 if (summaryEl) {
-                    summaryEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um das Ticket auszugleichen.`;
+                    summaryEl.textContent = `⚠️ You still need €${Math.abs(savings).toFixed(2)} in trips to break even.`;
                 }
             }
 
             // Generate heatmap
             generateHeatmap(trips);
             
-            // Generate Bundeslands heatmap
-            generateBundeslandsHeatmap(validTrips);
+            // Generate state heatmap
+            generateStatesHeatmap(validTrips);
         }
 
         // Update days remaining
         function updateDaysRemaining() {
             const now = new Date();
             const daysLeft = Math.max(0, Math.ceil((userEndDate - now) / (1000 * 60 * 60 * 24)));
-            document.getElementById('daysRemaining').textContent = daysLeft + ' Tage';
+            document.getElementById('daysRemaining').textContent = daysLeft + ' days';
             
             // Update expiry date display
             const expiryOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-            document.getElementById('expiryDate').textContent = userEndDate.toLocaleDateString('de-AT', expiryOptions);
+            document.getElementById('expiryDate').textContent = userEndDate.toLocaleDateString('en-GB', expiryOptions);
         }
 
         // Format date
         function formatDate(dateStr) {
             const date = new Date(dateStr + 'T00:00:00');
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('de-AT', options);
+            return date.toLocaleDateString('en-GB', options);
         }
 
         // Generate heatmap for single month
@@ -2723,9 +3034,9 @@
             renderYearOverview();
         }
         
-        // Generate Bundeslands heatmap
-        function generateBundeslandsHeatmap(trips) {
-            const bundeslaenderWithEmoji = [
+        // Generate state heatmap
+        function generateStatesHeatmap(trips) {
+            const statesWithEmoji = [
                 { name: 'Vorarlberg', emoji: '🏔️' },
                 { name: 'Tirol', emoji: '⛷️' },
                 { name: 'Salzburg', emoji: '🎼' },
@@ -2737,49 +3048,49 @@
                 { name: 'Kärnten', emoji: '🏖️' }
             ];
             
-            // Count trips per Bundesland
-            const countsByBundesland = {};
-            bundeslaenderWithEmoji.forEach(bl => countsByBundesland[bl.name] = 0);
+            // Count trips per state
+            const countsByState = {};
+            statesWithEmoji.forEach(state => countsByState[state.name] = 0);
             
             trips.forEach(trip => {
-                if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
-                    trip.bundeslaender.forEach(bl => {
-                        if (countsByBundesland[bl] !== undefined) {
-                            countsByBundesland[bl]++;
+                if (trip.states && Array.isArray(trip.states)) {
+                    trip.states.forEach(state => {
+                        if (countsByState[state] !== undefined) {
+                            countsByState[state]++;
                         }
                     });
                 }
             });
             
             // Find max count for scaling
-            const maxCount = Math.max(...Object.values(countsByBundesland), 1);
+            const maxCount = Math.max(...Object.values(countsByState), 1);
             
             // Render cards with emojis
-            const grid = document.getElementById('bundeslanderGrid');
-            grid.innerHTML = bundeslaenderWithEmoji.map(bl => {
-                const count = countsByBundesland[bl.name];
+            const grid = document.getElementById('statesGrid');
+            grid.innerHTML = statesWithEmoji.map(state => {
+                const count = countsByState[state.name];
                 const hasTrips = count > 0;
-                return `<div class="bundesland-card ${!hasTrips ? 'no-trips' : ''}">
-                    <span class="bundesland-icon">${bl.emoji}</span>
-                    <div class="bundesland-name">${bl.name}</div>
-                    <div class="bundesland-count">${count}</div>
-                    <div class="bundesland-label">Fahrt${count !== 1 ? 'en' : ''}</div>
+                return `<div class="state-card ${!hasTrips ? 'no-trips' : ''}">
+                    <span class="state-icon">${state.emoji}</span>
+                    <div class="state-name">${state.name}</div>
+                    <div class="state-count">${count}</div>
+                    <div class="state-label">Trip${count !== 1 ? 's' : ''}</div>
                 </div>`;
             }).join('');
             
             // Stats with bars
-            const bundeslandsStats = document.getElementById('bundeslandsStats');
-            const visited = bundeslaenderWithEmoji.filter(bl => countsByBundesland[bl.name] > 0)
-                .sort((a, b) => countsByBundesland[b.name] - countsByBundesland[a.name]);
+            const statesStats = document.getElementById('statesStats');
+            const visited = statesWithEmoji.filter(state => countsByState[state.name] > 0)
+                .sort((a, b) => countsByState[b.name] - countsByState[a.name]);
             
             if (visited.length === 0) {
-                bundeslandsStats.innerHTML = '<p style="grid-column: 1/-1; color: var(--text-tertiary); text-align: center; padding: 20px;">Noch keine Bundesländer besucht</p>';
+                statesStats.innerHTML = '<p style="grid-column: 1/-1; color: var(--text-tertiary); text-align: center; padding: 20px;">No states visited yet</p>';
             } else {
-                bundeslandsStats.innerHTML = visited.map(bl => {
-                    const count = countsByBundesland[bl.name];
+                statesStats.innerHTML = visited.map(state => {
+                    const count = countsByState[state.name];
                     const barWidth = (count / maxCount) * 100;
                     return `<div style="padding: 10px; background: var(--card-bg); border-radius: 6px; border-left: 4px solid var(--primary); transition: background-color 0.3s ease;">
-                        <div style="font-weight: 600; color: var(--text-color); margin-bottom: 4px; font-size: 13px;">${bl.name} ${bl.emoji}</div>
+                        <div style="font-weight: 600; color: var(--text-color); margin-bottom: 4px; font-size: 13px;">${state.name} ${state.emoji}</div>
                         <div style="font-size: 18px; font-weight: bold; color: var(--primary); margin-bottom: 6px;">${count}</div>
                         <div style="height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
                             <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: ${barWidth}%;"></div>
@@ -2962,13 +3273,13 @@
             ]);
 
             if (totalDates.size === 0) {
-                heatmapContent.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 20px;">Noch keine Fahrten zum Visualisieren</p>';
+                heatmapContent.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 20px;">No trips to visualize yet</p>';
                 return;
             }
 
             const year = currentHeatmapDate.getFullYear();
             const month = currentHeatmapDate.getMonth();
-            const monthName = currentHeatmapDate.toLocaleDateString('de-AT', { month: 'long', year: 'numeric' });
+            const monthName = currentHeatmapDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
             heatmapMonthTitle.textContent = monthName;
 
             // Get all days in month
@@ -2979,7 +3290,7 @@
 
             // Create day cells
             let dayHeaders = '';
-            const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             for (let i = 0; i < 7; i++) {
                 dayHeaders += `<div class="heatmap-day-header">${dayNames[i]}</div>`;
             }
@@ -3008,13 +3319,13 @@
                 const isToday = dateStr === today;
                 const todayStyle = isToday ? 'border: 2px solid #ff5722; box-shadow: 0 0 8px rgba(255, 87, 34, 0.5); font-weight: bold;' : '';
 
-                let title = 'Keine Fahrten';
+                let title = 'No trips';
                 if (validCount > 0 && invalidCount > 0) {
-                    title = `${validCount} Fahrt${validCount !== 1 ? 'en' : ''} (${invalidCount} außerhalb)`;
+                    title = `${validCount} trip${validCount !== 1 ? 's' : ''} (${invalidCount} out of range)`;
                 } else if (validCount > 0) {
-                    title = `${validCount} Fahrt${validCount !== 1 ? 'en' : ''}`;
+                    title = `${validCount} trip${validCount !== 1 ? 's' : ''}`;
                 } else if (invalidCount > 0) {
-                    title = `${invalidCount} Fahrt${invalidCount !== 1 ? 'en' : ''} außerhalb des Gültigkeitsbereichs`;
+                    title = `${invalidCount} trip${invalidCount !== 1 ? 's' : ''} out of range`;
                 }
                 dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer; ${todayStyle}" onclick="openQuickAddFromCalendar('${dateStr}')" onmouseover="showTripTooltip(event, '${dateStr}')" onmouseout="hideTripTooltip()">${day}</div>`;
             }
@@ -3044,16 +3355,16 @@
                 if (currentUser) {
                     const { data, error } = await supabase.from('trips').select('*');
                     if (error) throw error;
-                    trips = data || [];
+                    trips = normalizeTrips(data || []);
                 } else {
                     trips = getLocalTrips();
                 }
 
                 const dataStr = JSON.stringify(trips, null, 2);
                 const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                downloadFile(dataBlob, 'klimaticket-daten.json');
+                downloadFile(dataBlob, 'klimaticket-data.json');
             } catch (err) {
-                showToast('❌ Export fehler: ' + err.message, 'error');
+                showToast('❌ Export failed: ' + err.message, 'error');
             }
         }
 
@@ -3063,13 +3374,13 @@
                 if (currentUser) {
                     const { data, error } = await supabase.from('trips').select('*');
                     if (error) throw error;
-                    trips = data || [];
+                    trips = normalizeTrips(data || []);
                 } else {
                     trips = getLocalTrips();
                 }
 
-                const headers = ['Datum', 'Route', 'Kosten (EUR)', 'Notiz'];
-                const rows = trips.map(t => [t.date, t.route, t.cost, t.notes || '']);
+                const headers = ['Date', 'Route', 'Cost (EUR)', 'Notes', 'States'];
+                const rows = trips.map(t => [t.date, t.route, t.cost, t.notes || '', (t.states || []).join('; ')]);
 
                 let csv = headers.join(',') + '\n';
                 rows.forEach(row => {
@@ -3077,9 +3388,9 @@
                 });
 
                 const dataBlob = new Blob([csv], { type: 'text/csv' });
-                downloadFile(dataBlob, 'klimaticket-daten.csv');
+                downloadFile(dataBlob, 'klimaticket-data.csv');
             } catch (err) {
-                showToast('❌ Export fehler: ' + err.message, 'error');
+                showToast('❌ Export failed: ' + err.message, 'error');
             }
         }
 
@@ -3093,7 +3404,7 @@
                 if (currentUser) {
                     const { data, error } = await supabase.from('trips').select('*');
                     if (error) throw error;
-                    trips = data || [];
+                    trips = normalizeTrips(data || []);
                 } else {
                     trips = getLocalTrips();
                 }
@@ -3109,10 +3420,10 @@
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(24);
                 doc.setFont(undefined, 'bold');
-                doc.text('Klimaticket Zusammenfassung', 105, 20, { align: 'center' });
+                doc.text('Klimaticket Summary', 105, 20, { align: 'center' });
                 doc.setFontSize(12);
                 doc.setFont(undefined, 'normal');
-                doc.text(new Date().toLocaleDateString('de-AT', { year: 'numeric', month: 'long', day: 'numeric' }), 105, 30, { align: 'center' });
+                doc.text(new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }), 105, 30, { align: 'center' });
                 
                 // Reset text color
                 doc.setTextColor(0, 0, 0);
@@ -3121,22 +3432,22 @@
                 // Key Statistics
                 doc.setFontSize(16);
                 doc.setFont(undefined, 'bold');
-                doc.text('Statistiken', 20, yPos);
+                doc.text('Statistics', 20, yPos);
                 yPos += 10;
                 
                 doc.setFontSize(11);
                 doc.setFont(undefined, 'normal');
-                doc.text(`Gesamte Fahrten: ${trips.length}`, 20, yPos);
-                doc.text(`Gueltige Fahrten: ${validTrips.length}`, 110, yPos);
+                doc.text(`Total trips: ${trips.length}`, 20, yPos);
+                doc.text(`Valid trips: ${validTrips.length}`, 110, yPos);
                 yPos += 7;
-                doc.text(`Ausserhalb Gueltigkeit: ${invalidTrips.length}`, 20, yPos);
+                doc.text(`Out of range: ${invalidTrips.length}`, 20, yPos);
                 yPos += 7;
-                doc.text(`Ticketkosten: EUR ${userTicketCost.toFixed(2)}`, 20, yPos);
-                doc.text(`Gesamtkosten ohne Ticket: EUR ${totalCost.toFixed(2)}`, 110, yPos);
+                doc.text(`Ticket cost: EUR ${userTicketCost.toFixed(2)}`, 20, yPos);
+                doc.text(`Total cost without ticket: EUR ${totalCost.toFixed(2)}`, 110, yPos);
                 yPos += 7;
                 doc.setFont(undefined, 'bold');
                 doc.setTextColor(savings >= 0 ? 76 : 244, savings >= 0 ? 175 : 67, savings >= 0 ? 80 : 54);
-                doc.text(`Ersparnis: EUR ${savings.toFixed(2)}`, 20, yPos);
+                doc.text(`Savings: EUR ${savings.toFixed(2)}`, 20, yPos);
                 doc.setTextColor(0, 0, 0);
                 doc.setFont(undefined, 'normal');
                 yPos += 10;
@@ -3144,27 +3455,27 @@
                 // Ticket Validity
                 doc.setFontSize(16);
                 doc.setFont(undefined, 'bold');
-                doc.text('Gueltigkeit', 20, yPos);
+                doc.text('Validity', 20, yPos);
                 yPos += 10;
                 doc.setFontSize(11);
                 doc.setFont(undefined, 'normal');
-                doc.text(`Von: ${userStartDate.toLocaleDateString('de-AT')}`, 20, yPos);
-                doc.text(`Bis: ${userEndDate.toLocaleDateString('de-AT')}`, 110, yPos);
+                doc.text(`From: ${userStartDate.toLocaleDateString('en-GB')}`, 20, yPos);
+                doc.text(`To: ${userEndDate.toLocaleDateString('en-GB')}`, 110, yPos);
                 yPos += 7;
                 const daysTotal = Math.ceil((userEndDate - userStartDate) / (1000 * 60 * 60 * 24));
                 const daysRemaining = Math.ceil((userEndDate - new Date()) / (1000 * 60 * 60 * 24));
-                doc.text(`Gesamtdauer: ${daysTotal} Tage`, 20, yPos);
-                doc.text(`Verbleibend: ${daysRemaining} Tage`, 110, yPos);
+                doc.text(`Total duration: ${daysTotal} days`, 20, yPos);
+                doc.text(`Remaining: ${daysRemaining} days`, 110, yPos);
                 yPos += 12;
 
                 // Monthly Breakdown
                 doc.setFontSize(16);
                 doc.setFont(undefined, 'bold');
-                doc.text('Monatsuebersicht ' + currentYearView, 20, yPos);
+                doc.text('Monthly overview ' + currentYearView, 20, yPos);
                 yPos += 10;
                 
                 const monthStats = {};
-                const monthNames = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 for (let i = 0; i < 12; i++) monthStats[i] = { trips: 0, cost: 0 };
                 
                 trips.forEach(trip => {
@@ -3201,7 +3512,7 @@
                 if (topRoutes.length > 0) {
                     doc.setFontSize(16);
                     doc.setFont(undefined, 'bold');
-                    doc.text('Top 10 Strecken', 20, yPos);
+                    doc.text('Top 10 Routes', 20, yPos);
                     yPos += 10;
                     
                     doc.setFontSize(10);
@@ -3220,39 +3531,39 @@
                     yPos += 10;
                 }
 
-                // Bundeslaender Stats
-                const bundeslaenderStats = {};
-                const bundeslaender = ['Burgenland', 'Kaernten', 'Niederoesterreich', 'Oberoesterreich', 'Salzburg', 'Steiermark', 'Tirol', 'Vorarlberg', 'Wien'];
-                bundeslaender.forEach(bl => bundeslaenderStats[bl] = 0);
+                // State stats
+                const stateStats = {};
+                const states = ['Burgenland', 'Kärnten', 'Niederösterreich', 'Oberösterreich', 'Salzburg', 'Steiermark', 'Tirol', 'Vorarlberg', 'Wien'];
+                states.forEach(state => stateStats[state] = 0);
                 
                 validTrips.forEach(trip => {
-                    if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
-                        trip.bundeslaender.forEach(bl => {
-                            if (bundeslaenderStats[bl] !== undefined) {
-                                bundeslaenderStats[bl]++;
+                    if (trip.states && Array.isArray(trip.states)) {
+                        trip.states.forEach(state => {
+                            if (stateStats[state] !== undefined) {
+                                stateStats[state]++;
                             }
                         });
                     }
                 });
                 
-                const visitedBundeslaender = Object.entries(bundeslaenderStats)
+                const visitedStates = Object.entries(stateStats)
                     .filter(([_, count]) => count > 0)
                     .sort((a, b) => b[1] - a[1]);
                 
-                if (visitedBundeslaender.length > 0) {
+                if (visitedStates.length > 0) {
                     if (yPos > 250) {
                         doc.addPage();
                         yPos = 20;
                     }
                     doc.setFontSize(16);
                     doc.setFont(undefined, 'bold');
-                    doc.text('Bundeslaender', 20, yPos);
+                    doc.text('States', 20, yPos);
                     yPos += 10;
                     
                     doc.setFontSize(10);
                     doc.setFont(undefined, 'normal');
-                    visitedBundeslaender.forEach(([bl, count]) => {
-                        doc.text(`${bl}: ${count} Fahrten`, 20, yPos);
+                    visitedStates.forEach(([state, count]) => {
+                        doc.text(`${state}: ${count} trips`, 20, yPos);
                         yPos += 6;
                     });
                 }
@@ -3263,16 +3574,16 @@
                     doc.setPage(i);
                     doc.setFontSize(8);
                     doc.setTextColor(150);
-                    doc.text(`Seite ${i} von ${pageCount}`, 105, 290, { align: 'center' });
-                    doc.text('Erstellt mit Klimaticket Rechner', 105, 285, { align: 'center' });
+                    doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: 'center' });
+                    doc.text('Created with Klimaticket Calculator', 105, 285, { align: 'center' });
                 }
                 
                 // Save PDF
-                doc.save(`klimaticket-zusammenfassung-${new Date().toISOString().split('T')[0]}.pdf`);
-                showToast('✅ PDF erfolgreich erstellt!');
+                doc.save(`klimaticket-summary-${new Date().toISOString().split('T')[0]}.pdf`);
+                showToast('✅ PDF created successfully!');
             } catch (err) {
                 console.error('PDF Export Error:', err);
-                showToast('❌ PDF Export fehler: ' + err.message, 'error');
+                showToast('❌ PDF export failed: ' + err.message, 'error');
             }
         }
 
@@ -3315,12 +3626,14 @@
                     }
 
                     if (trips.length > 0) {
+                        const normalizedTrips = normalizeTrips(trips);
+                        const storageTrips = normalizedTrips.map(prepareTripForStorage);
                         if (currentUser) {
-                            const { error } = await supabase.from('trips').insert(trips);
+                            const { error } = await supabase.from('trips').insert(storageTrips);
                             if (error) throw error;
                         } else {
                             const localTrips = getLocalTrips();
-                            localTrips.push(...trips.map(t => ({
+                            localTrips.push(...storageTrips.map(t => ({
                                 ...t,
                                 id: Date.now() + Math.random(),
                                 timestamp: new Date().toISOString()
@@ -3329,10 +3642,10 @@
                         }
 
                         loadData();
-                        showToast(`✅ ${trips.length} Fahrten importiert!`);
+                        showToast(`✅ ${trips.length} trips imported!`);
                     }
                 } catch (err) {
-                    showToast('❌ Import fehler: ' + err.message, 'error');
+                    showToast('❌ Import failed: ' + err.message, 'error');
                 }
             };
             reader.readAsText(file);
@@ -3340,7 +3653,7 @@
         }
 
         async function clearAllData() {
-            if (!confirm('Alle Daten wirklich löschen?')) return;
+            if (!confirm('Delete all data?')) return;
 
             try {
                 if (currentUser) {
@@ -3351,9 +3664,9 @@
                 }
 
                 loadData();
-                showToast('🗑️ Alle Daten gelöscht!', 'error');
+                showToast('🗑️ All data deleted!', 'error');
             } catch (err) {
-                showToast('❌ Fehler: ' + err.message, 'error');
+                showToast('❌ Error: ' + err.message, 'error');
             }
         }
 
@@ -3398,7 +3711,7 @@
 
                 const progressPercent = (progress / achievement.total * 100).toFixed(0);
                 const progressText = isUnlocked 
-                    ? '✓ Erreicht!' 
+                    ? '✓ Unlocked!' 
                     : `${progress}/${achievement.total} (${progressPercent}%)`;
 
                 return `
@@ -3422,7 +3735,7 @@
                 // Show toast for each newly unlocked achievement
                 newlyUnlocked.forEach((achievement, index) => {
                     setTimeout(() => {
-                        showToast(`🏆 Achievement freigeschaltet: ${achievement.name}!`, 'success');
+                        showToast(`🏆 Achievement unlocked: ${achievement.name}!`, 'success');
                     }, index * 500);
                 });
             }
