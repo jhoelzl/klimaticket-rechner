@@ -85,6 +85,7 @@ CREATE TABLE trips (
   date TEXT NOT NULL,                    -- ISO: YYYY-MM-DD
   route TEXT NOT NULL,                   -- e.g. "Salzburg - Vienna"
   cost DECIMAL(10,2) NOT NULL,           -- Cost in EUR
+  distance DECIMAL(10,1),                -- Distance in kilometers (optional)
   bundeslaender TEXT[] DEFAULT '{}',     -- States array
   notes TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -95,6 +96,7 @@ CREATE TABLE trips (
 
 CREATE INDEX idx_user_date ON trips(user_id, date);
 CREATE INDEX idx_user_route ON trips(user_id, route);
+CREATE INDEX idx_distance ON trips(distance);
 ```
 
 ### users table
