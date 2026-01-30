@@ -1211,6 +1211,10 @@
             <div class="stats stats-overview">
                 <div class="stats-column stats-average">
                     <div class="stat-box">
+                        <div class="label" id="averageTripsPerMonthLabel">Average trips per month</div>
+                        <div class="value" id="averageTripsPerMonth">0.0</div>
+                    </div>
+                    <div class="stat-box">
                         <div class="label" id="averageCostLabel">Average cost per trip</div>
                         <div class="value" id="averageCost">€0.00</div>
                     </div>
@@ -1638,6 +1642,7 @@
                 tripCountLabel: 'Trip count',
                 totalCostLabel: 'Total cost',
                 totalKmLabel: 'Total distance',
+                averageTripsPerMonthLabel: 'Average trips per month',
                 averageCostLabel: 'Average cost per trip',
                 averageKmLabel: 'Average per trip',
                 savingsLabelPositive: 'Savings with Klimaticket',
@@ -1790,6 +1795,7 @@
                 tripCountLabel: 'Anzahl Fahrten',
                 totalCostLabel: 'Gesamtkosten',
                 totalKmLabel: 'Gesamtdistanz',
+                averageTripsPerMonthLabel: 'Ø Fahrten pro Monat',
                 averageCostLabel: 'Ø Kosten pro Fahrt',
                 averageKmLabel: 'Ø pro Fahrt',
                 savingsLabelPositive: 'Ersparnis mit Klimaticket',
@@ -1978,6 +1984,7 @@
             setText('tripCountLabel', t('tripCountLabel'));
             setText('totalCostLabel', t('totalCostLabel'));
             setText('totalKmLabel', t('totalKmLabel'));
+            setText('averageTripsPerMonthLabel', t('averageTripsPerMonthLabel'));
             setText('averageCostLabel', t('averageCostLabel'));
             setText('averageKmLabel', t('averageKmLabel'));
             setText('statesOverviewHeading', t('statesOverviewHeading'));
@@ -3457,6 +3464,8 @@
             const validTrips = trips.filter(trip => isValidTrip(trip));
             const totalCost = validTrips.reduce((sum, trip) => sum + trip.cost, 0);
             const totalKm = validTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
+            const monthsInRange = getMonthsInRange(userStartDate, userEndDate);
+            const averageTripsPerMonth = monthsInRange > 0 ? validTrips.length / monthsInRange : 0;
             const averageCost = validTrips.length > 0 ? totalCost / validTrips.length : 0;
             const averageKm = validTrips.length > 0 ? totalKm / validTrips.length : 0;
             const savings = totalCost - userTicketCost;
@@ -3465,6 +3474,7 @@
             document.getElementById('tripCount').textContent = validTrips.length;
             document.getElementById('totalCost').textContent = '€' + totalCost.toFixed(2);
             document.getElementById('totalKm').textContent = totalKm.toFixed(1) + ' km';
+            document.getElementById('averageTripsPerMonth').textContent = averageTripsPerMonth.toFixed(1);
             document.getElementById('averageCost').textContent = '€' + averageCost.toFixed(2);
             document.getElementById('averageKm').textContent = averageKm.toFixed(1) + ' km';
             document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
@@ -3525,6 +3535,23 @@
             // Update expiry date display
             const expiryOptions = { day: '2-digit', month: 'short', year: 'numeric' };
             document.getElementById('expiryDate').textContent = userEndDate.toLocaleDateString('en-GB', expiryOptions);
+        }
+
+        function getMonthsInRange(startDate, endDate) {
+            if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+                return 0;
+            }
+            if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+                return 0;
+            }
+            if (endDate < startDate) {
+                return 0;
+            }
+            const startYear = startDate.getFullYear();
+            const startMonth = startDate.getMonth();
+            const endYear = endDate.getFullYear();
+            const endMonth = endDate.getMonth();
+            return (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
         }
 
         // Format date
