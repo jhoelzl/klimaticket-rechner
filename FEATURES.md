@@ -31,6 +31,9 @@
 - ✅ Settings Modal für Konfiguration
 - ✅ Edit Trip Modal für Nachbearbeitung
 - ✅ Filter: Fahrten ohne Bundesland, Außerhalb Gültigkeit
+- ✅ **Dunkler Modus** mit Toggle in Settings
+- ✅ **System-Preference Auto-Detect** für automatisches Dark Theme
+- ✅ **Improved Dark Theme** für bessere Lesbarkeit mit CSS-Variablen
 
 ### Data Management
 - ✅ JSON Export/Import
@@ -89,11 +92,6 @@
 ## 🎨 UI/UX Verbesserungen
 
 ### Visual Enhancements
-- [ ] **Dunkler Modus**
-  - Toggle in Settings
-  - System-Preference Auto-Detect
-  - Improved Dark Theme für bessere Lesbarkeit
-
 - [ ] **Bessere Farbgestaltung für Heatmap**
   - Barrierefreiheit (Color-blind friendly)
   - Customizable Farbschema

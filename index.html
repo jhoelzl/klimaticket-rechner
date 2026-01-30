@@ -27,14 +27,41 @@
             --light: #f5f5f5;
             --dark: #333;
             --border: #ddd;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --shadow: rgba(0,0,0,0.1);
+            --heatmap-empty: #ebedf0;
+            --heatmap-border: #ddd;
+        }
+
+        [data-theme="dark"] {
+            --primary: #0fa4b3;
+            --secondary: #06c5bf;
+            --success: #66bb6a;
+            --danger: #ef5350;
+            --light: #1e1e1e;
+            --dark: #e0e0e0;
+            --border: #404040;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-tertiary: #808080;
+            --shadow: rgba(0,0,0,0.3);
+            --heatmap-empty: #2a2a2a;
+            --heatmap-border: #404040;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--light);
-            color: var(--dark);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             padding: 0;
             margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -126,18 +153,19 @@
         }
 
         .card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px var(--shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card h2 {
             color: var(--primary);
             margin-bottom: 16px;
             font-size: 18px;
-            border-bottom: 2px solid var(--light);
+            border-bottom: 2px solid var(--border);
             padding-bottom: 8px;
         }
 
@@ -149,8 +177,7 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 500;
-            font-size: 14px;
-            color: var(--dark);
+            font-size: 14text-color);
         }
 
         input, select {
@@ -160,11 +187,15 @@
             border-radius: 8px;
             font-size: 16px;
             font-family: inherit;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s ease, background-color 0.3s ease;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 164, 179, 0.2
             box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.1);
         }
 
@@ -236,10 +267,7 @@
         .trips-list {
             max-height: 400px;
             overflow-y: auto;
-        }
-
-        .trip-item {
-            background: var(--light);
+        }bg-color);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 8px;
@@ -247,11 +275,15 @@
             justify-content: space-between;
             align-items: center;
             font-size: 14px;
+            transition: background-color 0.3s ease
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
         }
 
         .trip-item .trip-info {
             flex: 1;
-        }
+        }var(--text-secondary)
 
         .trip-date {
             font-size: 12px;
@@ -434,8 +466,7 @@
             right: 16px;
             background: none;
             border: none;
-            font-size: 24px;
-            color: #666;
+            font-sivar(--text-secondary);
             cursor: pointer;
             padding: 4px 8px;
             transition: color 0.2s;
@@ -446,11 +477,13 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 24px;
             width: 90%;
             max-width: 400px;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: background-color 0.3s ease
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
 
@@ -466,7 +499,7 @@
             padding: 12px;
             border: none;
             background: transparent;
-            font-size: 14px;
+            font-sivar(--text-tertiary)14px;
             font-weight: 600;
             color: #999;
             cursor: pointer;
@@ -527,13 +560,59 @@
             opacity: 0.9;
         }
 
-        .modal-btn-secondary {
-            background: var(--light);
-            color: var(--dark);
+        .modal-btn-secondary {bg-color);
+            color: var(--text-color);
             border: 1px solid var(--border);
         }
 
         .modal-btn-secondary:active {
+            opacity: 0.9;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }text-color
+
+        .theme-toggle label {
+            margin: 0;
+            flex: 1;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--border);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+var(--text-tertiary)
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px)dary:active {
             opacity: 0.9;
         }
 
@@ -549,13 +628,14 @@
             font-weight: 600;
             color: var(--dark);
             margin-bottom: 4px;
+        }bg-color);
+            transition: background-color 0.3s ease;
         }
 
-        .settings-form input {
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
+        .heatmap-month-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color
             font-family: inherit;
         }
 
@@ -569,33 +649,33 @@
             font-size: 12px;
             color: #999;
             margin-top: -8px;
-            margin-bottom: 12px;
+            margin-var(--text-tertiary);
+            padding: 4px;
         }
 
-        /* Heatmap Styles */
-        .heatmap-container {
-            margin-top: 16px;
-            overflow-x: auto;
+        .heatmap-day {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            background: var(--heatmap-empty);
+            border: 1px solid var(--heatmap-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .heatmap-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 12px;
+        .heatmap-day:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
         }
 
-        .heatmap-months {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .heatmap-month {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            background: var(--light);
+        .heatmap-day.empty {
+            background: var(--heatmap-empty);
+            color: var(--text-tertiary) var(--light);
         }
 
         .heatmap-month-title {
@@ -615,14 +695,20 @@
         .heatmap-day-header {
             font-size: 10px;
             font-weight: 600;
-            text-align: center;
-            color: #999;
-            padding: 4px;
+            text-align: c8a8a8a;
+            color: var(--text-secondary);
+            border-color: #707070;
         }
 
-        .heatmap-day {
-            aspect-ratio: 1;
-            border-radius: 3px;
+        [data-theme="dark"] .heatmap-day.level-invalid {
+            background: #4a4a4a;
+            color: var(--text-secondary);
+            border-color: #606060;
+        }
+
+        .heatmap-legend {
+            font-size: 12px;
+            color: var(--text-secondary)us: 3px;
             background: #ebedf0;
             border: 1px solid #ddd;
             display: flex;
@@ -635,7 +721,7 @@
             transition: all 0.2s ease;
         }
 
-        .heatmap-day:hover {
+        .heatmap-day:hover {var(--border)
             border-color: var(--primary);
             transform: scale(1.1);
         }
@@ -746,8 +832,8 @@
 
         /* Year Overview */
         .year-overview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            display: grivar(--card-bg);
+            border: 1px solid var(--border)peat(auto-fit, minmax(140px, 1fr));
             gap: 12px;
             margin-top: 16px;
         }
@@ -774,7 +860,7 @@
             border-width: 2px;
         }
 
-        .month-card.no-trips {
+        .month-card.no-trtext-color{
             opacity: 0.5;
         }
 
@@ -787,13 +873,13 @@
 
         .month-trips {
             font-size: 20px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 4px;
+            font-wevar(--text-secondary);
+            font-weight: 600;
         }
 
-        .month-cost {
-            font-size: 12px;
+        .month-bar {
+            height: 4px;
+            background: var(--border)
             color: #666;
             font-weight: 600;
         }
@@ -811,19 +897,20 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             transition: width 0.3s ease;
         }
-
-        .year-selector {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding: 8px 12px;
-            background: #f8f9fa;
+var(--bg-color);
             border-radius: 8px;
+            transition: background-color 0.3s ease;
         }
 
         .year-selector button {
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-color;
             border: 1px solid #ddd;
             border-radius: 6px;
             padding: 6px 12px;
@@ -839,25 +926,25 @@
             color: white;
             border-color: var(--primary);
         }
-
-        .year-selector span {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .bundesland-card {
-            background: white;
-            border: 2px solid #e0e0e0;
+var(--card-bg);
+            border: 2px solid var(--border);
             border-radius: 8px;
             padding: 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px var(--shadow);
         }
 
         .bundesland-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(15, 164, 179, 0.2);
+        }
+
+        .bundesland-card.no-trips {
+            opacity: 0.5;
+            background: var(--bg-color){
             transform: translateY(-3px);
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(8, 126, 139, 0.2);
@@ -869,7 +956,7 @@
         }
 
         .bundesland-icon {
-            font-size: 28px;
+            font-size: 28text-color
             margin-bottom: 8px;
         }
 
@@ -882,7 +969,7 @@
 
         .bundesland-count {
             font-size: 18px;
-            font-weight: bold;
+            font-wevar(--text-tertiary): bold;
             color: var(--primary);
             margin-bottom: 4px;
         }
@@ -1172,6 +1259,15 @@
             <button type="button" class="modal-close-btn" onclick="closeSettingsModal()" title="Schließen (ESC)">✕</button>
             <h2 style="margin-bottom: 20px; color: var(--primary);">⚙️ Einstellungen</h2>
             <form class="settings-form" onsubmit="submitSettings(event)">
+                <!-- Dark Mode Toggle -->
+                <div class="theme-toggle">
+                    <label for="darkModeToggle" style="cursor: pointer;">🌓 Dunkler Modus</label>
+                    <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <p class="settings-help" style="margin-top: -4px;">Automatische Erkennung der System-Einstellung bei "Auto"</p>
+                
                 <label for="ticketCostInput">Klimaticket Kostenbetrag (€)</label>
                 <input type="number" id="ticketCostInput" placeholder="z.B. 1400" min="0" step="0.01" required>
                 <p class="settings-help">Der Betrag, den dein Klimaticket kostet (z.B. nach Arbeitgeberzuschuss).</p>
@@ -1311,6 +1407,52 @@
         // Set today's date
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('tripDate').value = today;
+
+        // Dark Mode Initialization
+        function initDarkMode() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateDarkModeToggle(true);
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                updateDarkModeToggle(false);
+            }
+        }
+
+        function toggleDarkMode() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateDarkModeToggle(newTheme === 'dark');
+        }
+
+        function updateDarkModeToggle(isDark) {
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) {
+                if (isDark) {
+                    toggle.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                }
+            }
+        }
+
+        // Listen to system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const savedTheme = localStorage.getItem('theme');
+            if (!savedTheme) {
+                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                updateDarkModeToggle(e.matches);
+            }
+        });
+
+        // Initialize dark mode on page load
+        initDarkMode();
 
         // Register Service Worker
         if ('serviceWorker' in navigator) {
@@ -1548,6 +1690,11 @@
             document.getElementById('ticketCostInput').value = userTicketCost;
             document.getElementById('startDateInput').value = userStartDate.toISOString().split('T')[0];
             document.getElementById('endDateInput').value = userEndDate.toISOString().split('T')[0];
+            
+            // Update dark mode toggle state
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            updateDarkModeToggle(isDark);
+            
             document.getElementById('settingsModal').classList.add('active');
         }
 
