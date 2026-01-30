@@ -2719,17 +2719,11 @@
                 
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'normal');
-                let col = 0;
                 for (let i = 0; i < 12; i++) {
-                    const x = 20 + (col * 175);
-                    if (i > 0 && i % 2 === 0) {
-                        yPos += 7;
-                        col = 0;
-                    }
-                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} (EUR ${monthStats[i].cost.toFixed(2)})`, x, yPos);
-                    col++;
+                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} (EUR ${monthStats[i].cost.toFixed(2)})`, 20, yPos);
+                    yPos += 5;
                 }
-                yPos += 12;
+                yPos += 7;
 
                 // Top Routes
                 const routeStats = {};
