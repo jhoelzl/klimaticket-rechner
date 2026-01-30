@@ -726,6 +726,108 @@
             color: #ff9800;
         }
 
+        /* Year Overview */
+        .year-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .month-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .month-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .month-card.current-month {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(8, 126, 139, 0.05), rgba(5, 168, 163, 0.05));
+            border-width: 2px;
+        }
+
+        .month-card.no-trips {
+            opacity: 0.5;
+        }
+
+        .month-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .month-trips {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .month-cost {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .month-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .month-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .year-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .year-selector button {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.2s;
+        }
+
+        .year-selector button:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .year-selector span {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
         @media (max-width: 480px) {
             header h1 {
                 font-size: 24px;
@@ -922,6 +1024,22 @@
             </div>
             
             <div id="bundeslandsStats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px;">
+                <!-- Will be filled by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Year Overview -->
+        <div class="card">
+            <h2>📅 Jahresübersicht</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Fahrten und Kosten nach Monat</p>
+            
+            <div class="year-selector">
+                <button onclick="changeYear(-1)">← {{previousYear}}</button>
+                <span id="yearOverviewTitle">2026</span>
+                <button onclick="changeYear(1)">{{nextYear}} →</button>
+            </div>
+
+            <div class="year-overview" id="yearOverview">
                 <!-- Will be filled by JavaScript -->
             </div>
         </div>
@@ -2123,6 +2241,7 @@
         function generateHeatmap(trips) {
             allTripsForHeatmap = trips; // Store for navigation
             renderHeatmapMonth();
+            renderYearOverview();
         }
         
         // Generate Bundeslands heatmap
@@ -2175,6 +2294,88 @@
                     </div>`;
                 })
                 .join('');
+        }
+
+        // Year overview
+        let currentYearView = new Date().getFullYear();
+
+        function renderYearOverview() {
+            const yearOverviewContainer = document.getElementById('yearOverview');
+            const yearTitle = document.getElementById('yearOverviewTitle');
+            yearTitle.textContent = currentYearView;
+
+            // Update year selector buttons
+            const yearSelector = document.querySelector('.year-selector');
+            yearSelector.innerHTML = `
+                <button onclick="changeYear(-1)">← ${currentYearView - 1}</button>
+                <span id="yearOverviewTitle">${currentYearView}</span>
+                <button onclick="changeYear(1)">${currentYearView + 1} →</button>
+            `;
+
+            // Calculate stats per month
+            const monthStats = {};
+            const monthNames = ['Jän', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+            
+            // Initialize all months
+            for (let i = 0; i < 12; i++) {
+                monthStats[i] = { trips: 0, cost: 0, validTrips: 0 };
+            }
+
+            // Count trips per month
+            allTripsForHeatmap.forEach(trip => {
+                const tripDate = new Date(trip.date);
+                if (tripDate.getFullYear() === currentYearView) {
+                    const month = tripDate.getMonth();
+                    monthStats[month].trips++;
+                    monthStats[month].cost += trip.cost;
+                    if (isValidTrip(trip)) {
+                        monthStats[month].validTrips++;
+                    }
+                }
+            });
+
+            // Find max trips for scaling bars
+            const maxTrips = Math.max(...Object.values(monthStats).map(m => m.trips), 1);
+
+            // Current month for highlighting
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+
+            // Render month cards
+            let html = '';
+            for (let i = 0; i < 12; i++) {
+                const stats = monthStats[i];
+                const isCurrentMonth = currentYearView === currentYear && i === currentMonth;
+                const noTrips = stats.trips === 0;
+                const barWidth = (stats.trips / maxTrips) * 100;
+
+                html += `
+                    <div class="month-card ${isCurrentMonth ? 'current-month' : ''} ${noTrips ? 'no-trips' : ''}" 
+                         onclick="jumpToMonth(${currentYearView}, ${i})" 
+                         title="Klicken um zu ${monthNames[i]} ${currentYearView} zu springen">
+                        <div class="month-name">${monthNames[i]}</div>
+                        <div class="month-trips">${stats.trips}</div>
+                        <div class="month-cost">€${stats.cost.toFixed(2)}</div>
+                        <div class="month-bar">
+                            <div class="month-bar-fill" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            yearOverviewContainer.innerHTML = html;
+        }
+
+        function changeYear(delta) {
+            currentYearView += delta;
+            renderYearOverview();
+        }
+
+        function jumpToMonth(year, month) {
+            currentHeatmapDate = new Date(year, month, 1);
+            renderHeatmapMonth();
+            // Scroll to heatmap
+            document.querySelector('.heatmap-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         // Show trip tooltip on hover
