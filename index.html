@@ -698,26 +698,13 @@
         <header>
             <div class="header-top">
                 <h1>🚆 Klimaticket Rechner</h1>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button onclick="reloadData()" id="reloadBtn" title="Daten aktualisieren" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px;">🔄</button>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button onclick="reloadData()" id="reloadBtn" title="Daten aktualisieren" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🔄</button>
+                    <button onclick="openSettingsModal()" id="settingsBtn" title="Einstellungen" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">⚙️</button>
+                    <button onclick="logout()" id="logoutBtn" title="Abmelden" class="hidden" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 14px;">🚪</button>
+                    <button onclick="handleAuth()" id="authBtn" style="background: rgba(255,255,255,0.9); color: var(--primary); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">📧 Anmelden</button>
                     <div id="authStatus" class="auth-status">⏳ Laden...</div>
                 </div>
-            </div>
-            <p style="font-size: 16px; margin-bottom: 16px; opacity: 0.95;">Zahlt sich das Klimaticket für mich aus?</p>
-            <div class="info-row">
-                <div class="info-box">
-                    <strong>Gültig bis:</strong>
-                    <span id="expiryDate">22. Jän. 2026</span>
-                </div>
-                <div class="info-box">
-                    <strong>Gültigkeit:</strong>
-                    <span id="daysRemaining">-</span>
-                </div>
-            </div>
-            <div class="auth-buttons">
-                <button onclick="handleAuth()" id="authBtn">📧 Anmelden</button>
-                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden">⚙️ Einstellungen</button>
-                <button onclick="logout()" id="logoutBtn" class="hidden">🚪 Abmelden</button>
             </div>
         </header>
 
@@ -759,6 +746,17 @@
         <!-- Statistiken -->
         <div class="card">
             <h2>📊 Übersicht</h2>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); font-size: 13px;">
+                <div style="flex: 1;">
+                    <div style="color: #999; margin-bottom: 4px;">Gültig bis</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="expiryDate">22. Jän. 2026</div>
+                </div>
+                <div style="flex: 1;">
+                    <div style="color: #999; margin-bottom: 4px;">Gültigkeit</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="daysRemaining">-</div>
+                </div>
+            </div>
             
             <div class="stats">
                 <div class="stat-box">
