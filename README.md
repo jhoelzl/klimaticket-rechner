@@ -214,9 +214,9 @@ Das Achievement-System belohnt dich für deine Öffi-Nutzung mit 12 Austria-them
 - 👑 **Österreich-Meister** - Besuche alle 9 Bundesländer
 - 🗺️ **Bundesland-Hopper** - 10 bundeslandübergreifende Fahrten
 
-**Zeit-basierte Achievements:**
-- 🌅 **Frühaufsteher** - 10 Fahrten vor 6:00 Uhr
-- 🦉 **Nachteule** - 10 Fahrten nach 22:00 Uhr
+**Vielfalt & Regelmäßigkeit:**
+- 🧭 **Strecken-Sammler** - 15 unterschiedliche Routen
+- 🗓️ **Monats-Champion** - Fahrten in 6 verschiedenen Monaten
 - 🎉 **Wochenend-Krieger** - 20 Fahrten am Wochenende
 
 **Einsparungs-Achievements:**

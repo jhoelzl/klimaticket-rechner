@@ -1596,56 +1596,56 @@
                 total: 9
             },
             {
-                id: 'early_bird',
-                name: 'Frühaufsteher',
-                description: '10 Fahrten vor 6:00 Uhr',
-                icon: '🌅',
-                requirement: (trips) => trips.filter(t => {
-                    const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
-                    if (time) {
-                        const hour = parseInt(time[1]);
-                        return hour < 6;
-                    }
-                    return false;
-                }).length >= 10,
-                progress: (trips) => {
-                    const count = trips.filter(t => {
-                        const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
-                        if (time) {
-                            const hour = parseInt(time[1]);
-                            return hour < 6;
+                id: 'route_collector',
+                name: 'Strecken-Sammler',
+                description: '15 unterschiedliche Routen',
+                icon: '🧭',
+                requirement: (trips) => {
+                    const uniqueRoutes = new Set();
+                    trips.forEach(t => {
+                        if (t.route) {
+                            uniqueRoutes.add(t.route.trim().toLowerCase());
                         }
-                        return false;
-                    }).length;
-                    return Math.min(10, count);
+                    });
+                    return uniqueRoutes.size >= 15;
                 },
-                total: 10
+                progress: (trips) => {
+                    const uniqueRoutes = new Set();
+                    trips.forEach(t => {
+                        if (t.route) {
+                            uniqueRoutes.add(t.route.trim().toLowerCase());
+                        }
+                    });
+                    return Math.min(15, uniqueRoutes.size);
+                },
+                total: 15
             },
             {
-                id: 'night_owl',
-                name: 'Nachteule',
-                description: '10 Fahrten nach 22:00 Uhr',
-                icon: '🦉',
-                requirement: (trips) => trips.filter(t => {
-                    const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
-                    if (time) {
-                        const hour = parseInt(time[1]);
-                        return hour >= 22;
-                    }
-                    return false;
-                }).length >= 10,
-                progress: (trips) => {
-                    const count = trips.filter(t => {
-                        const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
-                        if (time) {
-                            const hour = parseInt(time[1]);
-                            return hour >= 22;
+                id: 'month_champion',
+                name: 'Monats-Champion',
+                description: 'Fahrten in 6 verschiedenen Monaten',
+                icon: '🗓️',
+                requirement: (trips) => {
+                    const uniqueMonths = new Set();
+                    trips.forEach(t => {
+                        if (t.date) {
+                            const date = new Date(t.date);
+                            uniqueMonths.add(`${date.getFullYear()}-${date.getMonth() + 1}`);
                         }
-                        return false;
-                    }).length;
-                    return Math.min(10, count);
+                    });
+                    return uniqueMonths.size >= 6;
                 },
-                total: 10
+                progress: (trips) => {
+                    const uniqueMonths = new Set();
+                    trips.forEach(t => {
+                        if (t.date) {
+                            const date = new Date(t.date);
+                            uniqueMonths.add(`${date.getFullYear()}-${date.getMonth() + 1}`);
+                        }
+                    });
+                    return Math.min(6, uniqueMonths.size);
+                },
+                total: 6
             },
             {
                 id: 'weekend_warrior',
