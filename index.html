@@ -926,6 +926,43 @@
         </div>
     </div>
 
+    <!-- Quick Add Trip Modal (from Calendar) -->
+    <div id="quickAddModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 20px; color: var(--primary);">⚡ Fahrt hinzufügen - <span id="quickAddDate"></span></h2>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; color: #666; margin-bottom: 12px;"><strong>Quick Buttons:</strong></label>
+                <div class="quick-buttons">
+                    <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.60, 'S-Bahn Sbg')">
+                        🚇 S-Bahn Sbg<br>(3,60€)
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.00, 'Obus Sbg')">
+                        🚌 Obus Sbg<br>(3,00€)
+                    </button>
+                </div>
+            </div>
+
+            <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border);">
+
+            <form class="settings-form" onsubmit="submitCustomQuickAddTrip(event)">
+                <label for="quickTripRoute">Route (optional):</label>
+                <input type="text" id="quickTripRoute" placeholder="z.B. Salzburg - Wien">
+                
+                <label for="quickTripCost" style="margin-top: 12px;">Kosten (EUR):</label>
+                <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
+                
+                <label for="quickTripNotes" style="margin-top: 12px;">Notiz (optional):</label>
+                <input type="text" id="quickTripNotes" placeholder="optional">
+                
+                <div class="modal-buttons" style="margin-top: 20px;">
+                    <button type="button" class="modal-btn-secondary" onclick="closeQuickAddModal()">Abbrechen</button>
+                    <button type="submit" class="modal-btn-primary">Hinzufügen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Configuration
         const DEFAULT_TICKET_COST = 1400;
@@ -1358,6 +1395,96 @@
             }
         }
 
+        // Open quick add modal from calendar click
+        function openQuickAddFromCalendar(dateStr) {
+            document.getElementById('quickAddDate').textContent = formatDate(dateStr);
+            document.getElementById('quickTripRoute').value = '';
+            document.getElementById('quickTripCost').value = '';
+            document.getElementById('quickTripNotes').value = '';
+            document.getElementById('quickAddModal').classList.add('active');
+            document.getElementById('quickAddModal').dataset.selectedDate = dateStr;
+        }
+
+        function closeQuickAddModal() {
+            document.getElementById('quickAddModal').classList.remove('active');
+        }
+
+        // Quick add trip with selected date
+        async function submitQuickAddTrip(cost, route) {
+            const dateStr = document.getElementById('quickAddModal').dataset.selectedDate;
+            const notes = document.getElementById('quickTripNotes').value.trim();
+
+            const trip = {
+                date: dateStr,
+                route,
+                cost,
+                notes
+            };
+
+            try {
+                if (currentUser) {
+                    const { error } = await supabase
+                        .from('trips')
+                        .insert([trip]);
+                    
+                    if (error) throw error;
+                } else {
+                    const trips = getLocalTrips();
+                    trips.push({ ...trip, id: Date.now(), timestamp: new Date().toISOString() });
+                    localStorage.setItem('trips', JSON.stringify(trips));
+                }
+
+                showToast(`✅ ${route} (+€${cost.toFixed(2)}) am ${formatDate(dateStr)} hinzugefügt!`);
+                closeQuickAddModal();
+                loadData();
+            } catch (err) {
+                console.error('Quick add error:', err);
+                showToast('❌ Fehler: ' + err.message, 'error');
+            }
+        }
+
+        // Custom quick add trip
+        async function submitCustomQuickAddTrip(event) {
+            event.preventDefault();
+            const dateStr = document.getElementById('quickAddModal').dataset.selectedDate;
+            const route = document.getElementById('quickTripRoute').value.trim() || 'Fahrt';
+            const cost = parseFloat(document.getElementById('quickTripCost').value);
+            const notes = document.getElementById('quickTripNotes').value.trim();
+
+            if (!cost || cost <= 0) {
+                showToast('❌ Bitte Kosten eingeben!', 'error');
+                return;
+            }
+
+            const trip = {
+                date: dateStr,
+                route,
+                cost,
+                notes
+            };
+
+            try {
+                if (currentUser) {
+                    const { error } = await supabase
+                        .from('trips')
+                        .insert([trip]);
+                    
+                    if (error) throw error;
+                } else {
+                    const trips = getLocalTrips();
+                    trips.push({ ...trip, id: Date.now(), timestamp: new Date().toISOString() });
+                    localStorage.setItem('trips', JSON.stringify(trips));
+                }
+
+                showToast(`✅ ${route} (+€${cost.toFixed(2)}) am ${formatDate(dateStr)} hinzugefügt!`);
+                closeQuickAddModal();
+                loadData();
+            } catch (err) {
+                console.error('Custom quick add error:', err);
+                showToast('❌ Fehler: ' + err.message, 'error');
+            }
+        }
+
         // Delete trip
         async function deleteTrip(id) {
             if (!confirm('Fahrt wirklich löschen?')) return;
@@ -1603,7 +1730,7 @@
                 else if (count >= 1) level = 'level-1';
 
                 const title = count > 0 ? `${count} Fahrt${count !== 1 ? 'en' : ''}` : 'Keine Fahrten';
-                dayCells += `<div class="heatmap-day ${level}" title="${title}">${day}</div>`;
+                dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer;" onclick="openQuickAddFromCalendar('${dateStr}')">${day}</div>`;
             }
 
             heatmapContent.innerHTML = `
