@@ -858,7 +858,12 @@
                 <!-- Will be filled by JavaScript -->
             </div>
         </div>
-            <h2>📋 Deine Fahrten</h2>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="margin: 0;">📋 Deine Fahrten</h2>
+                <button id="filterNoBundeslandBtn" class="btn-secondary" onclick="toggleNoBundeslandFilter()" style="font-size: 12px; padding: 6px 12px;">🔍 Ohne Bundesland</button>
+            </div>
             <div class="trips-list" id="tripsList">
                 <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
             </div>
@@ -1098,6 +1103,7 @@
         let userTicketCost = DEFAULT_TICKET_COST; // Dynamic per user
         let userStartDate = DEFAULT_START_DATE; // Dynamic per user
         let userEndDate = DEFAULT_END_DATE; // Dynamic per user
+        let showOnlyNoBundesland = false; // Filter for trips without Bundesland
         let allTripsForHeatmap = []; // Store all trips for heatmap navigation
         let currentHeatmapDate = new Date(); // Current month being displayed
 
@@ -1381,6 +1387,22 @@
                 authBtn.classList.remove('hidden');
                 settingsBtn.classList.add('hidden');
             }
+        }
+
+        // Toggle filter for trips without Bundesland
+        function toggleNoBundeslandFilter() {
+            showOnlyNoBundesland = !showOnlyNoBundesland;
+            const btn = document.getElementById('filterNoBundeslandBtn');
+            if (showOnlyNoBundesland) {
+                btn.style.background = '#4caf50';
+                btn.style.color = 'white';
+                btn.textContent = '✓ Ohne Bundesland';
+            } else {
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.textContent = '🔍 Ohne Bundesland';
+            }
+            loadData();
         }
 
         // Load data from Supabase or localStorage
@@ -1855,7 +1877,17 @@
                 return;
             }
 
-            const sorted = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Filter trips if needed
+            let filtered = trips;
+            if (showOnlyNoBundesland) {
+                filtered = trips.filter(trip => !trip.bundeslaender || trip.bundeslaender.length === 0);
+                if (filtered.length === 0) {
+                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ Alle Fahrten haben ein Bundesland!</p>';
+                    return;
+                }
+            }
+
+            const sorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
 
             tripsList.innerHTML = sorted.map(trip => {
                 const valid = isValidTrip(trip);
