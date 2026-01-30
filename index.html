@@ -778,7 +778,84 @@
             <div id="message" class="hidden message"></div>
         </div>
 
+        <!-- Austria Bundeslands Map -->
         <div class="card">
+            <h2>🗺️ Bundeslands-Übersicht</h2>
+            <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Fahrten pro Bundesland (nur gültige Fahrten)</p>
+            
+            <div id="austriaMapContainer" style="background: #f5f5f5; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                <svg id="austriaMap" viewBox="0 0 500 300" style="max-width: 100%; height: auto;">
+                    <!-- Vorarlberg -->
+                    <path id="vorarlberg" d="M 10 120 L 10 180 L 50 185 L 55 170 L 65 165 L 60 150 L 55 140 L 45 130 L 30 125 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Vorarlberg</title>
+                    </path>
+                    
+                    <!-- Tirol -->
+                    <path id="tirol" d="M 65 165 L 55 170 L 50 185 L 75 190 L 110 195 L 145 185 L 170 175 L 185 165 L 190 155 L 175 145 L 155 138 L 135 135 L 115 138 L 95 145 L 75 150 L 65 155 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Tirol</title>
+                    </path>
+                    
+                    <!-- Salzburg -->
+                    <path id="salzburg" d="M 170 175 L 185 165 L 190 155 L 195 145 L 210 140 L 225 145 L 235 155 L 240 170 L 235 185 L 220 195 L 200 200 L 180 195 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Salzburg</title>
+                    </path>
+                    
+                    <!-- Oberösterreich -->
+                    <path id="oberösterreich" d="M 195 145 L 210 140 L 225 145 L 245 135 L 265 125 L 285 120 L 305 125 L 315 135 L 320 150 L 315 165 L 305 175 L 285 180 L 265 180 L 245 175 L 235 165 L 235 155 L 225 145 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Oberösterreich</title>
+                    </path>
+                    
+                    <!-- Niederösterreich -->
+                    <path id="niederösterreich" d="M 305 125 L 315 135 L 330 130 L 350 135 L 370 145 L 390 155 L 405 170 L 415 185 L 415 200 L 405 215 L 385 220 L 365 220 L 345 215 L 325 205 L 305 195 L 295 185 L 285 180 L 285 165 L 295 150 L 305 140 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Niederösterreich</title>
+                    </path>
+                    
+                    <!-- Wien -->
+                    <circle id="wien" cx="405" cy="170" r="12" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Wien</title>
+                    </circle>
+                    
+                    <!-- Burgenland -->
+                    <path id="burgenland" d="M 405 170 L 420 175 L 430 190 L 435 210 L 430 225 L 420 235 L 410 238 L 405 230 L 405 215 L 410 200 L 410 185 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Burgenland</title>
+                    </path>
+                    
+                    <!-- Steiermark -->
+                    <path id="steiermark" d="M 235 185 L 240 195 L 255 205 L 275 215 L 295 220 L 315 218 L 335 215 L 355 220 L 365 220 L 365 235 L 355 250 L 335 260 L 310 260 L 285 255 L 265 245 L 245 230 L 235 215 L 230 200 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Steiermark</title>
+                    </path>
+                    
+                    <!-- Kärnten -->
+                    <path id="kärnten" d="M 145 185 L 170 175 L 180 195 L 200 200 L 220 195 L 235 200 L 245 215 L 245 230 L 235 245 L 215 255 L 190 255 L 170 250 L 150 240 L 135 225 L 130 210 L 135 195 Z" fill="#e8f5e9" stroke="#333" stroke-width="0.8" style="cursor: pointer;">
+                        <title>Kärnten</title>
+                    </path>
+                    
+                    <!-- Labels -->
+                    <text x="32" y="160" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">V</text>
+                    <text x="120" y="168" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">T</text>
+                    <text x="210" y="173" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">S</text>
+                    <text x="270" y="155" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">OÖ</text>
+                    <text x="350" y="165" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">NÖ</text>
+                    <text x="405" y="174" font-size="8" fill="#333" text-anchor="middle" pointer-events="none">W</text>
+                    <text x="418" y="215" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">B</text>
+                    <text x="295" y="240" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">St</text>
+                    <text x="185" y="228" font-size="9" fill="#333" text-anchor="middle" pointer-events="none">K</text>
+                    
+                    <!-- Legend -->
+                    <text x="20" y="283" font-size="10" fill="#666">Weniger ←</text>
+                    <rect x="20" y="288" width="12" height="8" fill="#e8f5e9" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="35" y="288" width="12" height="8" fill="#c8e6c9" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="50" y="288" width="12" height="8" fill="#81c784" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="65" y="288" width="12" height="8" fill="#4caf50" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="80" y="288" width="12" height="8" fill="#2e7d32" stroke="#ccc" stroke-width="0.5"/>
+                    <text x="95" y="295" font-size="10" fill="#666">→ Mehr</text>
+                </svg>
+            </div>
+            
+            <div id="bundeslandsStats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px;">
+                <!-- Will be filled by JavaScript -->
+            </div>
+        </div>
             <h2>📋 Deine Fahrten</h2>
             <div class="trips-list" id="tripsList">
                 <p style="color: #999; text-align: center; padding: 20px;">Noch keine Fahrten hinzugefügt</p>
@@ -810,6 +887,22 @@
             <div class="form-group">
                 <label for="tripRoute">Route (z.B. Salzburg - Wien):</label>
                 <input type="text" id="tripRoute" placeholder="Von - Nach">
+            </div>
+
+            <div class="form-group">
+                <label for="tripBundeslaender">Bundesland(er) betroffen:</label>
+                <select id="tripBundeslaender" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                    <option value="Salzburg">Salzburg</option>
+                    <option value="Wien">Wien</option>
+                    <option value="Niederösterreich">Niederösterreich</option>
+                    <option value="Oberösterreich">Oberösterreich</option>
+                    <option value="Tirol">Tirol</option>
+                    <option value="Vorarlberg">Vorarlberg</option>
+                    <option value="Steiermark">Steiermark</option>
+                    <option value="Burgenland">Burgenland</option>
+                    <option value="Kärnten">Kärnten</option>
+                </select>
+                <p style="font-size: 12px; color: #999; margin-top: 4px;">Mehrfachauswahl mit Ctrl/Cmd + Klick</p>
             </div>
 
             <div class="form-row">
@@ -912,6 +1005,19 @@
                 
                 <label for="editTripRoute" style="margin-top: 12px;">Route:</label>
                 <input type="text" id="editTripRoute" placeholder="z.B. Salzburg - Wien" required>
+
+                <label for="editTripBundeslaender" style="margin-top: 12px;">Bundesland(er):</label>
+                <select id="editTripBundeslaender" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                    <option value="Salzburg">Salzburg</option>
+                    <option value="Wien">Wien</option>
+                    <option value="Niederösterreich">Niederösterreich</option>
+                    <option value="Oberösterreich">Oberösterreich</option>
+                    <option value="Tirol">Tirol</option>
+                    <option value="Vorarlberg">Vorarlberg</option>
+                    <option value="Steiermark">Steiermark</option>
+                    <option value="Burgenland">Burgenland</option>
+                    <option value="Kärnten">Kärnten</option>
+                </select>
                 
                 <label for="editTripCost" style="margin-top: 12px;">Kosten (EUR):</label>
                 <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
@@ -949,6 +1055,19 @@
             <form class="settings-form" onsubmit="submitCustomQuickAddTrip(event)">
                 <label for="quickTripRoute">Route (optional):</label>
                 <input type="text" id="quickTripRoute" placeholder="z.B. Salzburg - Wien">
+
+                <label for="quickTripBundeslaender" style="margin-top: 12px;">Bundesland(er):</label>
+                <select id="quickTripBundeslaender" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                    <option value="Salzburg" selected>Salzburg</option>
+                    <option value="Wien">Wien</option>
+                    <option value="Niederösterreich">Niederösterreich</option>
+                    <option value="Oberösterreich">Oberösterreich</option>
+                    <option value="Tirol">Tirol</option>
+                    <option value="Vorarlberg">Vorarlberg</option>
+                    <option value="Steiermark">Steiermark</option>
+                    <option value="Burgenland">Burgenland</option>
+                    <option value="Kärnten">Kärnten</option>
+                </select>
                 
                 <label for="quickTripCost" style="margin-top: 12px;">Kosten (EUR):</label>
                 <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
@@ -1398,6 +1517,10 @@
             const route = document.getElementById('tripRoute').value.trim();
             const cost = parseFloat(document.getElementById('tripCost').value);
             const notes = document.getElementById('tripNotes').value.trim();
+            
+            // Get selected Bundesländer
+            const bundeslaenderSelect = document.getElementById('tripBundeslaender');
+            const bundeslaender = Array.from(bundeslaenderSelect.selectedOptions).map(opt => opt.value);
 
             if (!date || !route || !cost || cost <= 0) {
                 showToast('❌ Bitte alle Felder ausfüllen!', 'error');
@@ -1408,7 +1531,8 @@
                 date,
                 route,
                 cost: parseFloat(cost.toFixed(2)),
-                notes
+                notes,
+                bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
             };
 
             try {
@@ -1451,7 +1575,8 @@
             const trip = {
                 date: today,
                 route,
-                cost
+                cost,
+                bundeslaender: ['Salzburg']
             };
 
             try {
@@ -1534,6 +1659,10 @@
             const route = document.getElementById('quickTripRoute').value.trim() || 'Fahrt';
             const cost = parseFloat(document.getElementById('quickTripCost').value);
             const notes = document.getElementById('quickTripNotes').value.trim();
+            
+            // Get selected Bundesländer (defaults to Salzburg if none selected)
+            const bundeslaenderSelect = document.getElementById('quickTripBundeslaender');
+            const bundeslaender = Array.from(bundeslaenderSelect.selectedOptions).map(opt => opt.value);
 
             if (!cost || cost <= 0) {
                 showToast('❌ Bitte Kosten eingeben!', 'error');
@@ -1544,7 +1673,8 @@
                 date: dateStr,
                 route,
                 cost,
-                notes
+                notes,
+                bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
             };
 
             try {
@@ -1627,6 +1757,19 @@
             document.getElementById('editTripRoute').value = trip.route;
             document.getElementById('editTripCost').value = trip.cost;
             document.getElementById('editTripNotes').value = trip.notes || '';
+            
+            // Load Bundesländer
+            const bundeslaenderSelect = document.getElementById('editTripBundeslaender');
+            bundeslaenderSelect.value = '';
+            if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
+                Array.from(bundeslaenderSelect.options).forEach(option => {
+                    option.selected = trip.bundeslaender.includes(option.value);
+                });
+            } else {
+                // Default to Salzburg if no bundeslaender
+                document.querySelector('#editTripBundeslaender option[value="Salzburg"]').selected = true;
+            }
+            
             document.getElementById('editTripModal').classList.add('active');
         }
 
@@ -1645,6 +1788,10 @@
             const route = document.getElementById('editTripRoute').value.trim();
             const cost = parseFloat(document.getElementById('editTripCost').value);
             const notes = document.getElementById('editTripNotes').value.trim();
+            
+            // Get selected Bundesländer
+            const bundeslaenderSelect = document.getElementById('editTripBundeslaender');
+            const bundeslaender = Array.from(bundeslaenderSelect.selectedOptions).map(opt => opt.value);
 
             if (!date || !route || !cost || cost <= 0) {
                 showToast('❌ Bitte alle Felder ausfüllen!', 'error');
@@ -1659,7 +1806,8 @@
                             date,
                             route,
                             cost: parseFloat(cost.toFixed(2)),
-                            notes
+                            notes,
+                            bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
                         })
                         .eq('id', currentEditTrip.id);
                     
@@ -1673,7 +1821,8 @@
                             date,
                             route,
                             cost: parseFloat(cost.toFixed(2)),
-                            notes
+                            notes,
+                            bundeslaender: bundeslaender.length > 0 ? bundeslaender : ['Salzburg']
                         };
                         localStorage.setItem('trips', JSON.stringify(trips));
                     }
@@ -1752,6 +1901,9 @@
 
             // Generate heatmap
             generateHeatmap(validTrips);
+            
+            // Generate Bundeslands heatmap
+            generateBundeslandsHeatmap(validTrips);
         }
 
         // Update days remaining
@@ -1772,6 +1924,58 @@
         function generateHeatmap(trips) {
             allTripsForHeatmap = trips; // Store for navigation
             renderHeatmapMonth();
+        }
+        
+        // Generate Bundeslands heatmap
+        function generateBundeslandsHeatmap(trips) {
+            const bundeslaender = [
+                'Burgenland', 'Kärnten', 'Niederösterreich', 
+                'Oberösterreich', 'Salzburg', 'Steiermark', 
+                'Tirol', 'Vorarlberg', 'Wien'
+            ];
+            
+            // Count trips per Bundesland
+            const countsByBundesland = {};
+            bundeslaender.forEach(bl => countsByBundesland[bl] = 0);
+            
+            trips.forEach(trip => {
+                if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
+                    trip.bundeslaender.forEach(bl => {
+                        if (countsByBundesland[bl] !== undefined) {
+                            countsByBundesland[bl]++;
+                        }
+                    });
+                }
+            });
+            
+            // Find max count for scaling
+            const maxCount = Math.max(...Object.values(countsByBundesland), 1);
+            
+            // Update SVG map colors
+            bundeslaender.forEach(bl => {
+                const count = countsByBundesland[bl];
+                const level = maxCount === 0 ? 0 : Math.ceil((count / maxCount) * 4);
+                const colors = ['#e8f5e9', '#c8e6c9', '#81c784', '#4caf50', '#2e7d32'];
+                const color = colors[level];
+                
+                const element = document.getElementById(bl.toLowerCase());
+                if (element) {
+                    element.setAttribute('fill', color);
+                }
+            });
+            
+            // Update stats list
+            const bundeslandsStats = document.getElementById('bundeslandsStats');
+            bundeslandsStats.innerHTML = bundeslaender
+                .sort((a, b) => countsByBundesland[b] - countsByBundesland[a])
+                .map(bl => {
+                    const count = countsByBundesland[bl];
+                    return `<div style="padding: 8px; background: #f8f9fa; border-radius: 4px; text-align: center;">
+                        <div style="font-weight: 600; color: var(--dark);">${count}</div>
+                        <div style="color: #666; font-size: 11px;">${bl}</div>
+                    </div>`;
+                })
+                .join('');
         }
 
         // Render current month heatmap
