@@ -15,6 +15,7 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 - 🗺️ **Bundesland-Übersicht** - Emoji-basierte Karten aller 9 österreichischen Bundesländer
 - 📋 **Top 10 Strecken** - Deine häufigsten Routen mit Fahrtanzahl
 - 📄 **PDF-Export** - Professionelle Zusammenfassung mit allen Statistiken
+- 🏆 **Achievements-System** - 12 Austria-themed Badges (Obus-Fan, S-Bahn Profi, Bundesland-Hopper, etc.)
 
 ### 💾 Data Management
 - ☁️ **Cloud-Sync mit Supabase** - Multi-Device Synchronisation
@@ -199,7 +200,31 @@ klimaticket_rechner/
 - 🔥 Heatmap-Kalender (aktueller Monat)
 - 📅 Jahresübersicht (alle 12 Monate)
 - 🗺️ Bundesland-Übersicht mit Stats
+- 🏆 Achievements mit Progress-Tracking
 - 📋 Fahrtenliste mit Filtering
+
+### Achievements-System
+Das Achievement-System belohnt dich für deine Öffi-Nutzung mit 12 Austria-themed Badges:
+
+**Salzburg & Austria Achievements:**
+- 🚎 **Obus-Fan** - 20 Fahrten mit dem Obus
+- 🚈 **S-Bahn Profi** - 50 Fahrten mit der S-Bahn
+- 🏔️ **Salzburg Lokalheld** - 100 Fahrten in Salzburg
+- 🇦🇹 **Österreich-Explorer** - Besuche 5 verschiedene Bundesländer
+- 👑 **Österreich-Meister** - Besuche alle 9 Bundesländer
+- 🗺️ **Bundesland-Hopper** - 10 bundeslandübergreifende Fahrten
+
+**Zeit-basierte Achievements:**
+- 🌅 **Frühaufsteher** - 10 Fahrten vor 6:00 Uhr
+- 🦉 **Nachteule** - 10 Fahrten nach 22:00 Uhr
+- 🎉 **Wochenend-Krieger** - 20 Fahrten am Wochenende
+
+**Einsparungs-Achievements:**
+- 💰 **Erste Einsparung** - Ticket amortisiert!
+- 🌱 **Klima-Champion** - 500€ an Einsparungen
+- 💯 **Öffi-Profi** - 100 Fahrten gesamt
+
+Jedes Badge zeigt deinen Fortschritt an und wird mit einer Toast-Notification freigeschaltet!
 
 ### Zusatzfunktionen
 - ⚡ Quick-Add Buttons (häufige Routes)

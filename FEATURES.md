@@ -22,6 +22,23 @@
   - Bundesland-Statistiken
 - ✅ Bundesland-Übersicht mit Emoji-Cards und Fahrtenzähler
 - ✅ Top 10 Routes Statistiken
+- ✅ **Achievements/Badges System** mit 12 Austria-themed Achievements:
+  - 🚎 Obus-Fan (20x Obus)
+  - 🚈 S-Bahn Profi (50x S-Bahn)
+  - 🗺️ Bundesland-Hopper (10x bundeslandübergreifend)
+  - 🏔️ Salzburg Lokalheld (100x in Salzburg)
+  - 🇦🇹 Österreich-Explorer (5 Bundesländer)
+  - 👑 Österreich-Meister (alle 9 Bundesländer)
+  - 🌅 Frühaufsteher (10x vor 6:00)
+  - 🦉 Nachteule (10x nach 22:00)
+  - 🎉 Wochenend-Krieger (20x Wochenende)
+  - 💰 Erste Einsparung (Ticket amortisiert)
+  - 🌱 Klima-Champion (500€ Ersparnis)
+  - 💯 Öffi-Profi (100 Fahrten)
+  - Progress-Tracking für jedes Badge
+  - Toast-Notifications bei Freischaltung
+  - localStorage-Persistenz
+  - Locked/Unlocked visual states
 
 ### UX/UI Improvements
 - ✅ Trip-Details Tooltip beim Hover über Kalender-Tage

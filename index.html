@@ -994,6 +994,92 @@
             color: var(--text-tertiary);
         }
 
+        /* Achievements/Badges */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .badge {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge.unlocked {
+            border-color: var(--success);
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(76, 175, 80, 0.1) 100%);
+        }
+
+        .badge.locked {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .badge-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .badge-name {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .badge-description {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .badge-progress {
+            font-size: 10px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .badge.unlocked .badge-progress {
+            color: var(--success);
+        }
+
+        .badge-unlock-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.3) 0%, transparent 70%);
+            animation: unlockPulse 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes unlockPulse {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
         @media (max-width: 480px) {
             header h1 {
                 font-size: 24px;
@@ -1125,6 +1211,16 @@
             </div>
             
             <div id="bundeslandsStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; font-size: 12px;">
+                <!-- Will be filled by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Achievements/Badges -->
+        <div class="card">
+            <h2>🏆 Achievements</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Deine Öffi-Erfolge</p>
+            
+            <div id="achievementsGrid" class="achievements-grid">
                 <!-- Will be filled by JavaScript -->
             </div>
         </div>
@@ -1410,6 +1506,205 @@
         let showOnlyOutOfRange = false; // Filter for trips outside validity range
         let allTripsForHeatmap = []; // Store all trips for heatmap navigation
         let currentHeatmapDate = new Date(); // Current month being displayed
+
+        // Achievement definitions
+        const ACHIEVEMENTS = [
+            {
+                id: 'obus_fan',
+                name: 'Obus-Fan',
+                description: '20 Fahrten mit dem Obus',
+                icon: '🚎',
+                requirement: (trips) => trips.filter(t => t.route && t.route.toLowerCase().includes('obus')).length >= 20,
+                progress: (trips) => Math.min(20, trips.filter(t => t.route && t.route.toLowerCase().includes('obus')).length),
+                total: 20
+            },
+            {
+                id: 's_bahn_profi',
+                name: 'S-Bahn Profi',
+                description: '50 Fahrten mit der S-Bahn',
+                icon: '🚈',
+                requirement: (trips) => trips.filter(t => t.route && t.route.toLowerCase().includes('s-bahn')).length >= 50,
+                progress: (trips) => Math.min(50, trips.filter(t => t.route && t.route.toLowerCase().includes('s-bahn')).length),
+                total: 50
+            },
+            {
+                id: 'bundesland_hopper',
+                name: 'Bundesland-Hopper',
+                description: '10 bundeslandübergreifende Fahrten',
+                icon: '🗺️',
+                requirement: (trips) => trips.filter(t => t.bundeslaender && t.bundeslaender.length > 1).length >= 10,
+                progress: (trips) => Math.min(10, trips.filter(t => t.bundeslaender && t.bundeslaender.length > 1).length),
+                total: 10
+            },
+            {
+                id: 'salzburg_local',
+                name: 'Salzburg Lokalheld',
+                description: '100 Fahrten in Salzburg',
+                icon: '🏔️',
+                requirement: (trips) => trips.filter(t => t.bundeslaender && t.bundeslaender.includes('Salzburg')).length >= 100,
+                progress: (trips) => Math.min(100, trips.filter(t => t.bundeslaender && t.bundeslaender.includes('Salzburg')).length),
+                total: 100
+            },
+            {
+                id: 'austria_explorer',
+                name: 'Österreich-Explorer',
+                description: 'Besuche 5 verschiedene Bundesländer',
+                icon: '🇦🇹',
+                requirement: (trips) => {
+                    const uniqueBundeslaender = new Set();
+                    trips.forEach(t => {
+                        if (t.bundeslaender) {
+                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        }
+                    });
+                    return uniqueBundeslaender.size >= 5;
+                },
+                progress: (trips) => {
+                    const uniqueBundeslaender = new Set();
+                    trips.forEach(t => {
+                        if (t.bundeslaender) {
+                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        }
+                    });
+                    return Math.min(5, uniqueBundeslaender.size);
+                },
+                total: 5
+            },
+            {
+                id: 'austria_master',
+                name: 'Österreich-Meister',
+                description: 'Besuche alle 9 Bundesländer',
+                icon: '👑',
+                requirement: (trips) => {
+                    const uniqueBundeslaender = new Set();
+                    trips.forEach(t => {
+                        if (t.bundeslaender) {
+                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        }
+                    });
+                    return uniqueBundeslaender.size >= 9;
+                },
+                progress: (trips) => {
+                    const uniqueBundeslaender = new Set();
+                    trips.forEach(t => {
+                        if (t.bundeslaender) {
+                            t.bundeslaender.forEach(b => uniqueBundeslaender.add(b));
+                        }
+                    });
+                    return Math.min(9, uniqueBundeslaender.size);
+                },
+                total: 9
+            },
+            {
+                id: 'early_bird',
+                name: 'Frühaufsteher',
+                description: '10 Fahrten vor 6:00 Uhr',
+                icon: '🌅',
+                requirement: (trips) => trips.filter(t => {
+                    const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+                    if (time) {
+                        const hour = parseInt(time[1]);
+                        return hour < 6;
+                    }
+                    return false;
+                }).length >= 10,
+                progress: (trips) => {
+                    const count = trips.filter(t => {
+                        const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+                        if (time) {
+                            const hour = parseInt(time[1]);
+                            return hour < 6;
+                        }
+                        return false;
+                    }).length;
+                    return Math.min(10, count);
+                },
+                total: 10
+            },
+            {
+                id: 'night_owl',
+                name: 'Nachteule',
+                description: '10 Fahrten nach 22:00 Uhr',
+                icon: '🦉',
+                requirement: (trips) => trips.filter(t => {
+                    const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+                    if (time) {
+                        const hour = parseInt(time[1]);
+                        return hour >= 22;
+                    }
+                    return false;
+                }).length >= 10,
+                progress: (trips) => {
+                    const count = trips.filter(t => {
+                        const time = t.notes && t.notes.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+                        if (time) {
+                            const hour = parseInt(time[1]);
+                            return hour >= 22;
+                        }
+                        return false;
+                    }).length;
+                    return Math.min(10, count);
+                },
+                total: 10
+            },
+            {
+                id: 'weekend_warrior',
+                name: 'Wochenend-Krieger',
+                description: '20 Fahrten am Wochenende',
+                icon: '🎉',
+                requirement: (trips) => trips.filter(t => {
+                    const date = new Date(t.date);
+                    const day = date.getDay();
+                    return day === 0 || day === 6;
+                }).length >= 20,
+                progress: (trips) => Math.min(20, trips.filter(t => {
+                    const date = new Date(t.date);
+                    const day = date.getDay();
+                    return day === 0 || day === 6;
+                }).length),
+                total: 20
+            },
+            {
+                id: 'first_savings',
+                name: 'Erste Einsparung',
+                description: 'Ticket amortisiert!',
+                icon: '💰',
+                requirement: (trips) => {
+                    const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
+                    return totalCost >= userTicketCost;
+                },
+                progress: (trips) => {
+                    const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
+                    return Math.min(userTicketCost, totalCost);
+                },
+                total: userTicketCost
+            },
+            {
+                id: 'eco_champion',
+                name: 'Klima-Champion',
+                description: '500€ an Einsparungen',
+                icon: '🌱',
+                requirement: (trips) => {
+                    const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
+                    return totalCost - userTicketCost >= 500;
+                },
+                progress: (trips) => {
+                    const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
+                    const savings = totalCost - userTicketCost;
+                    return Math.min(500, Math.max(0, savings));
+                },
+                total: 500
+            },
+            {
+                id: 'century_club',
+                name: 'Öffi-Profi',
+                description: '100 Fahrten gesamt',
+                icon: '💯',
+                requirement: (trips) => trips.filter(t => isValidTrip(t)).length >= 100,
+                progress: (trips) => Math.min(100, trips.filter(t => isValidTrip(t)).length),
+                total: 100
+            }
+        ];
 
         // Initialize Supabase
         try {
@@ -1851,6 +2146,7 @@
                 updateOutOfRangeFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
+                updateAchievements(trips);
                 updateDaysRemaining();
             } catch (err) {
                 console.error('Load error:', err);
@@ -1860,6 +2156,7 @@
                 updateOutOfRangeFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
+                updateAchievements(trips);
             }
         }
 
@@ -3078,6 +3375,57 @@
                     toast.remove();
                 }, 300);
             }, 3000);
+        }
+
+        // Achievement functions
+        function updateAchievements(trips) {
+            const container = document.getElementById('achievementsGrid');
+            if (!container) return;
+
+            // Get previously unlocked achievements from localStorage
+            const unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+            const newlyUnlocked = [];
+
+            const html = ACHIEVEMENTS.map(achievement => {
+                const isUnlocked = achievement.requirement(trips);
+                const progress = achievement.progress(trips);
+                const wasUnlocked = unlockedAchievements.includes(achievement.id);
+
+                // Check if newly unlocked
+                if (isUnlocked && !wasUnlocked) {
+                    newlyUnlocked.push(achievement);
+                }
+
+                const progressPercent = (progress / achievement.total * 100).toFixed(0);
+                const progressText = isUnlocked 
+                    ? '✓ Erreicht!' 
+                    : `${progress}/${achievement.total} (${progressPercent}%)`;
+
+                return `
+                    <div class="badge ${isUnlocked ? 'unlocked' : 'locked'}" 
+                         title="${achievement.description}">
+                        <span class="badge-icon">${achievement.icon}</span>
+                        <div class="badge-name">${achievement.name}</div>
+                        <div class="badge-description">${achievement.description}</div>
+                        <div class="badge-progress">${progressText}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+
+            // Save newly unlocked achievements
+            if (newlyUnlocked.length > 0) {
+                const allUnlocked = [...unlockedAchievements, ...newlyUnlocked.map(a => a.id)];
+                localStorage.setItem('unlockedAchievements', JSON.stringify(allUnlocked));
+
+                // Show toast for each newly unlocked achievement
+                newlyUnlocked.forEach((achievement, index) => {
+                    setTimeout(() => {
+                        showToast(`🏆 Achievement freigeschaltet: ${achievement.name}!`, 'success');
+                    }, index * 500);
+                });
+            }
         }
 
         // Initial load
