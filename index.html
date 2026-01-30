@@ -989,7 +989,7 @@
                     showToast('⏳ E-Mail wird bestätigt...', 'success');
                     const { error } = await supabase.auth.verifyOtp({
                         token_hash: tokenHash,
-                        type: 'email_signup'
+                        type: 'email'
                     });
 
                     if (error) throw error;
