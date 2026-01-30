@@ -1395,6 +1395,20 @@
             }
         }
 
+        // Update filter button count
+        function updateNoBundeslandFilterCount(trips) {
+            const btn = document.getElementById('filterNoBundeslandBtn');
+            if (!btn) return;
+
+            const count = trips.filter(trip => !trip.bundeslaender || trip.bundeslaender.length === 0).length;
+            btn.dataset.count = String(count);
+            if (showOnlyNoBundesland) {
+                btn.textContent = `✓ Ohne Bundesland (${count})`;
+            } else {
+                btn.textContent = `🔍 Ohne Bundesland (${count})`;
+            }
+        }
+
         // Toggle filter for trips without Bundesland
         function toggleNoBundeslandFilter() {
             showOnlyNoBundesland = !showOnlyNoBundesland;
@@ -1402,11 +1416,11 @@
             if (showOnlyNoBundesland) {
                 btn.style.background = '#4caf50';
                 btn.style.color = 'white';
-                btn.textContent = '✓ Ohne Bundesland';
+                btn.textContent = `✓ Ohne Bundesland (${btn.dataset.count || 0})`;
             } else {
                 btn.style.background = '';
                 btn.style.color = '';
-                btn.textContent = '🔍 Ohne Bundesland';
+                btn.textContent = `🔍 Ohne Bundesland (${btn.dataset.count || 0})`;
             }
             loadData();
         }
@@ -1435,6 +1449,7 @@
                     trips = getLocalTrips();
                 }
 
+                updateNoBundeslandFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
                 updateDaysRemaining();
@@ -1442,6 +1457,7 @@
                 console.error('Load error:', err);
                 // Fallback to localStorage
                 const trips = getLocalTrips();
+                updateNoBundeslandFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
             }
