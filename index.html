@@ -1464,13 +1464,13 @@
             <button type="button" class="modal-close-btn" onclick="closeEditTripModal()" title="Close (ESC)">✕</button>
             <h2 id="editTripHeading" style="margin-bottom: 20px; color: var(--primary);">✏️ Edit Trip</h2>
             <form class="settings-form" onsubmit="submitEditTrip(event)">
-                <label for="editTripDate">Date:</label>
+                <label id="editTripDateLabel" for="editTripDate">Date:</label>
                 <input type="date" id="editTripDate" required>
                 
-                <label for="editTripRoute" style="margin-top: 12px;">Route:</label>
+                <label id="editTripRouteLabel" for="editTripRoute" style="margin-top: 12px;">Route:</label>
                 <input type="text" id="editTripRoute" placeholder="e.g. Salzburg - Vienna" required>
 
-                <label for="editTripStates" style="margin-top: 12px;">State(s):</label>
+                <label id="editTripStatesLabel" for="editTripStates" style="margin-top: 12px;">State(s):</label>
                 <select id="editTripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
                     <option value="Salzburg">Salzburg</option>
                     <option value="Wien">Wien</option>
@@ -1483,18 +1483,18 @@
                     <option value="Kärnten">Kärnten</option>
                 </select>
                 
-                <label for="editTripCost" style="margin-top: 12px;">Cost (EUR):</label>
+                <label id="editTripCostLabel" for="editTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
-                <label for="editTripDistance" style="margin-top: 12px;">Distance (km) - optional:</label>
+                <label id="editTripDistanceLabel" for="editTripDistance" style="margin-top: 12px;">Distance (km) - optional:</label>
                 <input type="number" id="editTripDistance" placeholder="e.g. 45" step="0.1" min="0">
                 
-                <label for="editTripNotes" style="margin-top: 12px;">Notes:</label>
+                <label id="editTripNotesLabel" for="editTripNotes" style="margin-top: 12px;">Notes:</label>
                 <input type="text" id="editTripNotes" placeholder="optional">
                 
                 <div class="modal-buttons">
-                    <button type="button" class="modal-btn-secondary" onclick="closeEditTripModal()">Cancel</button>
-                    <button type="submit" class="modal-btn-primary">Save</button>
+                    <button id="editTripCancelBtn" type="button" class="modal-btn-secondary" onclick="closeEditTripModal()">Cancel</button>
+                    <button id="editTripSaveBtn" type="submit" class="modal-btn-primary">Save</button>
                 </div>
             </form>
         </div>
@@ -1611,6 +1611,14 @@
                 editTripHeading: '✏️ Edit Trip',
                 quickButtonsTitle: '⚡ Quick Buttons:',
                 quickButtonsHelp: "Click a button to instantly add a trip (with today's date).",
+                editTripDateLabel: 'Date:',
+                editTripRouteLabel: 'Route:',
+                editTripStatesLabel: 'State(s):',
+                editTripCostLabel: 'Cost (EUR):',
+                editTripDistanceLabel: 'Distance (km) - optional:',
+                editTripNotesLabel: 'Notes:',
+                editTripCancelBtn: 'Cancel',
+                editTripSaveBtn: 'Save',
                 tripDateLabel: 'Date:',
                 tripRouteLabel: 'Route (e.g., Salzburg - Vienna):',
                 tripRoutePlaceholder: 'From - To',
@@ -1746,6 +1754,14 @@
                 editTripHeading: '✏️ Fahrt bearbeiten',
                 quickButtonsTitle: '⚡ Quick Buttons:',
                 quickButtonsHelp: 'Klick einen Button, um sofort eine Fahrt hinzuzufügen (mit heutigem Datum).',
+                editTripDateLabel: 'Datum:',
+                editTripRouteLabel: 'Route:',
+                editTripStatesLabel: 'Bundesland(er):',
+                editTripCostLabel: 'Kosten (EUR):',
+                editTripDistanceLabel: 'Distanz (km) - optional:',
+                editTripNotesLabel: 'Notiz:',
+                editTripCancelBtn: 'Abbrechen',
+                editTripSaveBtn: 'Speichern',
                 tripDateLabel: 'Datum:',
                 tripRouteLabel: 'Route (z.B. Salzburg - Wien):',
                 tripRoutePlaceholder: 'Von - Nach',
@@ -1980,6 +1996,14 @@
             setPlaceholder('quickTripNotes', t('quickTripNotesPlaceholder'));
             setText('quickAddCancelBtn', t('quickAddCancelBtn'));
             setText('quickAddSubmitBtn', t('quickAddSubmitBtn'));
+            setText('editTripDateLabel', t('editTripDateLabel'));
+            setText('editTripRouteLabel', t('editTripRouteLabel'));
+            setText('editTripStatesLabel', t('editTripStatesLabel'));
+            setText('editTripCostLabel', t('editTripCostLabel'));
+            setText('editTripDistanceLabel', t('editTripDistanceLabel'));
+            setText('editTripNotesLabel', t('editTripNotesLabel'));
+            setText('editTripCancelBtn', t('editTripCancelBtn'));
+            setText('editTripSaveBtn', t('editTripSaveBtn'));
 
             updateDaysRemaining();
             renderHeatmapMonth();
