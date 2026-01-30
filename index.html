@@ -1345,10 +1345,19 @@
                     <input type="number" id="tripCost" placeholder="5.00" step="0.01" min="0">
                 </div>
                 <div class="form-group">
+                    <label id="tripDistanceLabel" for="tripDistance">Distance (km) - optional:</label>
+                    <input type="number" id="tripDistance" placeholder="e.g. 45" step="0.1" min="0">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
                     <label id="tripNotesLabel" for="tripNotes">Notes:</label>
                     <input type="text" id="tripNotes" placeholder="optional">
                 </div>
             </div>
+
+            <p id="tripDistanceHelp" style="font-size: 12px; color: var(--text-secondary); margin-top: -8px; margin-bottom: 16px;">Approximate distance of your trip for accurate carbon calculation</p>
 
             <button id="saveTripBtn" class="btn-primary" onclick="addTrip()" style="width: 100%;">
                 ➕ Save trip
@@ -1475,6 +1484,9 @@
                 
                 <label for="editTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
+                
+                <label for="editTripDistance" style="margin-top: 12px;">Distance (km) - optional:</label>
+                <input type="number" id="editTripDistance" placeholder="e.g. 45" step="0.1" min="0">
                 
                 <label for="editTripNotes" style="margin-top: 12px;">Notes:</label>
                 <input type="text" id="editTripNotes" placeholder="optional">
@@ -1727,6 +1739,9 @@
                 tripCostLabel: 'Kosten ohne Ticket (EUR):',
                 tripNotesLabel: 'Notiz:',
                 tripNotesPlaceholder: 'optional',
+                tripDistanceLabel: 'Distanz (km) - optional:',
+                tripDistancePlaceholder: 'z.B. 45',
+                tripDistanceHelp: 'Ungefähre Entfernung deiner Fahrt für genaue CO₂-Berechnung',
                 saveTripBtn: '➕ Fahrt speichern',
                 backupHeading: '💾 Datensicherung',
                 backupSubtitle: 'Exportiere Deine Daten als JSON oder CSV für Backup.',
@@ -1894,6 +1909,9 @@
             setText('tripStatesLabel', t('tripStatesLabel'));
             setText('tripStatesHelp', t('tripStatesHelp'));
             setText('tripCostLabel', t('tripCostLabel'));
+            setText('tripDistanceLabel', t('tripDistanceLabel'));
+            setPlaceholder('tripDistance', t('tripDistancePlaceholder'));
+            setText('tripDistanceHelp', t('tripDistanceHelp'));
             setText('tripNotesLabel', t('tripNotesLabel'));
             setPlaceholder('tripNotes', t('tripNotesPlaceholder'));
             setText('saveTripBtn', t('saveTripBtn'));
@@ -2766,6 +2784,7 @@
             const date = document.getElementById('tripDate').value;
             const route = document.getElementById('tripRoute').value.trim();
             const cost = parseFloat(document.getElementById('tripCost').value);
+            const distance = document.getElementById('tripDistance').value.trim() ? parseFloat(document.getElementById('tripDistance').value) : null;
             const notes = document.getElementById('tripNotes').value.trim();
             
             // Get selected states
@@ -2781,6 +2800,7 @@
                 date,
                 route,
                 cost: parseFloat(cost.toFixed(2)),
+                distance: distance,
                 notes,
                 states: states.length > 0 ? states : ['Salzburg']
             };
@@ -2807,6 +2827,7 @@
                 // Clear form
                 document.getElementById('tripRoute').value = '';
                 document.getElementById('tripCost').value = '';
+                document.getElementById('tripDistance').value = '';
                 document.getElementById('tripNotes').value = '';
                 document.getElementById('tripDate').value = today;
 
@@ -3015,6 +3036,7 @@
             document.getElementById('editTripDate').value = trip.date;
             document.getElementById('editTripRoute').value = trip.route;
             document.getElementById('editTripCost').value = trip.cost;
+            document.getElementById('editTripDistance').value = trip.distance || '';
             document.getElementById('editTripNotes').value = trip.notes || '';
             
             // Load states
@@ -3046,6 +3068,7 @@
             const date = document.getElementById('editTripDate').value;
             const route = document.getElementById('editTripRoute').value.trim();
             const cost = parseFloat(document.getElementById('editTripCost').value);
+            const distance = document.getElementById('editTripDistance').value.trim() ? parseFloat(document.getElementById('editTripDistance').value) : null;
             const notes = document.getElementById('editTripNotes').value.trim();
             
             // Get selected states
@@ -3061,6 +3084,7 @@
                 date,
                 route,
                 cost: parseFloat(cost.toFixed(2)),
+                distance: distance,
                 notes,
                 states: states.length > 0 ? states : ['Salzburg']
             };
@@ -3168,9 +3192,13 @@
             plane: 0.285             // kg CO₂ per km (per seat)
         };
 
-        // Estimate distance per route (conservative estimate: 40-60km average)
-        function estimateDistance(route) {
-            // Simple heuristic: count commas + 1 as number of segments, estimate 50km per segment
+        // Estimate distance per route or use provided distance
+        function estimateDistance(route, providedDistance) {
+            // If distance is provided, use it
+            if (providedDistance && providedDistance > 0) {
+                return parseFloat(providedDistance);
+            }
+            // Otherwise use heuristic: count commas + 1 as number of segments, estimate 50km per segment
             const segments = (route.match(/,/g) || []).length + 1;
             return Math.max(30, segments * 50 + Math.random() * 30);
         }
@@ -3190,7 +3218,7 @@
             // Calculate CO₂ per trip
             let totalCarbon = 0;
             validTrips.forEach(trip => {
-                const distance = estimateDistance(trip.route);
+                const distance = estimateDistance(trip.route, trip.distance);
                 const carbon = distance * CARBON_CONFIG.publicTransport;
                 totalCarbon += carbon;
             });
