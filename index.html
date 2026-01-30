@@ -1201,8 +1201,8 @@
 
         <!-- Austria states overview -->
         <div class="card">
-            <h2>🗺️ States Overview</h2>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Trips per state</p>
+            <h2 id="statesOverviewHeading">🗺️ States Overview</h2>
+            <p id="statesOverviewSubtitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Trips per state</p>
             
             <div id="austriaStatesContainer" class="state-map-container">
                 <div id="statesGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
@@ -1597,7 +1597,9 @@
                 noTripsTitle: 'No trips',
                 tripTitle: 'trip',
                 tripsTitle: 'trips',
-                outOfRangeShort: 'out of range'
+                outOfRangeShort: 'out of range',
+                statesOverviewHeading: '🗺️ States Overview',
+                statesOverviewSubtitle: 'Trips per state'
             },
             de: {
                 appTitle: '🚆 Klimaticket Rechner',
@@ -1678,7 +1680,9 @@
                 noTripsTitle: 'Keine Fahrten',
                 tripTitle: 'Fahrt',
                 tripsTitle: 'Fahrten',
-                outOfRangeShort: 'außerhalb'
+                outOfRangeShort: 'außerhalb',
+                statesOverviewHeading: '🗺️ Bundesländer-Übersicht',
+                statesOverviewSubtitle: 'Fahrten pro Bundesland'
             }
         };
 
@@ -1732,6 +1736,8 @@
             setText('validityLabel', t('validityLabel'));
             setText('tripCountLabel', t('tripCountLabel'));
             setText('totalCostLabel', t('totalCostLabel'));
+            setText('statesOverviewHeading', t('statesOverviewHeading'));
+            setText('statesOverviewSubtitle', t('statesOverviewSubtitle'));
             setText('achievementsSubtitle', t('achievementsSubtitle'));
             setText('yearOverviewHeading', t('yearOverviewHeading'));
             setText('yearOverviewSubtitle', t('yearOverviewSubtitle'));
@@ -1786,14 +1792,57 @@
             updateDaysRemaining();
             renderHeatmapMonth();
             renderYearOverview();
+            
+            // Re-render achievements with new language
+            const trips = allTripsForHeatmap || [];
+            updateAchievements(trips);
         }
 
         // Achievement definitions
+        const ACHIEVEMENT_TRANSLATIONS = {
+            en: {
+                obus_fan: { name: 'Obus Fan', description: '20 trips with the Obus' },
+                s_bahn_pro: { name: 'S-Bahn Pro', description: '50 trips with the S-Bahn' },
+                state_hopper: { name: 'State Hopper', description: '10 cross-state trips' },
+                salzburg_local: { name: 'Salzburg Local Hero', description: '100 trips in Salzburg' },
+                austria_explorer: { name: 'Austria Explorer', description: 'Visit 5 different states' },
+                austria_master: { name: 'Austria Master', description: 'Visit all 9 states' },
+                route_collector: { name: 'Route Collector', description: '15 unique routes' },
+                month_champion: { name: 'Monthly Champion', description: 'Trips in 6 different months' },
+                weekend_warrior: { name: 'Weekend Warrior', description: '20 weekend trips' },
+                first_savings: { name: 'First Break-Even', description: 'Ticket paid off!' },
+                eco_champion: { name: 'Climate Champion', description: '€500 in savings' },
+                century_club: { name: 'Transit Pro', description: '100 trips total' }
+            },
+            de: {
+                obus_fan: { name: 'Obus-Fan', description: '20 Fahrten mit dem Obus' },
+                s_bahn_pro: { name: 'S-Bahn Profi', description: '50 Fahrten mit der S-Bahn' },
+                state_hopper: { name: 'Bundesland-Hopper', description: '10 bundeslandübergreifende Fahrten' },
+                salzburg_local: { name: 'Salzburg Lokalheld', description: '100 Fahrten in Salzburg' },
+                austria_explorer: { name: 'Österreich-Explorer', description: 'Besuche 5 verschiedene Bundesländer' },
+                austria_master: { name: 'Österreich-Meister', description: 'Besuche alle 9 Bundesländer' },
+                route_collector: { name: 'Strecken-Sammler', description: '15 unterschiedliche Routen' },
+                month_champion: { name: 'Monats-Champion', description: 'Fahrten in 6 verschiedenen Monaten' },
+                weekend_warrior: { name: 'Wochenend-Krieger', description: '20 Fahrten am Wochenende' },
+                first_savings: { name: 'Erste Einsparung', description: 'Ticket amortisiert!' },
+                eco_champion: { name: 'Klima-Champion', description: '500€ an Einsparungen' },
+                century_club: { name: 'Öffi-Profi', description: '100 Fahrten gesamt' }
+            }
+        };
+
+        function getAchievementName(id) {
+            const translations = ACHIEVEMENT_TRANSLATIONS[currentLanguage] || ACHIEVEMENT_TRANSLATIONS.en;
+            return translations[id]?.name || id;
+        }
+
+        function getAchievementDescription(id) {
+            const translations = ACHIEVEMENT_TRANSLATIONS[currentLanguage] || ACHIEVEMENT_TRANSLATIONS.en;
+            return translations[id]?.description || '';
+        }
+
         const ACHIEVEMENTS = [
             {
                 id: 'obus_fan',
-                name: 'Obus Fan',
-                description: '20 trips with the Obus',
                 icon: '🚎',
                 requirement: (trips) => trips.filter(t => t.route && t.route.toLowerCase().includes('obus')).length >= 20,
                 progress: (trips) => Math.min(20, trips.filter(t => t.route && t.route.toLowerCase().includes('obus')).length),
@@ -1801,8 +1850,6 @@
             },
             {
                 id: 's_bahn_pro',
-                name: 'S-Bahn Pro',
-                description: '50 trips with the S-Bahn',
                 icon: '🚈',
                 requirement: (trips) => trips.filter(t => t.route && t.route.toLowerCase().includes('s-bahn')).length >= 50,
                 progress: (trips) => Math.min(50, trips.filter(t => t.route && t.route.toLowerCase().includes('s-bahn')).length),
@@ -1810,8 +1857,6 @@
             },
             {
                 id: 'state_hopper',
-                name: 'State Hopper',
-                description: '10 cross-state trips',
                 icon: '🗺️',
                 requirement: (trips) => trips.filter(t => t.states && t.states.length > 1).length >= 10,
                 progress: (trips) => Math.min(10, trips.filter(t => t.states && t.states.length > 1).length),
@@ -1819,8 +1864,6 @@
             },
             {
                 id: 'salzburg_local',
-                name: 'Salzburg Local Hero',
-                description: '100 trips in Salzburg',
                 icon: '🏔️',
                 requirement: (trips) => trips.filter(t => t.states && t.states.includes('Salzburg')).length >= 100,
                 progress: (trips) => Math.min(100, trips.filter(t => t.states && t.states.includes('Salzburg')).length),
@@ -1828,8 +1871,6 @@
             },
             {
                 id: 'austria_explorer',
-                name: 'Austria Explorer',
-                description: 'Visit 5 different states',
                 icon: '🇦🇹',
                 requirement: (trips) => {
                     const uniqueStates = new Set();
@@ -1853,8 +1894,6 @@
             },
             {
                 id: 'austria_master',
-                name: 'Austria Master',
-                description: 'Visit all 9 states',
                 icon: '👑',
                 requirement: (trips) => {
                     const uniqueStates = new Set();
@@ -1878,8 +1917,6 @@
             },
             {
                 id: 'route_collector',
-                name: 'Route Collector',
-                description: '15 unique routes',
                 icon: '🧭',
                 requirement: (trips) => {
                     const uniqueRoutes = new Set();
@@ -1903,8 +1940,6 @@
             },
             {
                 id: 'month_champion',
-                name: 'Monthly Champion',
-                description: 'Trips in 6 different months',
                 icon: '🗓️',
                 requirement: (trips) => {
                     const uniqueMonths = new Set();
@@ -1930,8 +1965,6 @@
             },
             {
                 id: 'weekend_warrior',
-                name: 'Weekend Warrior',
-                description: '20 weekend trips',
                 icon: '🎉',
                 requirement: (trips) => trips.filter(t => {
                     const date = new Date(t.date);
@@ -1947,8 +1980,6 @@
             },
             {
                 id: 'first_savings',
-                name: 'First Break-Even',
-                description: 'Ticket paid off!',
                 icon: '💰',
                 requirement: (trips) => {
                     const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
@@ -1962,8 +1993,6 @@
             },
             {
                 id: 'eco_champion',
-                name: 'Climate Champion',
-                description: '€500 in savings',
                 icon: '🌱',
                 requirement: (trips) => {
                     const totalCost = trips.filter(t => isValidTrip(t)).reduce((sum, t) => sum + t.cost, 0);
@@ -1978,8 +2007,6 @@
             },
             {
                 id: 'century_club',
-                name: 'Transit Pro',
-                description: '100 trips total',
                 icon: '💯',
                 requirement: (trips) => trips.filter(t => isValidTrip(t)).length >= 100,
                 progress: (trips) => Math.min(100, trips.filter(t => isValidTrip(t)).length),
@@ -3735,17 +3762,19 @@
                     newlyUnlocked.push(achievement);
                 }
 
+                const achievementName = getAchievementName(achievement.id);
+                const achievementDesc = getAchievementDescription(achievement.id);
                 const progressPercent = (progress / achievement.total * 100).toFixed(0);
                 const progressText = isUnlocked 
-                    ? '✓ Unlocked!' 
+                    ? '✓ ' + (currentLanguage === 'de' ? 'Erreicht!' : 'Unlocked!')
                     : `${progress}/${achievement.total} (${progressPercent}%)`;
 
                 return `
                     <div class="badge ${isUnlocked ? 'unlocked' : 'locked'}" 
-                         title="${achievement.description}">
+                         title="${achievementDesc}">
                         <span class="badge-icon">${achievement.icon}</span>
-                        <div class="badge-name">${achievement.name}</div>
-                        <div class="badge-description">${achievement.description}</div>
+                        <div class="badge-name">${achievementName}</div>
+                        <div class="badge-description">${achievementDesc}</div>
                         <div class="badge-progress">${progressText}</div>
                     </div>
                 `;
@@ -3761,7 +3790,11 @@
                 // Show toast for each newly unlocked achievement
                 newlyUnlocked.forEach((achievement, index) => {
                     setTimeout(() => {
-                        showToast(`🏆 Achievement unlocked: ${achievement.name}!`, 'success');
+                        const achievementName = getAchievementName(achievement.id);
+                        const message = currentLanguage === 'de' 
+                            ? `🏆 Achievement freigeschaltet: ${achievementName}!`
+                            : `🏆 Achievement unlocked: ${achievementName}!`;
+                        showToast(message, 'success');
                     }, index * 500);
                 });
             }
