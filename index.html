@@ -1217,7 +1217,7 @@
 
         <!-- Achievements/Badges -->
         <div class="card">
-            <h2>🏆 Achievements</h2>
+            <h2 id="achievementsHeading">🏆 Achievements</h2>
             <p id="achievementsSubtitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Your transit achievements</p>
             
             <div id="achievementsGrid" class="achievements-grid">
@@ -1537,6 +1537,7 @@
                 totalCostLabel: 'Total cost (without ticket)',
                 savingsLabelPositive: 'Savings with Klimaticket',
                 savingsLabelNegative: 'Remaining travel costs',
+                achievementsHeading: '🏆 Achievements',
                 achievementsSubtitle: 'Your transit achievements',
                 yearOverviewHeading: '📅 Year Overview',
                 yearOverviewSubtitle: 'Trips and costs by month',
@@ -1599,7 +1600,9 @@
                 tripsTitle: 'trips',
                 outOfRangeShort: 'out of range',
                 statesOverviewHeading: '🗺️ States Overview',
-                statesOverviewSubtitle: 'Trips per state'
+                statesOverviewSubtitle: 'Trips per state',
+                savingsSummaryPositive: '✅ Congrats! You save €{amount} with the Klimaticket.',
+                savingsSummaryNegative: '⚠️ You still need €{amount} in trips to break even.'
             },
             de: {
                 appTitle: '🚆 Klimaticket Rechner',
@@ -1620,6 +1623,7 @@
                 totalCostLabel: 'Gesamtkosten (ohne Ticket)',
                 savingsLabelPositive: 'Ersparnis mit Klimaticket',
                 savingsLabelNegative: 'Noch benötigte Fahrkosten',
+                achievementsHeading: '🏆 Erfolge',
                 achievementsSubtitle: 'Deine Öffi-Erfolge',
                 yearOverviewHeading: '📅 Jahresübersicht',
                 yearOverviewSubtitle: 'Fahrten und Kosten nach Monat',
@@ -1682,7 +1686,9 @@
                 tripsTitle: 'Fahrten',
                 outOfRangeShort: 'außerhalb',
                 statesOverviewHeading: '🗺️ Bundesländer-Übersicht',
-                statesOverviewSubtitle: 'Fahrten pro Bundesland'
+                statesOverviewSubtitle: 'Fahrten pro Bundesland',
+                savingsSummaryPositive: '✅ Glückwunsch! Du sparst €{amount} mit dem Klimaticket.',
+                savingsSummaryNegative: '⚠️ Du brauchst noch €{amount} an Fahrten, um das Ticket auszugleichen.'
             }
         };
 
@@ -1738,6 +1744,7 @@
             setText('totalCostLabel', t('totalCostLabel'));
             setText('statesOverviewHeading', t('statesOverviewHeading'));
             setText('statesOverviewSubtitle', t('statesOverviewSubtitle'));
+            setText('achievementsHeading', t('achievementsHeading'));
             setText('achievementsSubtitle', t('achievementsSubtitle'));
             setText('yearOverviewHeading', t('yearOverviewHeading'));
             setText('yearOverviewSubtitle', t('yearOverviewSubtitle'));
@@ -3025,12 +3032,12 @@
             const savingsLabel = document.getElementById('savingsLabel');
             const savingsBox = document.querySelector('.stat-savings');
             if (savings >= 0) {
-                savingsLabel.textContent = 'Savings with Klimaticket';
+                savingsLabel.textContent = t('savingsLabelPositive');
                 if (savingsBox) {
                     savingsBox.classList.remove('negative');
                 }
             } else {
-                savingsLabel.textContent = 'Remaining travel costs';
+                savingsLabel.textContent = t('savingsLabelNegative');
                 if (savingsBox) {
                     savingsBox.classList.add('negative');
                 }
@@ -3047,11 +3054,13 @@
                 }
             } else if (savings >= 0) {
                 if (summaryEl) {
-                    summaryEl.textContent = `✅ Congrats! You save €${Math.abs(savings).toFixed(2)} with the Klimaticket.`;
+                    const amount = Math.abs(savings).toFixed(2);
+                    summaryEl.textContent = t('savingsSummaryPositive').replace('{amount}', amount);
                 }
             } else {
                 if (summaryEl) {
-                    summaryEl.textContent = `⚠️ You still need €${Math.abs(savings).toFixed(2)} in trips to break even.`;
+                    const amount = Math.abs(savings).toFixed(2);
+                    summaryEl.textContent = t('savingsSummaryNegative').replace('{amount}', amount);
                 }
             }
 
@@ -3765,9 +3774,12 @@
                 const achievementName = getAchievementName(achievement.id);
                 const achievementDesc = getAchievementDescription(achievement.id);
                 const progressPercent = (progress / achievement.total * 100).toFixed(0);
+                const isMoneyProgress = achievement.id === 'first_savings' || achievement.total === userTicketCost;
+                const progressValue = isMoneyProgress ? progress.toFixed(2) : progress;
+                const totalValue = isMoneyProgress ? achievement.total.toFixed(2) : achievement.total;
                 const progressText = isUnlocked 
                     ? '✓ ' + (currentLanguage === 'de' ? 'Erreicht!' : 'Unlocked!')
-                    : `${progress}/${achievement.total} (${progressPercent}%)`;
+                    : `${progressValue}/${totalValue} (${progressPercent}%)`;
 
                 return `
                     <div class="badge ${isUnlocked ? 'unlocked' : 'locked'}" 
