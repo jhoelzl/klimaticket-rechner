@@ -1217,7 +1217,7 @@
                     .from('user_settings')
                     .select('ticket_cost, start_date, end_date')
                     .eq('user_id', currentUser.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (data) {
                     userTicketCost = data.ticket_cost;
