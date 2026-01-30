@@ -3395,7 +3395,7 @@
 
             const year = currentHeatmapDate.getFullYear();
             const month = currentHeatmapDate.getMonth();
-            const monthName = currentHeatmapDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+            const monthName = currentHeatmapDate.toLocaleDateString(getLocale(), { month: 'long', year: 'numeric' });
             heatmapMonthTitle.textContent = monthName;
 
             // Get all days in month
