@@ -1686,6 +1686,12 @@
         }
 
         // Display trips
+        // Check if trip is within validity range
+        function isValidTrip(trip) {
+            const tripDate = new Date(trip.date + 'T00:00:00');
+            return tripDate >= userStartDate && tripDate <= userEndDate;
+        }
+
         function displayTrips(trips) {
             const tripsList = document.getElementById('tripsList');
             
@@ -1696,10 +1702,14 @@
 
             const sorted = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            tripsList.innerHTML = sorted.map(trip => `
-                <div class="trip-item">
+            tripsList.innerHTML = sorted.map(trip => {
+                const valid = isValidTrip(trip);
+                const badge = valid ? '' : '<span style="display: inline-block; background: #f44336; color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;">⚠️ Außerhalb</span>';
+                
+                return `
+                <div class="trip-item" style="${valid ? '' : 'opacity: 0.6; background: #fff5f5;'}">
                     <div class="trip-info">
-                        <div class="trip-date">${formatDate(trip.date)}</div>
+                        <div class="trip-date">${formatDate(trip.date)}${badge}</div>
                         <div><strong>${trip.route}</strong></div>
                         ${trip.notes ? `<div style="font-size: 12px; color: #666;">${trip.notes}</div>` : ''}
                     </div>
@@ -1709,22 +1719,25 @@
                         <button class="trip-delete" onclick="deleteTrip(${trip.id})">✕</button>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         // Update stats
         function updateStats(trips) {
-            const totalCost = trips.reduce((sum, trip) => sum + trip.cost, 0);
+            // Filter only valid trips (within validity range)
+            const validTrips = trips.filter(trip => isValidTrip(trip));
+            const totalCost = validTrips.reduce((sum, trip) => sum + trip.cost, 0);
             const savings = totalCost - userTicketCost;
             const progressPercent = Math.min(100, (totalCost / userTicketCost) * 100);
 
-            document.getElementById('tripCount').textContent = trips.length;
+            document.getElementById('tripCount').textContent = validTrips.length;
             document.getElementById('totalCost').textContent = '€' + totalCost.toFixed(2);
             document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
             document.getElementById('progressFill').style.width = progressPercent + '%';
 
             const messageEl = document.getElementById('message');
-            if (trips.length === 0) {
+            if (validTrips.length === 0) {
                 messageEl.classList.add('hidden');
             } else if (savings >= 0) {
                 messageEl.className = 'message positive';
@@ -1735,7 +1748,7 @@
             }
 
             // Generate heatmap
-            generateHeatmap(trips);
+            generateHeatmap(validTrips);
         }
 
         // Update days remaining
