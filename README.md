@@ -24,7 +24,12 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 - 🔐 **Authentifizierung** - Email-basiertes Login mit Supabase Auth
 
 ### 🎨 UX/UI
-- 🌓 **Dunkler Modus** - Automatische System-Erkennung und manueller Toggle
+- 🌓 **Dunkler Modus** - Vollständig implementiert mit:
+  - 🔄 Automatische System-Erkennung (prefers-color-scheme)
+  - 🎛️ Manueller Toggle in Einstellungen
+  - 💾 Speicherung der Benutzer-Präferenz
+  - ✨ Sanfte Übergänge zwischen Themes
+  - 🎨 Optimierte Farben für bessere Lesbarkeit
 - ⚡ **Quick-Add Buttons** - Schnell Fahrten hinzufügen (pre-configured Routen)
 - 🖱️ **Trip-Details Tooltip** - Hover über Kalender-Tage für Trip-Infos
 - 🔍 **Filter & Suche** - Nach Strecke, Bundesland, Datum filtern
@@ -35,7 +40,7 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 - 💶 **Ticketpreis anpassen** - Dynamische Kostenberechnung
 - 📅 **Gültigkeitsdatum einstellen** - Von/Bis Datum für Ticket-Validität
 - ⏰ **Automatische Berechnung** - Verbleibende Tage bis Ablauf
-- 🌓 **Dark Mode Settings** - Toggle in Einstellungen mit Auto-Detect
+- 🌓 **Dark Mode** - Toggle-Switch in Einstellungen mit automatischer System-Erkennung
 
 ---
 
