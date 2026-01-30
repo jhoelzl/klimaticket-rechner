@@ -1211,6 +1211,10 @@
             <div class="stats stats-overview">
                 <div class="stats-column stats-average">
                     <div class="stat-box">
+                        <div class="label" id="averageCostLabel">Average cost per trip</div>
+                        <div class="value" id="averageCost">€0.00</div>
+                    </div>
+                    <div class="stat-box">
                         <div class="label" id="averageKmLabel">Average per trip</div>
                         <div class="value" id="averageKm">0 km</div>
                     </div>
@@ -1634,6 +1638,7 @@
                 tripCountLabel: 'Trip count',
                 totalCostLabel: 'Total cost (without ticket)',
                 totalKmLabel: 'Total distance',
+                averageCostLabel: 'Average cost per trip',
                 averageKmLabel: 'Average per trip',
                 savingsLabelPositive: 'Savings with Klimaticket',
                 savingsLabelNegative: 'Remaining travel costs',
@@ -1785,6 +1790,7 @@
                 tripCountLabel: 'Anzahl Fahrten',
                 totalCostLabel: 'Gesamtkosten (ohne Ticket)',
                 totalKmLabel: 'Gesamtdistanz',
+                averageCostLabel: 'Ø Kosten pro Fahrt',
                 averageKmLabel: 'Ø pro Fahrt',
                 savingsLabelPositive: 'Ersparnis mit Klimaticket',
                 savingsLabelNegative: 'Noch benötigte Fahrkosten',
@@ -1972,6 +1978,7 @@
             setText('tripCountLabel', t('tripCountLabel'));
             setText('totalCostLabel', t('totalCostLabel'));
             setText('totalKmLabel', t('totalKmLabel'));
+            setText('averageCostLabel', t('averageCostLabel'));
             setText('averageKmLabel', t('averageKmLabel'));
             setText('statesOverviewHeading', t('statesOverviewHeading'));
             setText('statesOverviewSubtitle', t('statesOverviewSubtitle'));
@@ -3450,6 +3457,7 @@
             const validTrips = trips.filter(trip => isValidTrip(trip));
             const totalCost = validTrips.reduce((sum, trip) => sum + trip.cost, 0);
             const totalKm = validTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
+            const averageCost = validTrips.length > 0 ? totalCost / validTrips.length : 0;
             const averageKm = validTrips.length > 0 ? totalKm / validTrips.length : 0;
             const savings = totalCost - userTicketCost;
             const progressPercent = Math.min(100, (totalCost / userTicketCost) * 100);
@@ -3457,6 +3465,7 @@
             document.getElementById('tripCount').textContent = validTrips.length;
             document.getElementById('totalCost').textContent = '€' + totalCost.toFixed(2);
             document.getElementById('totalKm').textContent = totalKm.toFixed(1) + ' km';
+            document.getElementById('averageCost').textContent = '€' + averageCost.toFixed(2);
             document.getElementById('averageKm').textContent = averageKm.toFixed(1) + ' km';
             document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
             document.getElementById('progressFill').style.width = progressPercent + '%';
