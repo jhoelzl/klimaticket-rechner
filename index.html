@@ -306,6 +306,10 @@
             background: linear-gradient(135deg, var(--success), #66bb6a) !important;
         }
 
+        .stat-savings.negative {
+            background: linear-gradient(135deg, #e53935, #ef5350) !important;
+        }
+
         .stat-savings .value {
             font-size: 32px;
         }
@@ -1997,10 +2001,17 @@
 
             // Update label based on savings status
             const savingsLabel = document.getElementById('savingsLabel');
+            const savingsBox = document.querySelector('.stat-savings');
             if (savings >= 0) {
                 savingsLabel.textContent = 'Ersparnis mit Klimaticket';
+                if (savingsBox) {
+                    savingsBox.classList.remove('negative');
+                }
             } else {
                 savingsLabel.textContent = 'Noch benötigte Fahrkosten';
+                if (savingsBox) {
+                    savingsBox.classList.add('negative');
+                }
             }
 
             const messageEl = document.getElementById('message');
