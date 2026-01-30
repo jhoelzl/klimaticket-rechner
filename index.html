@@ -1612,7 +1612,7 @@
                 statesOverviewHeading: '🗺️ States Overview',
                 statesOverviewSubtitle: 'Trips per state',
                 savingsSummaryPositive: '✅ Congrats! You save €{amount} with the Klimaticket.',
-                savingsSummaryNegative: '⚠️ You still need €{amount} in trips to break even.',
+                savingsSummaryNegative: '⚠️ You still need this amount in trips to break even.',
                 pdfTitle: 'Klimaticket Summary',
                 pdfStatistics: 'Statistics',
                 pdfTotalTrips: 'Total trips: {count}',
@@ -1730,7 +1730,7 @@
                 statesOverviewHeading: '🗺️ Bundesländer-Übersicht',
                 statesOverviewSubtitle: 'Fahrten pro Bundesland',
                 savingsSummaryPositive: '✅ Glückwunsch! Du sparst €{amount} mit dem Klimaticket.',
-                savingsSummaryNegative: '⚠️ Du brauchst noch €{amount} an Fahrten, um das Ticket auszugleichen.',
+                savingsSummaryNegative: '⚠️ Du brauchst noch diese Summe an Fahrten, um das Ticket auszugleichen.',
                 pdfTitle: 'Klimaticket Zusammenfassung',
                 pdfStatistics: 'Statistiken',
                 pdfTotalTrips: 'Gesamte Fahrten: {count}',
@@ -3144,7 +3144,7 @@
             } else {
                 if (summaryEl) {
                     const amount = Math.abs(savings).toFixed(2);
-                    summaryEl.textContent = t('savingsSummaryNegative').replace('{amount}', amount);
+                    summaryEl.textContent = t('savingsSummaryNegative');
                 }
             }
 
