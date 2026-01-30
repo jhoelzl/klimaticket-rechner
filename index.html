@@ -4028,7 +4028,7 @@
                 
                 const monthStats = {};
                 const monthNames = Array.from({ length: 12 }, (_, index) => new Date(currentYearView, index, 1).toLocaleDateString(locale, { month: 'short' }));
-                for (let i = 0; i < 12; i++) monthStats[i] = { trips: 0, cost: 0 };
+                for (let i = 0; i < 12; i++) monthStats[i] = { trips: 0, cost: 0, km: 0 };
                 
                 trips.forEach(trip => {
                     const tripDate = new Date(trip.date);
@@ -4036,6 +4036,7 @@
                         const month = tripDate.getMonth();
                         monthStats[month].trips++;
                         monthStats[month].cost += trip.cost;
+                        monthStats[month].km += trip.distance || 0;
                     }
                 });
                 
@@ -4043,8 +4044,10 @@
                 doc.setFont(undefined, 'normal');
                 for (let i = 0; i < 12; i++) {
                     const monthCost = monthStats[i].cost;
+                    const monthKm = monthStats[i].km;
                     const costText = monthCost > 0 ? ` (EUR ${monthCost.toFixed(2)})` : '';
-                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} ${t('pdfTripsWord')}${costText}`, 20, yPos);
+                    const kmText = monthKm > 0 ? ` | ${Math.round(monthKm)} km` : '';
+                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} ${t('pdfTripsWord')}${costText}${kmText}`, 20, yPos);
                     yPos += 5;
                 }
                 yPos += 7;
