@@ -743,4 +743,4 @@ function initApp() {
     checkAuth();
 }
 
-initApp();
+window.initApp = initApp;
