@@ -1685,7 +1685,7 @@
                 tripNotesLabel: 'Notes (optional):',
                 tripNotesPlaceholder: 'optional',
                 tripDistanceLabel: 'Distance (km) (optional):',
-                tripDistancePlaceholder: 'e.g. 45',
+                tripDistancePlaceholder: '100',
                 saveTripBtn: '➕ Save trip',
                 backupHeading: '💾 Backup',
                 backupSubtitle: 'Export your data as JSON or CSV for backup.',
@@ -1764,7 +1764,7 @@
                 quickTripStatesLabel: 'State(s):',
                 quickTripCostLabel: 'Cost (EUR):',
                 quickTripDistanceLabel: 'Distance (km) (optional):',
-                quickTripDistancePlaceholder: 'e.g. 45',
+                quickTripDistancePlaceholder: '100',
                 quickTripDistanceHelp: 'Approximate distance for accurate CO₂ calculation',
                 quickTripNotesLabel: 'Notes (optional):',
                 quickTripNotesPlaceholder: 'optional',
@@ -1839,7 +1839,7 @@
                 tripNotesLabel: 'Notiz (optional):',
                 tripNotesPlaceholder: 'optional',
                 tripDistanceLabel: 'Distanz (km) (optional):',
-                tripDistancePlaceholder: 'z.B. 45',
+                tripDistancePlaceholder: '100',
                 tripDistanceHelp: 'Ungefähre Entfernung deiner Fahrt für genaue CO₂-Berechnung',
                 saveTripBtn: '➕ Fahrt speichern',
                 backupHeading: '💾 Datensicherung',
@@ -1919,7 +1919,7 @@
                 quickTripStatesLabel: 'Bundesland(er):',
                 quickTripCostLabel: 'Kosten (EUR):',
                 quickTripDistanceLabel: 'Distanz (km) (optional):',
-                quickTripDistancePlaceholder: 'z.B. 45',
+                quickTripDistancePlaceholder: '100',
                 quickTripDistanceHelp: 'Ungefähre Entfernung für genaue CO₂-Berechnung',
                 quickTripNotesLabel: 'Notiz (optional):',
                 quickTripNotesPlaceholder: 'optional',
@@ -3482,10 +3482,10 @@
 
             document.getElementById('tripCount').textContent = validTrips.length;
             document.getElementById('totalCost').textContent = '€' + totalCost.toFixed(2);
-            document.getElementById('totalKm').textContent = totalKm.toFixed(1) + ' km';
+            document.getElementById('totalKm').textContent = totalKm.toFixed(0) + ' km';
             document.getElementById('averageTripsPerMonth').textContent = averageTripsPerMonth.toFixed(1);
             document.getElementById('averageCost').textContent = '€' + averageCost.toFixed(2);
-            document.getElementById('averageKm').textContent = averageKm.toFixed(1) + ' km';
+            document.getElementById('averageKm').textContent = averageKm.toFixed(0) + ' km';
             document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
             document.getElementById('progressFill').style.width = progressPercent + '%';
 
@@ -4012,8 +4012,8 @@
                 yPos += 7;
                 const totalKm = validTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
                 const averageKm = validTrips.length > 0 ? totalKm / validTrips.length : 0;
-                doc.text(formatText('pdfTotalKm', { km: totalKm.toFixed(1) }), 20, yPos);
-                doc.text(formatText('pdfAverageKm', { km: averageKm.toFixed(1) }), 110, yPos);
+                doc.text(formatText('pdfTotalKm', { km: totalKm.toFixed(0) }), 20, yPos);
+                doc.text(formatText('pdfAverageKm', { km: averageKm.toFixed(0) }), 110, yPos);
                 yPos += 10;
 
                 // Ticket Validity
