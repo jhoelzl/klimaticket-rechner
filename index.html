@@ -1196,6 +1196,14 @@
                     <div class="label" id="totalCostLabel">Total cost (without ticket)</div>
                     <div class="value" id="totalCost">0€</div>
                 </div>
+                <div class="stat-box">
+                    <div class="label" id="totalKmLabel">Total distance</div>
+                    <div class="value" id="totalKm">0 km</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label" id="averageKmLabel">Average per trip</div>
+                    <div class="value" id="averageKm">0 km</div>
+                </div>
                 <div class="stat-box stat-savings">
                     <div class="label" id="savingsLabel">Savings with Klimaticket</div>
                     <div class="value" id="savings">0€</div>
@@ -1594,13 +1602,16 @@
                 validityLabel: 'Validity',
                 tripCountLabel: 'Trip count',
                 totalCostLabel: 'Total cost (without ticket)',
+                totalKmLabel: 'Total distance',
+                averageKmLabel: 'Average per trip',
                 savingsLabelPositive: 'Savings with Klimaticket',
                 savingsLabelNegative: 'Remaining travel costs',
                 achievementsHeading: '🏆 Achievements',
                 achievementsSubtitle: 'Your transit achievements',
                 yearOverviewHeading: '📅 Year Overview',
                 yearOverviewSubtitle: 'Trips and costs by month',
-                tripsHeading: '📋 Your Trips',
+                yearOverviewKmSubtitle: 'Trips, costs, and distances by month',
+                topRoutesHeading: 'Top 10 Routes',
                 filterNoState: '🔍 Without state',
                 filterNoStateActive: '✓ Without state',
                 filterOutOfRange: '⚠️ Out of range',
@@ -1689,6 +1700,8 @@
                 pdfRemaining: 'Remaining: {days} days',
                 pdfMonthlyOverview: 'Monthly overview {year}',
                 pdfTopRoutes: 'Top 10 Routes',
+                pdfTotalKm: 'Total distance: {km} km',
+                pdfAverageKm: 'Average per trip: {km} km',
                 pdfStates: 'States',
                 pdfTripsWord: 'trips',
                 pdfPageOf: 'Page {page} of {total}',
@@ -1737,13 +1750,16 @@
                 validityLabel: 'Gültigkeit',
                 tripCountLabel: 'Anzahl Fahrten',
                 totalCostLabel: 'Gesamtkosten (ohne Ticket)',
+                totalKmLabel: 'Gesamtdistanz',
+                averageKmLabel: 'Ø pro Fahrt',
                 savingsLabelPositive: 'Ersparnis mit Klimaticket',
                 savingsLabelNegative: 'Noch benötigte Fahrkosten',
                 achievementsHeading: '🏆 Erfolge',
                 achievementsSubtitle: 'Deine Öffi-Erfolge',
                 yearOverviewHeading: '📅 Jahresübersicht',
                 yearOverviewSubtitle: 'Fahrten und Kosten nach Monat',
-                tripsHeading: '📋 Deine Fahrten',
+                yearOverviewKmSubtitle: 'Fahrten, Kosten und Distanzen nach Monat',
+                topRoutesHeading: 'Top 10 Strecken',
                 filterNoState: '🔍 Ohne Bundesland',
                 filterNoStateActive: '✓ Ohne Bundesland',
                 filterOutOfRange: '⚠️ Außerhalb',
@@ -1835,6 +1851,8 @@
                 pdfRemaining: 'Verbleibend: {days} Tage',
                 pdfMonthlyOverview: 'Monatsübersicht {year}',
                 pdfTopRoutes: 'Top 10 Strecken',
+                pdfTotalKm: 'Gesamtdistanz: {km} km',
+                pdfAverageKm: 'Ø pro Fahrt: {km} km',
                 pdfStates: 'Bundesländer',
                 pdfTripsWord: 'Fahrten',
                 pdfPageOf: 'Seite {page} von {total}',
@@ -1918,6 +1936,8 @@
             setText('validityLabel', t('validityLabel'));
             setText('tripCountLabel', t('tripCountLabel'));
             setText('totalCostLabel', t('totalCostLabel'));
+            setText('totalKmLabel', t('totalKmLabel'));
+            setText('averageKmLabel', t('averageKmLabel'));
             setText('statesOverviewHeading', t('statesOverviewHeading'));
             setText('statesOverviewSubtitle', t('statesOverviewSubtitle'));
             setText('carbonTrackingTitle', t('carbonTrackingTitle'));
@@ -3394,11 +3414,15 @@
             // Filter only valid trips (within validity range)
             const validTrips = trips.filter(trip => isValidTrip(trip));
             const totalCost = validTrips.reduce((sum, trip) => sum + trip.cost, 0);
+            const totalKm = validTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
+            const averageKm = validTrips.length > 0 ? totalKm / validTrips.length : 0;
             const savings = totalCost - userTicketCost;
             const progressPercent = Math.min(100, (totalCost / userTicketCost) * 100);
 
             document.getElementById('tripCount').textContent = validTrips.length;
             document.getElementById('totalCost').textContent = '€' + totalCost.toFixed(2);
+            document.getElementById('totalKm').textContent = totalKm.toFixed(1) + ' km';
+            document.getElementById('averageKm').textContent = averageKm.toFixed(1) + ' km';
             document.getElementById('savings').textContent = '€' + Math.abs(savings).toFixed(2);
             document.getElementById('progressFill').style.width = progressPercent + '%';
 
@@ -3561,7 +3585,7 @@
             
             // Initialize all months
             for (let i = 0; i < 12; i++) {
-                monthStats[i] = { trips: 0, cost: 0, validTrips: 0 };
+                monthStats[i] = { trips: 0, cost: 0, km: 0, validTrips: 0 };
             }
 
             // Count trips per month
@@ -3571,6 +3595,7 @@
                     const month = tripDate.getMonth();
                     monthStats[month].trips++;
                     monthStats[month].cost += trip.cost;
+                    monthStats[month].km += trip.distance || 0;
                     if (isValidTrip(trip)) {
                         monthStats[month].validTrips++;
                     }
@@ -3599,6 +3624,7 @@
                         <div class="month-name">${monthNames[i]}</div>
                         <div class="month-trips">${stats.trips}</div>
                         <div class="month-cost">€${stats.cost.toFixed(2)}</div>
+                        <div class="month-km">${stats.km.toFixed(1)} km</div>
                         <div class="month-bar">
                             <div class="month-bar-fill" style="width: ${barWidth}%"></div>
                         </div>
@@ -3638,14 +3664,19 @@
             let content = `<div class="trip-tooltip-header">${dateStr}</div>`;
             
             if (validTrips.length > 0) {
+                const totalKm = validTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
                 validTrips.forEach(trip => {
                     content += `
                         <div class="trip-tooltip-item">
                             <span class="trip-tooltip-route">${trip.route}</span>
                             <span class="trip-tooltip-cost">€${trip.cost.toFixed(2)}</span>
+                            ${trip.distance ? `<span class="trip-tooltip-km">${trip.distance.toFixed(1)} km</span>` : ''}
                         </div>
                     `;
                 });
+                if (validTrips.length > 1) {
+                    content += `<div class="trip-tooltip-summary">Total: ${totalKm.toFixed(1)} km</div>`;
+                }
             }
             
             if (invalidTrips.length > 0) {
@@ -3654,6 +3685,7 @@
                         <div class="trip-tooltip-item trip-tooltip-invalid">
                             <span class="trip-tooltip-route">${trip.route} ⚠️</span>
                             <span class="trip-tooltip-cost">€${trip.cost.toFixed(2)}</span>
+                            ${trip.distance ? `<span class="trip-tooltip-km">${trip.distance.toFixed(1)} km</span>` : ''}
                         </div>
                     `;
                 });
@@ -3897,6 +3929,11 @@
                 doc.text(formatText('pdfSavings', { amount: savings.toFixed(2) }), 20, yPos);
                 doc.setTextColor(0, 0, 0);
                 doc.setFont(undefined, 'normal');
+                yPos += 7;
+                const totalKm = validTrips.reduce((sum, trip) => sum + (trip.distance || 0), 0);
+                const averageKm = validTrips.length > 0 ? totalKm / validTrips.length : 0;
+                doc.text(formatText('pdfTotalKm', { km: totalKm.toFixed(1) }), 20, yPos);
+                doc.text(formatText('pdfAverageKm', { km: averageKm.toFixed(1) }), 110, yPos);
                 yPos += 10;
 
                 // Ticket Validity
@@ -3948,10 +3985,11 @@
                 const routeStats = {};
                 validTrips.forEach(trip => {
                     if (!routeStats[trip.route]) {
-                        routeStats[trip.route] = { count: 0, cost: 0 };
+                        routeStats[trip.route] = { count: 0, cost: 0, km: 0 };
                     }
                     routeStats[trip.route].count++;
                     routeStats[trip.route].cost += trip.cost;
+                    routeStats[trip.route].km += trip.distance || 0;
                 });
                 
                 const topRoutes = Object.entries(routeStats)
@@ -3972,7 +4010,7 @@
                             yPos = 20;
                         }
                         const routeText = `${idx + 1}. ${route}`;
-                        const statsText = `${stats.count}x (EUR ${stats.cost.toFixed(2)})`;
+                        const statsText = `${stats.count}x | EUR ${stats.cost.toFixed(2)} | ${stats.km.toFixed(1)} km`;
                         doc.text(routeText, 20, yPos);
                         doc.text(statsText, 170, yPos, { align: 'right' });
                         yPos += 6;
