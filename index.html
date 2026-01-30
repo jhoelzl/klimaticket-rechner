@@ -1460,10 +1460,10 @@
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
             <button type="button" class="modal-close-btn" onclick="closeQuickAddModal()" title="Close (ESC)">✕</button>
-            <h2 style="margin-bottom: 20px; color: var(--primary);">⚡ Add Trip - <span id="quickAddDate"></span></h2>
+            <h2 style="margin-bottom: 20px; color: var(--primary);"><span id="quickAddTitle">⚡ Add Trip</span> - <span id="quickAddDate"></span></h2>
             
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 14px; color: #666; margin-bottom: 12px;"><strong>Quick Buttons:</strong></label>
+                <label id="quickAddQuickButtonsLabel" style="display: block; font-size: 14px; color: #666; margin-bottom: 12px;"><strong>Quick Buttons:</strong></label>
                 <div class="quick-buttons">
                     <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.60, 'S-Bahn Sbg')">
                         🚇 S-Bahn Sbg<br>(€3.60)
@@ -1477,10 +1477,10 @@
             <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border);">
 
             <form class="settings-form" onsubmit="submitCustomQuickAddTrip(event)">
-                <label for="quickTripRoute">Route (optional):</label>
+                <label id="quickTripRouteLabel" for="quickTripRoute">Route (optional):</label>
                 <input type="text" id="quickTripRoute" placeholder="e.g. Salzburg - Vienna">
 
-                <label for="quickTripStates" style="margin-top: 12px;">State(s):</label>
+                <label id="quickTripStatesLabel" for="quickTripStates" style="margin-top: 12px;">State(s):</label>
                 <select id="quickTripStates" multiple style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
                     <option value="Salzburg" selected>Salzburg</option>
                     <option value="Wien">Wien</option>
@@ -1493,15 +1493,15 @@
                     <option value="Kärnten">Kärnten</option>
                 </select>
                 
-                <label for="quickTripCost" style="margin-top: 12px;">Cost (EUR):</label>
+                <label id="quickTripCostLabel" for="quickTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
-                <label for="quickTripNotes" style="margin-top: 12px;">Notes (optional):</label>
+                <label id="quickTripNotesLabel" for="quickTripNotes" style="margin-top: 12px;">Notes (optional):</label>
                 <input type="text" id="quickTripNotes" placeholder="optional">
                 
                 <div class="modal-buttons" style="margin-top: 20px;">
-                    <button type="button" class="modal-btn-secondary" onclick="closeQuickAddModal()">Cancel</button>
-                    <button type="submit" class="modal-btn-primary">Add</button>
+                    <button id="quickAddCancelBtn" type="button" class="modal-btn-secondary" onclick="closeQuickAddModal()">Cancel</button>
+                    <button id="quickAddSubmitBtn" type="submit" class="modal-btn-primary">Add</button>
                 </div>
             </form>
         </div>
@@ -1634,7 +1634,17 @@
                 pdfCreatedWith: 'Created with Klimaticket Calculator',
                 pdfFilename: 'klimaticket-summary-{date}.pdf',
                 pdfSaveSuccess: '✅ PDF created successfully!',
-                pdfExportFailed: '❌ PDF export failed: {error}'
+                pdfExportFailed: '❌ PDF export failed: {error}',
+                quickAddTitle: '⚡ Add Trip',
+                quickAddQuickButtonsLabel: 'Quick Buttons:',
+                quickTripRouteLabel: 'Route (optional):',
+                quickTripRoutePlaceholder: 'e.g. Salzburg - Vienna',
+                quickTripStatesLabel: 'State(s):',
+                quickTripCostLabel: 'Cost (EUR):',
+                quickTripNotesLabel: 'Notes (optional):',
+                quickTripNotesPlaceholder: 'optional',
+                quickAddCancelBtn: 'Cancel',
+                quickAddSubmitBtn: 'Add'
             },
             de: {
                 appTitle: '🚆 Klimaticket Rechner',
@@ -1742,7 +1752,17 @@
                 pdfCreatedWith: 'Erstellt mit Klimaticket Rechner',
                 pdfFilename: 'klimaticket-zusammenfassung-{date}.pdf',
                 pdfSaveSuccess: '✅ PDF erfolgreich erstellt!',
-                pdfExportFailed: '❌ PDF Export fehlgeschlagen: {error}'
+                pdfExportFailed: '❌ PDF Export fehlgeschlagen: {error}',
+                quickAddTitle: '⚡ Fahrt hinzufügen',
+                quickAddQuickButtonsLabel: 'Quick Buttons:',
+                quickTripRouteLabel: 'Route (optional):',
+                quickTripRoutePlaceholder: 'z.B. Salzburg - Wien',
+                quickTripStatesLabel: 'Bundesland(er):',
+                quickTripCostLabel: 'Kosten (EUR):',
+                quickTripNotesLabel: 'Notiz (optional):',
+                quickTripNotesPlaceholder: 'optional',
+                quickAddCancelBtn: 'Abbrechen',
+                quickAddSubmitBtn: 'Hinzufügen'
             }
         };
 
@@ -1849,6 +1869,16 @@
             setText('endDateHelp', t('endDateHelp'));
             setText('settingsCancelBtn', t('settingsCancelBtn'));
             setText('settingsSaveBtn', t('settingsSaveBtn'));
+            setText('quickAddTitle', t('quickAddTitle'));
+            setText('quickAddQuickButtonsLabel', t('quickAddQuickButtonsLabel'));
+            setText('quickTripRouteLabel', t('quickTripRouteLabel'));
+            setPlaceholder('quickTripRoute', t('quickTripRoutePlaceholder'));
+            setText('quickTripStatesLabel', t('quickTripStatesLabel'));
+            setText('quickTripCostLabel', t('quickTripCostLabel'));
+            setText('quickTripNotesLabel', t('quickTripNotesLabel'));
+            setPlaceholder('quickTripNotes', t('quickTripNotesPlaceholder'));
+            setText('quickAddCancelBtn', t('quickAddCancelBtn'));
+            setText('quickAddSubmitBtn', t('quickAddSubmitBtn'));
 
             updateDaysRemaining();
             renderHeatmapMonth();
@@ -3140,7 +3170,7 @@
         function formatDate(dateStr) {
             const date = new Date(dateStr + 'T00:00:00');
             const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-GB', options);
+            return date.toLocaleDateString(getLocale(), options);
         }
 
         // Generate heatmap for single month
