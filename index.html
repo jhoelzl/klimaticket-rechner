@@ -1612,7 +1612,29 @@
                 statesOverviewHeading: '🗺️ States Overview',
                 statesOverviewSubtitle: 'Trips per state',
                 savingsSummaryPositive: '✅ Congrats! You save €{amount} with the Klimaticket.',
-                savingsSummaryNegative: '⚠️ You still need €{amount} in trips to break even.'
+                savingsSummaryNegative: '⚠️ You still need €{amount} in trips to break even.',
+                pdfTitle: 'Klimaticket Summary',
+                pdfStatistics: 'Statistics',
+                pdfTotalTrips: 'Total trips: {count}',
+                pdfValidTrips: 'Valid trips: {count}',
+                pdfOutOfRange: 'Out of range: {count}',
+                pdfTicketCost: 'Ticket cost: EUR {amount}',
+                pdfTotalCostWithoutTicket: 'Total cost without ticket: EUR {amount}',
+                pdfSavings: 'Savings: EUR {amount}',
+                pdfValidity: 'Validity',
+                pdfFrom: 'From: {date}',
+                pdfTo: 'To: {date}',
+                pdfTotalDuration: 'Total duration: {days} days',
+                pdfRemaining: 'Remaining: {days} days',
+                pdfMonthlyOverview: 'Monthly overview {year}',
+                pdfTopRoutes: 'Top 10 Routes',
+                pdfStates: 'States',
+                pdfTripsWord: 'trips',
+                pdfPageOf: 'Page {page} of {total}',
+                pdfCreatedWith: 'Created with Klimaticket Calculator',
+                pdfFilename: 'klimaticket-summary-{date}.pdf',
+                pdfSaveSuccess: '✅ PDF created successfully!',
+                pdfExportFailed: '❌ PDF export failed: {error}'
             },
             de: {
                 appTitle: '🚆 Klimaticket Rechner',
@@ -1698,7 +1720,29 @@
                 statesOverviewHeading: '🗺️ Bundesländer-Übersicht',
                 statesOverviewSubtitle: 'Fahrten pro Bundesland',
                 savingsSummaryPositive: '✅ Glückwunsch! Du sparst €{amount} mit dem Klimaticket.',
-                savingsSummaryNegative: '⚠️ Du brauchst noch €{amount} an Fahrten, um das Ticket auszugleichen.'
+                savingsSummaryNegative: '⚠️ Du brauchst noch €{amount} an Fahrten, um das Ticket auszugleichen.',
+                pdfTitle: 'Klimaticket Zusammenfassung',
+                pdfStatistics: 'Statistiken',
+                pdfTotalTrips: 'Gesamte Fahrten: {count}',
+                pdfValidTrips: 'Gültige Fahrten: {count}',
+                pdfOutOfRange: 'Außerhalb: {count}',
+                pdfTicketCost: 'Ticketkosten: EUR {amount}',
+                pdfTotalCostWithoutTicket: 'Gesamtkosten ohne Ticket: EUR {amount}',
+                pdfSavings: 'Ersparnis: EUR {amount}',
+                pdfValidity: 'Gültigkeit',
+                pdfFrom: 'Von: {date}',
+                pdfTo: 'Bis: {date}',
+                pdfTotalDuration: 'Gesamtdauer: {days} Tage',
+                pdfRemaining: 'Verbleibend: {days} Tage',
+                pdfMonthlyOverview: 'Monatsübersicht {year}',
+                pdfTopRoutes: 'Top 10 Strecken',
+                pdfStates: 'Bundesländer',
+                pdfTripsWord: 'Fahrten',
+                pdfPageOf: 'Seite {page} von {total}',
+                pdfCreatedWith: 'Erstellt mit Klimaticket Rechner',
+                pdfFilename: 'klimaticket-zusammenfassung-{date}.pdf',
+                pdfSaveSuccess: '✅ PDF erfolgreich erstellt!',
+                pdfExportFailed: '❌ PDF Export fehlgeschlagen: {error}'
             }
         };
 
@@ -3470,6 +3514,14 @@
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
+                const locale = getLocale();
+                const formatText = (key, values = {}) => {
+                    let text = t(key);
+                    Object.entries(values).forEach(([placeholder, value]) => {
+                        text = text.replace(`{${placeholder}}`, value);
+                    });
+                    return text;
+                };
                 
                 // Get all trips
                 let trips = [];
@@ -3492,10 +3544,10 @@
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(24);
                 doc.setFont(undefined, 'bold');
-                doc.text('Klimaticket Summary', 105, 20, { align: 'center' });
+                doc.text(t('pdfTitle'), 105, 20, { align: 'center' });
                 doc.setFontSize(12);
                 doc.setFont(undefined, 'normal');
-                doc.text(new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }), 105, 30, { align: 'center' });
+                doc.text(new Date().toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' }), 105, 30, { align: 'center' });
                 
                 // Reset text color
                 doc.setTextColor(0, 0, 0);
@@ -3504,22 +3556,22 @@
                 // Key Statistics
                 doc.setFontSize(16);
                 doc.setFont(undefined, 'bold');
-                doc.text('Statistics', 20, yPos);
+                doc.text(t('pdfStatistics'), 20, yPos);
                 yPos += 10;
                 
                 doc.setFontSize(11);
                 doc.setFont(undefined, 'normal');
-                doc.text(`Total trips: ${trips.length}`, 20, yPos);
-                doc.text(`Valid trips: ${validTrips.length}`, 110, yPos);
+                doc.text(formatText('pdfTotalTrips', { count: trips.length }), 20, yPos);
+                doc.text(formatText('pdfValidTrips', { count: validTrips.length }), 110, yPos);
                 yPos += 7;
-                doc.text(`Out of range: ${invalidTrips.length}`, 20, yPos);
+                doc.text(formatText('pdfOutOfRange', { count: invalidTrips.length }), 20, yPos);
                 yPos += 7;
-                doc.text(`Ticket cost: EUR ${userTicketCost.toFixed(2)}`, 20, yPos);
-                doc.text(`Total cost without ticket: EUR ${totalCost.toFixed(2)}`, 110, yPos);
+                doc.text(formatText('pdfTicketCost', { amount: userTicketCost.toFixed(2) }), 20, yPos);
+                doc.text(formatText('pdfTotalCostWithoutTicket', { amount: totalCost.toFixed(2) }), 110, yPos);
                 yPos += 7;
                 doc.setFont(undefined, 'bold');
                 doc.setTextColor(savings >= 0 ? 76 : 244, savings >= 0 ? 175 : 67, savings >= 0 ? 80 : 54);
-                doc.text(`Savings: EUR ${savings.toFixed(2)}`, 20, yPos);
+                doc.text(formatText('pdfSavings', { amount: savings.toFixed(2) }), 20, yPos);
                 doc.setTextColor(0, 0, 0);
                 doc.setFont(undefined, 'normal');
                 yPos += 10;
@@ -3527,27 +3579,27 @@
                 // Ticket Validity
                 doc.setFontSize(16);
                 doc.setFont(undefined, 'bold');
-                doc.text('Validity', 20, yPos);
+                doc.text(t('pdfValidity'), 20, yPos);
                 yPos += 10;
                 doc.setFontSize(11);
                 doc.setFont(undefined, 'normal');
-                doc.text(`From: ${userStartDate.toLocaleDateString('en-GB')}`, 20, yPos);
-                doc.text(`To: ${userEndDate.toLocaleDateString('en-GB')}`, 110, yPos);
+                doc.text(formatText('pdfFrom', { date: userStartDate.toLocaleDateString(locale) }), 20, yPos);
+                doc.text(formatText('pdfTo', { date: userEndDate.toLocaleDateString(locale) }), 110, yPos);
                 yPos += 7;
                 const daysTotal = Math.ceil((userEndDate - userStartDate) / (1000 * 60 * 60 * 24));
                 const daysRemaining = Math.ceil((userEndDate - new Date()) / (1000 * 60 * 60 * 24));
-                doc.text(`Total duration: ${daysTotal} days`, 20, yPos);
-                doc.text(`Remaining: ${daysRemaining} days`, 110, yPos);
+                doc.text(formatText('pdfTotalDuration', { days: daysTotal }), 20, yPos);
+                doc.text(formatText('pdfRemaining', { days: daysRemaining }), 110, yPos);
                 yPos += 12;
 
                 // Monthly Breakdown
                 doc.setFontSize(16);
                 doc.setFont(undefined, 'bold');
-                doc.text('Monthly overview ' + currentYearView, 20, yPos);
+                doc.text(formatText('pdfMonthlyOverview', { year: currentYearView }), 20, yPos);
                 yPos += 10;
                 
                 const monthStats = {};
-                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const monthNames = Array.from({ length: 12 }, (_, index) => new Date(currentYearView, index, 1).toLocaleDateString(locale, { month: 'short' }));
                 for (let i = 0; i < 12; i++) monthStats[i] = { trips: 0, cost: 0 };
                 
                 trips.forEach(trip => {
@@ -3584,7 +3636,7 @@
                 if (topRoutes.length > 0) {
                     doc.setFontSize(16);
                     doc.setFont(undefined, 'bold');
-                    doc.text('Top 10 Routes', 20, yPos);
+                    doc.text(t('pdfTopRoutes'), 20, yPos);
                     yPos += 10;
                     
                     doc.setFontSize(10);
@@ -3629,13 +3681,13 @@
                     }
                     doc.setFontSize(16);
                     doc.setFont(undefined, 'bold');
-                    doc.text('States', 20, yPos);
+                    doc.text(t('pdfStates'), 20, yPos);
                     yPos += 10;
                     
                     doc.setFontSize(10);
                     doc.setFont(undefined, 'normal');
                     visitedStates.forEach(([state, count]) => {
-                        doc.text(`${state}: ${count} trips`, 20, yPos);
+                        doc.text(`${state}: ${count} ${t('pdfTripsWord')}`, 20, yPos);
                         yPos += 6;
                     });
                 }
@@ -3646,16 +3698,17 @@
                     doc.setPage(i);
                     doc.setFontSize(8);
                     doc.setTextColor(150);
-                    doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: 'center' });
-                    doc.text('Created with Klimaticket Calculator', 105, 285, { align: 'center' });
+                    doc.text(formatText('pdfPageOf', { page: i, total: pageCount }), 105, 290, { align: 'center' });
+                    doc.text(t('pdfCreatedWith'), 105, 285, { align: 'center' });
                 }
                 
                 // Save PDF
-                doc.save(`klimaticket-summary-${new Date().toISOString().split('T')[0]}.pdf`);
-                showToast('✅ PDF created successfully!');
+                const fileDate = new Date().toISOString().split('T')[0];
+                doc.save(formatText('pdfFilename', { date: fileDate }));
+                showToast(t('pdfSaveSuccess'));
             } catch (err) {
                 console.error('PDF Export Error:', err);
-                showToast('❌ PDF export failed: ' + err.message, 'error');
+                showToast(formatText('pdfExportFailed', { error: err.message }), 'error');
             }
         }
 
