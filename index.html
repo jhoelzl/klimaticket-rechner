@@ -970,6 +970,12 @@
             background: var(--bg-color);
         }
 
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
         .state-icon {
             font-size: 28px;
             margin-bottom: 8px;
@@ -1096,6 +1102,10 @@
             .stats {
                 grid-template-columns: 1fr;
             }
+
+            .states-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @supports (padding: max(0px)) {
@@ -1205,7 +1215,7 @@
             <p id="statesOverviewSubtitle" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">Trips per state</p>
             
             <div id="austriaStatesContainer" class="state-map-container">
-                <div id="statesGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                <div id="statesGrid" class="states-grid">
                     <!-- Will be filled by JavaScript -->
                 </div>
             </div>
