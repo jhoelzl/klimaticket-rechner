@@ -698,7 +698,10 @@
         <header>
             <div class="header-top">
                 <h1>🚆 Klimaticket Rechner</h1>
-                <div id="authStatus" class="auth-status">⏳ Laden...</div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button onclick="reloadData()" id="reloadBtn" title="Daten aktualisieren" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px;">🔄</button>
+                    <div id="authStatus" class="auth-status">⏳ Laden...</div>
+                </div>
             </div>
             <p style="font-size: 16px; margin-bottom: 16px; opacity: 0.95;">Zahlt sich das Klimaticket für mich aus?</p>
             <div class="info-row">
@@ -997,6 +1000,52 @@
                 console.log('Service Worker registration failed:', err)
             );
         }
+
+        // Reload data function
+        async function reloadData() {
+            const reloadBtn = document.getElementById('reloadBtn');
+            reloadBtn.style.opacity = '0.5';
+            reloadBtn.style.transform = 'rotate(180deg)';
+            reloadBtn.style.transition = 'transform 0.6s ease';
+            
+            try {
+                await loadData();
+                showToast('✅ Daten aktualisiert!', 'success');
+            } catch (err) {
+                console.error('Reload error:', err);
+                showToast('❌ Fehler beim Aktualisieren', 'error');
+            } finally {
+                setTimeout(() => {
+                    reloadBtn.style.opacity = '1';
+                    reloadBtn.style.transform = 'rotate(0deg)';
+                }, 600);
+            }
+        }
+
+        // Pull-to-refresh functionality
+        let touchStartY = 0;
+        let isRefreshing = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                touchStartY = e.touches[0].clientY;
+            }
+        }, false);
+
+        document.addEventListener('touchmove', (e) => {
+            if (isRefreshing || window.scrollY !== 0) return;
+            
+            const touchY = e.touches[0].clientY;
+            const diff = touchY - touchStartY;
+
+            if (diff > 100 && !isRefreshing) {
+                isRefreshing = true;
+                reloadData();
+                setTimeout(() => {
+                    isRefreshing = false;
+                }, 2000);
+            }
+        }, false);
 
         // Check authentication status on page load
         async function checkAuth() {
