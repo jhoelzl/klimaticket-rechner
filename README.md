@@ -1,6 +1,6 @@
-# 🚆 Klimaticket Rechner
+# 🚆 Klimaticket Calculator
 
-Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und intelligente Statistiken für das österreichische Klimaticket.
+A complete web app to track trips, calculate costs, and visualize statistics for the Austrian Klimaticket.
 
 **Live Demo:** https://jhoelzl.github.io/klimaticket-rechner/
 
@@ -9,45 +9,45 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 ## ✨ Features
 
 ### 📊 Analytics & Reporting
-- 🔥 **Heatmap-Kalender** - Visualisiere deine Fahrten pro Tag mit Farbcodierung
-- 📅 **12-Monat Year Overview** - Alle Monate auf einen Blick mit Statistiken
-- 📈 **Monatliche Trends** - Fahrten und Kosten pro Monat
-- 🗺️ **Bundesland-Übersicht** - Emoji-basierte Karten aller 9 österreichischen Bundesländer
-- 📋 **Top 10 Strecken** - Deine häufigsten Routen mit Fahrtanzahl
-- 📄 **PDF-Export** - Professionelle Zusammenfassung mit allen Statistiken
-- 🏆 **Achievements-System** - 12 Austria-themed Badges (Obus-Fan, S-Bahn Profi, Bundesland-Hopper, etc.)
+- 🔥 **Heatmap calendar** – Visualize trips per day with intensity levels.
+- 📅 **12-month year overview** – All months at a glance with stats.
+- 📈 **Monthly trends** – Trips and costs by month.
+- 🗺️ **States overview** – Emoji cards for all 9 Austrian states.
+- 📋 **Top 10 routes** – Your most frequent routes.
+- 📄 **PDF export** – Professional summary with all statistics.
+- 🏆 **Achievements system** – 12 Austria-themed badges (Obus Fan, S-Bahn Pro, State Hopper, etc.)
 
 ### 💾 Data Management
-- ☁️ **Cloud-Sync mit Supabase** - Multi-Device Synchronisation
-- 📱 **Offline-Support** - Funktioniert auch ohne Internet (PWA)
-- 💾 **Lokale Fallbacks** - localStorage für anonym registrierte User
-- 📥 **JSON/CSV Export & Import** - Daten-Portabilität
-- 🔐 **Authentifizierung** - Email-basiertes Login mit Supabase Auth
+- ☁️ **Cloud sync with Supabase** – Multi-device synchronization.
+- 📱 **Offline support** – Works without internet (PWA).
+- 💾 **Local fallback** – localStorage for anonymous users.
+- 📥 **JSON/CSV export & import** – Data portability.
+- 🔐 **Authentication** – Email-based login via Supabase Auth.
 
 ### 🎨 UX/UI
-- � **Mehrsprachig** - Deutsch & English mit:
-  - 🔄 Automatische Browser-Sprachen-Erkennung
-  - 🎛️ Manueller Sprachwechsel in Einstellungen
-  - 💾 Speicherung der Sprach-Präferenz (Cloud & lokal)
-  - ✨ Vollständige Übersetzung aller UI-Elemente
-- 🌓 **Dunkler Modus** - Vollständig implementiert mit:
-  - 🔄 Automatische System-Erkennung (prefers-color-scheme)
-  - 🎛️ Manueller Toggle in Einstellungen
-  - 💾 Speicherung der Benutzer-Präferenz
-  - ✨ Sanfte Übergänge zwischen Themes
-  - 🎨 Optimierte Farben für bessere Lesbarkeit
-- ⚡ **Quick-Add Buttons** - Schnell Fahrten hinzufügen (pre-configured Routen)
-- 🖱️ **Trip-Details Tooltip** - Hover über Kalender-Tage für Trip-Infos
-- 🔍 **Filter & Suche** - Nach Strecke, Bundesland, Datum filtern
-- ✕ **Modale mit X-Button & ESC-Support** - Komfortable Modal-Bedienung
-- 📱 **Responsive Design** - Mobile-first, funktioniert auf allen Geräten
+- 🌐 **Multilingual** – English and German with:
+  - 🔄 Automatic browser language detection
+  - 🎛️ Manual language switching in settings
+  - 💾 Language preference storage (cloud & local)
+  - ✨ Full UI translation support
+- 🌓 **Dark mode** – Fully implemented with:
+  - 🔄 Automatic system detection (prefers-color-scheme)
+  - 🎛️ Manual toggle in settings
+  - 💾 User preference storage
+  - ✨ Smooth transitions between themes
+  - 🎨 Optimized colors for better readability
+- ⚡ **Quick-add buttons** – Add frequent trips instantly (pre-configured routes)
+- 🖱️ **Trip tooltip** – Hover on calendar days for trip details
+- 🔍 **Filters & search** – Filter by route, state, date
+- ✕ **Modal UX** – Close via X button or ESC key
+- 📱 **Responsive design** – Mobile-first, works on all devices
 
-### 🔧 Konfiguration
-- 🌐 **Spracheinstellung** - Deutsch oder English wählen
-- 💶 **Ticketpreis anpassen** - Dynamische Kostenberechnung
-- 📅 **Gültigkeitsdatum einstellen** - Von/Bis Datum für Ticket-Validität
-- ⏰ **Automatische Berechnung** - Verbleibende Tage bis Ablauf
-- 🌓 **Dark Mode** - Toggle-Switch in Einstellungen mit automatischer System-Erkennung
+### 🔧 Configuration
+- 🌐 **Language setting** – Choose between English and German
+- 💶 **Adjust ticket cost** – Dynamic savings calculation
+- 📅 **Set validity period** – Start/end dates for ticket validity
+- ⏰ **Automatic countdown** – Days remaining until expiry
+- 🌓 **Dark mode** – Toggle with automatic system detection
 
 ---
 
@@ -56,37 +56,37 @@ Eine vollständige Web-App zum Tracken von Bahnfahrten, Kostenberechnung und int
 ### Installation
 
 ```bash
-# Repository klonen
+# Clone the repository
 git clone https://github.com/jhoelzl/klimaticket-rechner.git
 cd klimaticket_rechner
 
-# Lokal mit Python starten
+# Start locally with Python
 python3 -m http.server 8000
 
-# Im Browser öffnen
+# Open in browser
 # http://localhost:8000
 ```
 
-### Als PWA installieren (iPhone/Android)
+### Install as PWA (iPhone/Android)
 
-1. **iPhone:** Safari → Share-Button → "Zum Home-Bildschirm"
-2. **Android:** Chrome → Menü → "App installieren"
-3. App funktioniert offline mit automatischem Cloud-Sync!
+1. **iPhone:** Safari → Share button → "Add to Home Screen"
+2. **Android:** Chrome → Menu → "Install app"
+3. App works offline with automatic cloud sync!
 
 ---
 
-## 🗄️ Datenbank-Struktur (Supabase)
+## 🗄️ Database Structure (Supabase)
 
-### trips Tabelle
+### trips table
 ```sql
 CREATE TABLE trips (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id UUID NOT NULL DEFAULT auth.uid(),
-  date TEXT NOT NULL,                    -- ISO-Format: YYYY-MM-DD
-  route TEXT NOT NULL,                   -- z.B. "Salzburg - Wien"
-  cost DECIMAL(10,2) NOT NULL,           -- Fahrtkosten in EUR
-  bundeslaender TEXT[] DEFAULT '{}',     -- Array: ['Salzburg', 'Wien']
-  notes TEXT,                            -- Optionale Notizen
+  date TEXT NOT NULL,                    -- ISO: YYYY-MM-DD
+  route TEXT NOT NULL,                   -- e.g. "Salzburg - Vienna"
+  cost DECIMAL(10,2) NOT NULL,           -- Cost in EUR
+  bundeslaender TEXT[] DEFAULT '{}',     -- States array
+  notes TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   CONSTRAINT fk_user FOREIGN KEY (user_id) 
@@ -97,14 +97,14 @@ CREATE INDEX idx_user_date ON trips(user_id, date);
 CREATE INDEX idx_user_route ON trips(user_id, route);
 ```
 
-### users Tabelle
+### users table
 ```sql
 CREATE TABLE users (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   ticket_cost DECIMAL(10,2) DEFAULT 1400.00,
   start_date DATE,
   end_date DATE,
-  language VARCHAR(5) DEFAULT 'en',      -- Spracheinstellung: 'en', 'de'
+  language VARCHAR(5) DEFAULT 'en',      -- Language preference: 'en', 'de'
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -116,7 +116,7 @@ CREATE TABLE users (
 ALTER TABLE trips ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
--- Trips: User können nur ihre eigenen sehen/ändern
+-- Trips: Users can only view/modify their own trips
 CREATE POLICY "Users can view own trips" ON trips FOR SELECT
   USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own trips" ON trips FOR INSERT
@@ -126,281 +126,268 @@ CREATE POLICY "Users can update own trips" ON trips FOR UPDATE
 CREATE POLICY "Users can delete own trips" ON trips FOR DELETE
   USING (auth.uid() = user_id);
 
--- Users: User können nur ihre eigenen Einstellungen sehen/ändern
+-- Users: Users can only view/modify their own settings
 CREATE POLICY "Users can manage own settings" ON users
   FOR ALL USING (auth.uid() = user_id);
 ```
 
 ---
 
-## 🔐 Authentifizierung
+## 🔐 Authentication
 
-### Mit Anmeldung (Cloud)
+### With Login (Cloud)
 ```
-1. "📧 Anmelden" Button klicken
-2. E-Mail eingeben
-3. Confirmation-Link aus E-Mail öffnen
-4. ✅ Fertig! Daten in Supabase gespeichert
-5. 📱 Multi-Device Sync aktiviert
+1. Click "📧 Sign in" button
+2. Enter email address
+3. Open confirmation link from email
+4. ✅ Done! Data stored in Supabase
+5. 📱 Multi-device sync enabled
 ```
 
-### Anonym (Lokal)
+### Anonymous (Local)
 ```
-1. App öffnen → Daten direkt eingeben
-2. 💾 Alles im Browser-Speicher (localStorage)
-3. 📥 Export/Import für Sicherung möglich
-4. ⚠️ Nicht zwischen Geräten sync
+1. Open the app
+2. Data stored directly in browser storage (localStorage)
+3. Export/Import available for backup
+4. ⚠️ No sync across devices
 ```
 
 ---
 
-## 🛠️ Supabase Setup (für Entwickler)
+## 🛠️ Supabase Setup (for Developers)
 
-### 1. Projekt erstellen
+### 1. Create a project
 ```
 https://supabase.com → Sign Up → New Project
-Region: Frankfurt (am nächsten)
-Passwort: Sicher wählen!
+Region: Frankfurt (closest to Austria)
+Password: Choose securely!
 ```
 
-### 2. Tabellen erstellen
-Supabase Dashboard → SQL Editor → Copy-Paste obige SQL
+### 2. Create tables
+Supabase Dashboard → SQL Editor → Copy-paste the SQL above
 
 ### 3. Environment Variables
 ```bash
-# .env.local (wird NICHT gepusht)
+# .env.local (NOT pushed to git)
 VITE_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR-ANON-KEY
 ```
 
-Findest du unter: Supabase Settings → API → Project URL + Publishable Key
+Find these at: Supabase Settings → API → Project URL + Publishable Key
 
-### 4. Email Templates anpassen (optional)
-Supabase Dashboard → Email Templates → Deine Branding hinzufügen
+### 4. Email templates (optional)
+Supabase Dashboard → Email Templates → Customize branding
 
 ---
 
-## 📁 Projekt-Struktur
+## 📁 Project Structure
 
 ```
 klimaticket_rechner/
-├── index.html              # Haupt-HTML mit eingebettetes CSS/JS
-├── manifest.json           # PWA Manifest
-├── sw.js                   # Service Worker (Offline-Support)
-├── README.md               # Diese Datei
-├── FEATURES.md             # Feature-Roadmap
+├── index.html              # Main HTML with embedded CSS/JS
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service Worker (offline support)
+├── README.md               # This file
+├── FEATURES.md             # Feature roadmap
 ├── .gitignore              # Git ignore file
-└── .env.example            # Environment Variables Template
+└── .env.example            # Environment variables template
 ```
 
-### Stack
-- **Frontend:** Vanilla HTML/CSS/JavaScript (keine Frameworks!)
+### Tech Stack
+- **Frontend:** Vanilla HTML/CSS/JavaScript (no frameworks!)
 - **Backend:** Supabase (PostgreSQL + Auth)
 - **Deployment:** GitHub Pages
 - **PWA:** Service Worker + Web Manifest
 
 ---
 
-## 📊 Funktions-Übersicht
+## 📊 Features Overview
 
-### Hauptseite
-- 🔥 Heatmap-Kalender (aktueller Monat)
-- 📅 Jahresübersicht (alle 12 Monate)
-- 🗺️ Bundesland-Übersicht mit Stats
-- 🏆 Achievements mit Progress-Tracking
-- 📋 Fahrtenliste mit Filtering
+### Homepage
+- 🔥 Heatmap calendar (current month)
+- 📅 Year overview (all 12 months)
+- 🗺️ States overview with statistics
+- 🏆 Achievements with progress tracking
+- 📋 Trip list with filtering
 
-### Achievements-System
-Das Achievement-System belohnt dich für deine Öffi-Nutzung mit 12 Austria-themed Badges:
+### Achievements System
+The achievement system rewards frequent public transport usage with 12 Austria-themed badges:
 
-**Salzburg & Austria Achievements:**
-- 🚎 **Obus-Fan** - 20 Fahrten mit dem Obus
-- 🚈 **S-Bahn Profi** - 50 Fahrten mit der S-Bahn
-- 🏔️ **Salzburg Lokalheld** - 100 Fahrten in Salzburg
-- 🇦🇹 **Österreich-Explorer** - Besuche 5 verschiedene Bundesländer
-- 👑 **Österreich-Meister** - Besuche alle 9 Bundesländer
-- 🗺️ **Bundesland-Hopper** - 10 bundeslandübergreifende Fahrten
+**Transit & Location Achievements:**
+- 🚎 **Obus Fan** – 20 trips with the Obus
+- 🚈 **S-Bahn Pro** – 50 trips with the S-Bahn
+- 🏔️ **Salzburg Local Hero** – 100 trips in Salzburg
+- 🇦🇹 **Austria Explorer** – Visit 5 different states
+- 👑 **Austria Master** – Visit all 9 states
+- 🗺️ **State Hopper** – 10 cross-state trips
 
-**Vielfalt & Regelmäßigkeit:**
-- 🧭 **Strecken-Sammler** - 15 unterschiedliche Routen
-- 🗓️ **Monats-Champion** - Fahrten in 6 verschiedenen Monaten
-- 🎉 **Wochenend-Krieger** - 20 Fahrten am Wochenende
+**Variety & Consistency:**
+- 🧭 **Route Collector** – 15 unique routes
+- 🗓️ **Monthly Champion** – Trips in 6 different months
+- 🎉 **Weekend Warrior** – 20 weekend trips
 
-**Einsparungs-Achievements:**
-- 💰 **Erste Einsparung** - Ticket amortisiert!
-- 🌱 **Klima-Champion** - 500€ an Einsparungen
-- 💯 **Öffi-Profi** - 100 Fahrten gesamt
+**Savings Achievements:**
+- 💰 **First Break-Even** – Ticket paid off!
+- 🌱 **Climate Champion** – €500 in savings
+- 💯 **Transit Pro** – 100 trips total
 
-Jedes Badge zeigt deinen Fortschritt an und wird mit einer Toast-Notification freigeschaltet!
+Each badge shows your progress and unlocks with a toast notification!
 
-### Zusatzfunktionen
-- ⚡ Quick-Add Buttons (häufige Routes)
-- ✏️ Edit Trip Modal für Nachbearbeitung
-- 📊 PDF-Export (komplette Zusammenfassung)
-- 📥 JSON/CSV Import & Export
-- ⚙️ Settings für Ticket-Konfiguration
-
----
-
-## 🎯 Verwendungsbeispiele
-
-### Szenario 1: Fahrt schnell erfassen
-```
-1. "⚡ Quick Buttons" klicken
-2. Z.B. "S-Bahn Sbg (3,60€)"
-3. ✅ Fertig - Fahrt mit heutigem Datum hinzugefügt
-```
-
-### Szenario 2: Einzelne Fahrt bearbeiten
-```
-1. In Fahrtenliste auf Fahrt klicken
-2. ✏️ Edit Trip Modal öffnet sich
-3. Daten ändern → Speichern
-```
-
-### Szenario 3: Statistiken ansehen
-```
-1. 🔥 Heatmap → Täglich Fahrten sehen
-2. 📅 Jahresübersicht → Monatstrends
-3. 🗺️ Bundesländer → Welche Bundesländer am meisten?
-```
-
-### Szenario 4: PDF exportieren
-```
-1. Bottom → "📄 PDF Zusammenfassung"
-2. PDF mit allen Stats wird generiert
-3. Download oder Print
-```
+### Additional Features
+- ⚡ Quick-add buttons (frequent routes)
+- ✏️ Edit trip modal for adjustments
+- 📊 PDF export (complete summary)
+- 📥 JSON/CSV import & export
+- ⚙️ Settings for ticket configuration
 
 ---
 
-## 🔄 Synchronisation
+## 🎯 Usage Examples
 
-### Cloud Sync (mit Anmeldung)
+### Scenario 1: Quick trip entry
 ```
-Local Changes → Supabase → Alle Devices
-Automatisch bei Änderungen
+1. Click "⚡ Quick Buttons"
+2. E.g. "S-Bahn Sbg (€3.60)"
+3. ✅ Done – Trip added with today's date
+```
+
+### Scenario 2: Edit a trip
+```
+1. Click trip in trip list
+2. ✏️ Edit trip modal opens
+3. Modify data → Save
+```
+
+### Scenario 3: View statistics
+```
+1. 🔥 Heatmap → See daily trips
+2. 📅 Year overview → Monthly trends
+3. 🗺️ States → Which states visited most?
+```
+
+### Scenario 4: Export to PDF
+```
+1. Bottom → "📄 PDF Summary"
+2. PDF with all stats is generated
+3. Download or print
+```
+
+---
+
+## 🔄 Synchronization
+
+### Cloud Sync (with login)
+```
+Local Changes → Supabase → All Devices
+Automatic on changes
 ```
 
 ### Offline Mode
 ```
-Ohne Internet → Changes gepuffert lokal
-→ Auto-Sync wenn wieder Online
+Without internet → Changes buffered locally
+→ Auto-sync when back online
 ```
 
 ### Manual Sync
 ```
 - JSON Export → Backup
-- CSV Export → Spreadsheet-Compatible
-- Import von Datei möglich
+- CSV Export → Spreadsheet-compatible
+- Import from file supported
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-| Problem | Lösung |
-|---------|--------|
-| Supabase Connection Error | Check `.env.local` - URL & Key richtig? |
-| Daten laden nicht | Supabase Dashboard → trips Tabelle existiert? |
-| Auth funktioniert nicht | Supabase → Email Templates → SMTP richtig? |
-| Offline funktioniert nicht | Browser Service Workers aktiviert? |
-| PDF hat abgeschnittenen Text | Browser Zoom auf 100%, jetzt 1 Monat pro Zeile |
+| Problem | Solution |
+|---------|----------|
+| Supabase Connection Error | Check `.env.local` – URL & key correct? |
+| Data won't load | Supabase Dashboard → trips table exists? |
+| Auth not working | Supabase → Email Templates → SMTP correct? |
+| Offline not working | Browser Service Workers enabled? |
+| PDF text cut off | Set browser zoom to 100%, then 1 month per line |
 
 ---
 
 ## 🚀 Deployment
 
-### GitHub Pages (Automatisch)
+### GitHub Pages (Automatic)
 ```bash
 git push origin main
-# Wird automatisch deployed zu:
+# Automatically deploys to:
 # https://jhoelzl.github.io/klimaticket-rechner/
 ```
 
-### Lokales Deployment
+### Local Deployment
 ```bash
 # Python SimpleHTTPServer
 python3 -m http.server 8000
-# oder
+# or
 npx http-server
 ```
 
 ---
 
-## 📋 Geplante Features
+## 📋 Planned Features
 
-Siehe [FEATURES.md](FEATURES.md) für vollständige Roadmap mit 50+ Feature-Ideen:
+See [FEATURES.md](FEATURES.md) for complete roadmap with 50+ feature ideas:
 
-- [ ] English/Deutsch Sprachumschaltung
-- [ ] Graphische Diagramme (Monthly Trends)
-- [ ] Dunkler Modus (Dark Mode)
-- [ ] Native Mobile App (React Native)
-- [ ] Gamification (Achievements, Badges)
-- [ ] Sharing & Social Features
-- [ ] Erweiterte Filterung & Suche
-- [ ] Excel Export (.xlsx)
-- [ ] Voice Input Integration
-- [ ] CO₂ Tracking
+- [ ] Advanced filtering & search
+- [ ] Excel export (.xlsx)
+- [ ] CO₂ tracking
 
 ---
 
 ## 💡 Best Practices
 
-### Daten eingeben
-- 📅 Verwende immer das korrekte Datum
-- 🏘️ Füge alle befahrenen Bundesländer ein
-- 💬 Notizen helfen später beim Tracking
+### Entering Data
+- 📅 Always use correct date
+- 🏘️ Add all states involved in trip
+- 💬 Notes help with tracking later
 
-### Sicherheit
-- 🔐 Verwende starkes Passwort
-- ☁️ Mit Anmeldung = Cloud-Backup
-- 💾 Regelmäßig Backups exportieren
+### Security
+- 🔐 Use strong password
+- ☁️ With login = cloud backup
+- 💾 Export backups regularly
 
 ### Performance
-- 🔋 Offline-Mode nutzen wenn online nicht verfügbar
-- 📱 PWA installieren für schnelleren Zugriff
-- 🗑️ Alte Daten archivieren wenn zu groß
+- 🔋 Use offline mode when needed
+- 📱 Install PWA for faster access
+- 🗑️ Archive old data if too much
 
 ---
 
-## 🤝 Beitragen
+## 🤝 Contributing
 
-Contributions sind willkommen! 
+Contributions welcome!
 
 ```bash
-# 1. Fork das Repo
-# 2. Feature-Branch erstellen
+# 1. Fork the repo
+# 2. Create feature branch
 git checkout -b feature/my-feature
 
-# 3. Deine Änderungen committen
+# 3. Commit your changes
 git commit -m "Add: my awesome feature"
 
-# 4. Branch pushen
+# 4. Push to branch
 git push origin feature/my-feature
 
-# 5. Pull Request erstellen
+# 5. Create pull request
 ```
 
 ---
 
-## 📝 Lizenz
+## 📝 License
 
-MIT License - Frei verwendbar!
-
----
-
-## 🎯 Kontakt & Support
-
-- **Issues:** GitHub Issues nutzen
-- **Features:** FEATURES.md checken + Issue erstellen
-- **Bugs:** Mit Stacktrace/Screenshots berichten
+MIT License – Free to use!
 
 ---
 
-**Viel Spaß mit dem Klimaticket Rechner!** 🚆🌍
+## 🎯 Support
 
-*Entwickelt mit ❤️ von jhoelzl - Für nachhaltiges Reisen in Österreich!*
+- **Issues:** Use GitHub Issues
+- **Features:** Check FEATURES.md + create issue
+- **Bugs:** Report with screenshot/stacktrace
 
 ---
 

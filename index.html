@@ -1608,6 +1608,7 @@
                 noTripsTitle: 'No trips',
                 tripTitle: 'trip',
                 tripsTitle: 'trips',
+                noStatesVisited: 'No states visited yet',
                 outOfRangeShort: 'out of range',
                 statesOverviewHeading: '🗺️ States Overview',
                 statesOverviewSubtitle: 'Trips per state',
@@ -1726,6 +1727,7 @@
                 noTripsTitle: 'Keine Fahrten',
                 tripTitle: 'Fahrt',
                 tripsTitle: 'Fahrten',
+                noStatesVisited: 'Noch keine Bundesländer besucht',
                 outOfRangeShort: 'außerhalb',
                 statesOverviewHeading: '🗺️ Bundesländer-Übersicht',
                 statesOverviewSubtitle: 'Fahrten pro Bundesland',
@@ -3220,7 +3222,7 @@
                     <span class="state-icon">${state.emoji}</span>
                     <div class="state-name">${state.name}</div>
                     <div class="state-count">${count}</div>
-                    <div class="state-label">Trip${count !== 1 ? 's' : ''}</div>
+                    <div class="state-label">${count !== 1 ? t('tripsTitle') : t('tripTitle')}</div>
                 </div>`;
             }).join('');
             
@@ -3230,7 +3232,7 @@
                 .sort((a, b) => countsByState[b.name] - countsByState[a.name]);
             
             if (visited.length === 0) {
-                statesStats.innerHTML = '<p style="grid-column: 1/-1; color: var(--text-tertiary); text-align: center; padding: 20px;">No states visited yet</p>';
+                statesStats.innerHTML = '<p style="grid-column: 1/-1; color: var(--text-tertiary); text-align: center; padding: 20px;">' + t('noStatesVisited') + '</p>';
             } else {
                 statesStats.innerHTML = visited.map(state => {
                     const count = countsByState[state.name];
