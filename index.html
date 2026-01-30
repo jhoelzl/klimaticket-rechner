@@ -3193,14 +3193,26 @@
         };
 
         // Estimate distance per route or use provided distance
-        function estimateDistance(route, providedDistance) {
+        function estimateDistance(route, providedDistance, states) {
             // If distance is provided, use it
             if (providedDistance && providedDistance > 0) {
                 return parseFloat(providedDistance);
             }
-            // Otherwise use heuristic: count commas + 1 as number of segments, estimate 50km per segment
-            const segments = (route.match(/,/g) || []).length + 1;
-            return Math.max(30, segments * 50 + Math.random() * 30);
+            
+            // Otherwise estimate based on number of states
+            let stateCount = 0;
+            if (states && Array.isArray(states)) {
+                stateCount = states.length;
+            }
+            
+            // Default distances based on state count
+            if (stateCount >= 3) {
+                return 300; // 3+ states: 300km
+            } else if (stateCount === 2) {
+                return 100; // 2 states: 100km
+            } else {
+                return 10; // 1 state or unknown: 10km
+            }
         }
 
         function calculateCarbonStats(trips) {
@@ -3218,7 +3230,7 @@
             // Calculate CO₂ per trip
             let totalCarbon = 0;
             validTrips.forEach(trip => {
-                const distance = estimateDistance(trip.route, trip.distance);
+                const distance = estimateDistance(trip.route, trip.distance, trip.states);
                 const carbon = distance * CARBON_CONFIG.publicTransport;
                 totalCarbon += carbon;
             });
