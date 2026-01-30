@@ -11,6 +11,7 @@
     <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23087e8b' width='192' height='192'/><text x='96' y='140' font-size='100' font-weight='bold' fill='white' text-anchor='middle'>€</text></svg>">
     <title>Klimaticket Rechner</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1125,6 +1126,7 @@
             <div class="export-buttons">
                 <button class="btn-secondary" onclick="exportJSON()">📥 JSON Export</button>
                 <button class="btn-secondary" onclick="exportCSV()">📊 CSV Export</button>
+                <button class="btn-primary" onclick="exportPDF()">📄 PDF Zusammenfassung</button>
                 <button class="btn-secondary" onclick="importData()">📤 Importieren</button>
                 <button class="btn-danger" onclick="clearAllData()">🗑️ Löschen</button>
             </div>
@@ -2587,6 +2589,205 @@
                 downloadFile(dataBlob, 'klimaticket-daten.csv');
             } catch (err) {
                 showToast('❌ Export fehler: ' + err.message, 'error');
+            }
+        }
+
+        async function exportPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Get all trips
+                let trips = [];
+                if (currentUser) {
+                    const { data, error } = await supabase.from('trips').select('*');
+                    if (error) throw error;
+                    trips = data || [];
+                } else {
+                    trips = getLocalTrips();
+                }
+
+                const validTrips = trips.filter(trip => isValidTrip(trip));
+                const invalidTrips = trips.filter(trip => !isValidTrip(trip));
+                const totalCost = validTrips.reduce((sum, t) => sum + t.cost, 0);
+                const savings = totalCost - userTicketCost;
+                
+                // Title and Header
+                doc.setFillColor(8, 126, 139);
+                doc.rect(0, 0, 210, 40, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(24);
+                doc.setFont(undefined, 'bold');
+                doc.text('Klimaticket Zusammenfassung', 105, 20, { align: 'center' });
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'normal');
+                doc.text(new Date().toLocaleDateString('de-AT', { year: 'numeric', month: 'long', day: 'numeric' }), 105, 30, { align: 'center' });
+                
+                // Reset text color
+                doc.setTextColor(0, 0, 0);
+                let yPos = 50;
+
+                // Key Statistics
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('Statistiken', 20, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Gesamte Fahrten: ${trips.length}`, 20, yPos);
+                doc.text(`Gueltige Fahrten: ${validTrips.length}`, 110, yPos);
+                yPos += 7;
+                doc.text(`Ausserhalb Gueltigkeit: ${invalidTrips.length}`, 20, yPos);
+                yPos += 7;
+                doc.text(`Ticketkosten: EUR ${userTicketCost.toFixed(2)}`, 20, yPos);
+                doc.text(`Gesamtkosten ohne Ticket: EUR ${totalCost.toFixed(2)}`, 110, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(savings >= 0 ? 76 : 244, savings >= 0 ? 175 : 67, savings >= 0 ? 80 : 54);
+                doc.text(`Ersparnis: EUR ${savings.toFixed(2)}`, 20, yPos);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                yPos += 10;
+
+                // Ticket Validity
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('Gueltigkeit', 20, yPos);
+                yPos += 10;
+                doc.setFontSize(11);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Von: ${userStartDate.toLocaleDateString('de-AT')}`, 20, yPos);
+                doc.text(`Bis: ${userEndDate.toLocaleDateString('de-AT')}`, 110, yPos);
+                yPos += 7;
+                const daysTotal = Math.ceil((userEndDate - userStartDate) / (1000 * 60 * 60 * 24));
+                const daysRemaining = Math.ceil((userEndDate - new Date()) / (1000 * 60 * 60 * 24));
+                doc.text(`Gesamtdauer: ${daysTotal} Tage`, 20, yPos);
+                doc.text(`Verbleibend: ${daysRemaining} Tage`, 110, yPos);
+                yPos += 12;
+
+                // Monthly Breakdown
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('Monatsuebersicht ' + currentYearView, 20, yPos);
+                yPos += 10;
+                
+                const monthStats = {};
+                const monthNames = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+                for (let i = 0; i < 12; i++) monthStats[i] = { trips: 0, cost: 0 };
+                
+                trips.forEach(trip => {
+                    const tripDate = new Date(trip.date);
+                    if (tripDate.getFullYear() === currentYearView) {
+                        const month = tripDate.getMonth();
+                        monthStats[month].trips++;
+                        monthStats[month].cost += trip.cost;
+                    }
+                });
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                let col = 0;
+                for (let i = 0; i < 12; i++) {
+                    const x = 20 + (col * 63);
+                    if (i > 0 && i % 3 === 0) {
+                        yPos += 7;
+                        col = 0;
+                    }
+                    doc.text(`${monthNames[i]}: ${monthStats[i].trips} (EUR ${monthStats[i].cost.toFixed(2)})`, x, yPos);
+                    col++;
+                }
+                yPos += 12;
+
+                // Top Routes
+                const routeStats = {};
+                validTrips.forEach(trip => {
+                    if (!routeStats[trip.route]) {
+                        routeStats[trip.route] = { count: 0, cost: 0 };
+                    }
+                    routeStats[trip.route].count++;
+                    routeStats[trip.route].cost += trip.cost;
+                });
+                
+                const topRoutes = Object.entries(routeStats)
+                    .sort((a, b) => b[1].count - a[1].count)
+                    .slice(0, 10);
+                
+                if (topRoutes.length > 0) {
+                    doc.setFontSize(16);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Top 10 Strecken', 20, yPos);
+                    yPos += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    topRoutes.forEach(([route, stats], idx) => {
+                        if (yPos > 270) {
+                            doc.addPage();
+                            yPos = 20;
+                        }
+                        const routeText = `${idx + 1}. ${route}`;
+                        const statsText = `${stats.count}x (EUR ${stats.cost.toFixed(2)})`;
+                        doc.text(routeText, 20, yPos);
+                        doc.text(statsText, 170, yPos, { align: 'right' });
+                        yPos += 6;
+                    });
+                    yPos += 10;
+                }
+
+                // Bundeslaender Stats
+                const bundeslaenderStats = {};
+                const bundeslaender = ['Burgenland', 'Kaernten', 'Niederoesterreich', 'Oberoesterreich', 'Salzburg', 'Steiermark', 'Tirol', 'Vorarlberg', 'Wien'];
+                bundeslaender.forEach(bl => bundeslaenderStats[bl] = 0);
+                
+                validTrips.forEach(trip => {
+                    if (trip.bundeslaender && Array.isArray(trip.bundeslaender)) {
+                        trip.bundeslaender.forEach(bl => {
+                            if (bundeslaenderStats[bl] !== undefined) {
+                                bundeslaenderStats[bl]++;
+                            }
+                        });
+                    }
+                });
+                
+                const visitedBundeslaender = Object.entries(bundeslaenderStats)
+                    .filter(([_, count]) => count > 0)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                if (visitedBundeslaender.length > 0) {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    doc.setFontSize(16);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Bundeslaender', 20, yPos);
+                    yPos += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    visitedBundeslaender.forEach(([bl, count]) => {
+                        doc.text(`${bl}: ${count} Fahrten`, 20, yPos);
+                        yPos += 6;
+                    });
+                }
+
+                // Footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150);
+                    doc.text(`Seite ${i} von ${pageCount}`, 105, 290, { align: 'center' });
+                    doc.text('Erstellt mit Klimaticket Rechner', 105, 285, { align: 'center' });
+                }
+                
+                // Save PDF
+                doc.save(`klimaticket-zusammenfassung-${new Date().toISOString().split('T')[0]}.pdf`);
+                showToast('✅ PDF erfolgreich erstellt!');
+            } catch (err) {
+                console.error('PDF Export Error:', err);
+                showToast('❌ PDF Export fehler: ' + err.message, 'error');
             }
         }
 
