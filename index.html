@@ -3704,7 +3704,7 @@
                         <div class="month-name">${monthNames[i]}</div>
                         <div class="month-trips">${stats.trips}</div>
                         <div class="month-cost">€${stats.cost.toFixed(2)}</div>
-                        <div class="month-km">${stats.km.toFixed(1)} km</div>
+                        <div class="month-km">${Math.round(stats.km)} km</div>
                         <div class="month-bar">
                             <div class="month-bar-fill" style="width: ${barWidth}%"></div>
                         </div>
@@ -3750,12 +3750,12 @@
                         <div class="trip-tooltip-item">
                             <span class="trip-tooltip-route">${trip.route}</span>
                             <span class="trip-tooltip-cost">€${trip.cost.toFixed(2)}</span>
-                            ${trip.distance ? `<span class="trip-tooltip-km">${trip.distance.toFixed(1)} km</span>` : ''}
+                            ${trip.distance ? `<span class="trip-tooltip-km">${Math.round(trip.distance)} km</span>` : ''}
                         </div>
                     `;
                 });
                 if (validTrips.length > 1) {
-                    content += `<div class="trip-tooltip-summary">Total: ${totalKm.toFixed(1)} km</div>`;
+                    content += `<div class="trip-tooltip-summary">Total: ${Math.round(totalKm)} km</div>`;
                 }
             }
             
@@ -3765,7 +3765,7 @@
                         <div class="trip-tooltip-item trip-tooltip-invalid">
                             <span class="trip-tooltip-route">${trip.route} ⚠️</span>
                             <span class="trip-tooltip-cost">€${trip.cost.toFixed(2)}</span>
-                            ${trip.distance ? `<span class="trip-tooltip-km">${trip.distance.toFixed(1)} km</span>` : ''}
+                            ${trip.distance ? `<span class="trip-tooltip-km">${Math.round(trip.distance)} km</span>` : ''}
                         </div>
                     `;
                 });
@@ -4090,7 +4090,7 @@
                             yPos = 20;
                         }
                         const routeText = `${idx + 1}. ${route}`;
-                        const statsText = `${stats.count}x | EUR ${stats.cost.toFixed(2)} | ${stats.km.toFixed(1)} km`;
+                        const statsText = `${stats.count}x | EUR ${stats.cost.toFixed(2)} | ${Math.round(stats.km)} km`;
                         doc.text(routeText, 20, yPos);
                         doc.text(statsText, 170, yPos, { align: 'right' });
                         yPos += 6;
