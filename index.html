@@ -1305,10 +1305,10 @@
             </p>
             
             <div class="quick-buttons">
-                <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn Sbg')">
+                <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn Sbg', 10)">
                     🚇 S-Bahn Sbg<br>(€3.60)
                 </button>
-                <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Sbg')">
+                <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Sbg', 5)">
                     🚌 Obus Sbg<br>(€3.00)
                 </button>
             </div>
@@ -1508,10 +1508,10 @@
             <div style="margin-bottom: 16px;">
                 <label id="quickAddQuickButtonsLabel" style="display: block; font-size: 14px; color: #666; margin-bottom: 12px;"><strong>Quick Buttons:</strong></label>
                 <div class="quick-buttons">
-                    <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.60, 'S-Bahn Sbg')">
+                    <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.60, 'S-Bahn Sbg', 10)">
                         🚇 S-Bahn Sbg<br>(€3.60)
                     </button>
-                    <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.00, 'Obus Sbg')">
+                    <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.00, 'Obus Sbg', 5)">
                         🚌 Obus Sbg<br>(€3.00)
                     </button>
                 </div>
@@ -2844,11 +2844,12 @@
         }
 
         // Add quick trip
-        async function addQuickTrip(cost, route) {
+        async function addQuickTrip(cost, route, distance) {
             const trip = {
                 date: today,
                 route,
                 cost,
+                distance: distance || null,
                 states: ['Salzburg']
             };
 
@@ -2894,7 +2895,7 @@
         }
 
         // Quick add trip with selected date
-        async function submitQuickAddTrip(cost, route) {
+        async function submitQuickAddTrip(cost, route, distance) {
             const dateStr = document.getElementById('quickAddModal').dataset.selectedDate;
             const notes = document.getElementById('quickTripNotes').value.trim();
 
@@ -2902,6 +2903,7 @@
                 date: dateStr,
                 route,
                 cost,
+                distance: distance || null,
                 notes,
                 states: ['Salzburg']
             };
