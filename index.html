@@ -1447,11 +1447,11 @@
             }
         }
 
-        // Load user settings from Supabase
+        // Load user settings from Supabase (users table)
         async function loadUserSettings() {
             try {
                 const { data, error } = await supabase
-                    .from('user_settings')
+                    .from('users')
                     .select('ticket_cost, start_date, end_date')
                     .eq('user_id', currentUser.id)
                     .maybeSingle();
@@ -1497,13 +1497,13 @@
             }
         }
 
-        // Save user settings to Supabase
+        // Save user settings to Supabase (users table)
         async function saveUserSettings(ticketCost, startDate, endDate) {
             if (!currentUser) return;
             
             try {
                 const { error } = await supabase
-                    .from('user_settings')
+                    .from('users')
                     .upsert({
                         user_id: currentUser.id,
                         ticket_cost: parseFloat(ticketCost),
