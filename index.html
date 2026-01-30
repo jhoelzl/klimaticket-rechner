@@ -1410,7 +1410,8 @@
             if (!btn) return;
 
             const count = trips.filter(trip => !trip.bundeslaender || trip.bundeslaender.length === 0).length;
-            btn.style.display = count > 0 ? '' : 'none';
+            // Show button if count > 0 OR filter is active
+            btn.style.display = (count > 0 || showOnlyNoBundesland) ? '' : 'none';
             btn.dataset.count = String(count);
             if (showOnlyNoBundesland) {
                 btn.textContent = `✓ Ohne Bundesland (${count})`;
@@ -1425,7 +1426,8 @@
             if (!btn) return;
 
             const count = trips.filter(trip => !isValidTrip(trip)).length;
-            btn.style.display = count > 0 ? '' : 'none';
+            // Show button if count > 0 OR filter is active
+            btn.style.display = (count > 0 || showOnlyOutOfRange) ? '' : 'none';
             btn.dataset.count = String(count);
             if (showOnlyOutOfRange) {
                 btn.textContent = `✓ Außerhalb (${count})`;
