@@ -428,6 +428,23 @@
             display: flex;
         }
 
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: color 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--primary);
+        }
+
         .modal-content {
             background: white;
             border-radius: 12px;
@@ -1120,6 +1137,7 @@
     <!-- Auth Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
+            <button type="button" class="modal-close-btn" onclick="closeAuthModal()" title="Schließen (ESC)">✕</button>
             <div class="modal-tabs">
                 <button class="modal-tab active" onclick="switchAuthTab('login')">🔐 Anmelden</button>
                 <button class="modal-tab" onclick="switchAuthTab('signup')">✍️ Registrieren</button>
@@ -1151,6 +1169,7 @@
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
+            <button type="button" class="modal-close-btn" onclick="closeSettingsModal()" title="Schließen (ESC)">✕</button>
             <h2 style="margin-bottom: 20px; color: var(--primary);">⚙️ Einstellungen</h2>
             <form class="settings-form" onsubmit="submitSettings(event)">
                 <label for="ticketCostInput">Klimaticket Kostenbetrag (€)</label>
@@ -1176,6 +1195,7 @@
     <!-- Edit Trip Modal -->
     <div id="editTripModal" class="modal">
         <div class="modal-content">
+            <button type="button" class="modal-close-btn" onclick="closeEditTripModal()" title="Schließen (ESC)">✕</button>
             <h2 style="margin-bottom: 20px; color: var(--primary);">✏️ Fahrt bearbeiten</h2>
             <form class="settings-form" onsubmit="submitEditTrip(event)">
                 <label for="editTripDate">Datum:</label>
@@ -1214,6 +1234,7 @@
     <!-- Quick Add Trip Modal (from Calendar) -->
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
+            <button type="button" class="modal-close-btn" onclick="closeQuickAddModal()" title="Schließen (ESC)">✕</button>
             <h2 style="margin-bottom: 20px; color: var(--primary);">⚡ Fahrt hinzufügen - <span id="quickAddDate"></span></h2>
             
             <div style="margin-bottom: 16px;">
@@ -1343,6 +1364,22 @@
                 }, 2000);
             }
         }, false);
+
+        // Close modals on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                // Close any open modal
+                if (document.getElementById('authModal').classList.contains('active')) {
+                    closeAuthModal();
+                } else if (document.getElementById('settingsModal').classList.contains('active')) {
+                    closeSettingsModal();
+                } else if (document.getElementById('editTripModal').classList.contains('active')) {
+                    closeEditTripModal();
+                } else if (document.getElementById('quickAddModal').classList.contains('active')) {
+                    closeQuickAddModal();
+                }
+            }
+        });
 
         // Check authentication status on page load
         async function checkAuth() {
