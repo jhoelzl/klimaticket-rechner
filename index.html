@@ -1288,6 +1288,7 @@
                 <div style="display: flex; gap: 8px;">
                     <button id="filterNoStateBtn" class="btn-secondary" onclick="toggleNoStateFilter()" style="font-size: 12px; padding: 6px 12px;">🔍 Without state</button>
                     <button id="filterOutOfRangeBtn" class="btn-secondary" onclick="toggleOutOfRangeFilter()" style="font-size: 12px; padding: 6px 12px;">⚠️ Out of range</button>
+                    <button id="filterNoDistanceBtn" class="btn-secondary" onclick="toggleNoDistanceFilter()" style="font-size: 12px; padding: 6px 12px;">📏 Without distance</button>
                 </div>
             </div>
             <div class="trips-list" id="tripsList">
@@ -1566,6 +1567,7 @@
         let userEndDate = DEFAULT_END_DATE; // Dynamic per user
         let showOnlyNoState = false; // Filter for trips without a state
         let showOnlyOutOfRange = false; // Filter for trips outside validity range
+        let showOnlyNoDistance = false; // Filter for trips without distance entered
         let allTripsForHeatmap = []; // Store all trips for heatmap navigation
         let currentHeatmapDate = new Date(); // Current month being displayed
         let currentLanguage = DEFAULT_LANGUAGE;
@@ -1599,6 +1601,8 @@
                 filterNoStateActive: '✓ Without state',
                 filterOutOfRange: '⚠️ Out of range',
                 filterOutOfRangeActive: '✓ Out of range',
+                filterNoDistance: '📏 Without distance',
+                filterNoDistanceActive: '✓ Without distance',
                 addTripHeading: '📝 Add Trip',
                 quickButtonsTitle: '⚡ Quick Buttons:',
                 quickButtonsHelp: "Click a button to instantly add a trip (with today's date).",
@@ -1728,6 +1732,8 @@
                 filterNoStateActive: '✓ Ohne Bundesland',
                 filterOutOfRange: '⚠️ Außerhalb',
                 filterOutOfRangeActive: '✓ Außerhalb',
+                filterNoDistance: '📏 Ohne km Angaben',
+                filterNoDistanceActive: '✓ Ohne km Angaben',
                 addTripHeading: '📝 Fahrt hinzufügen',
                 quickButtonsTitle: '⚡ Quick Buttons:',
                 quickButtonsHelp: 'Klick einen Button, um sofort eine Fahrt hinzuzufügen (mit heutigem Datum).',
@@ -1900,6 +1906,7 @@
             setText('tripsHeading', t('tripsHeading'));
             setText('filterNoStateBtn', t('filterNoState'));
             setText('filterOutOfRangeBtn', t('filterOutOfRange'));
+            setText('filterNoDistanceBtn', t('filterNoDistance'));
             setText('addTripHeading', t('addTripHeading'));
             setText('quickButtonsTitle', t('quickButtonsTitle'));
             setText('quickButtonsHelp', t('quickButtonsHelp'));
@@ -2567,6 +2574,22 @@
             }
         }
 
+        // Update no distance filter count
+        function updateNoDistanceFilterCount(trips) {
+            const btn = document.getElementById('filterNoDistanceBtn');
+            if (!btn) return;
+
+            const count = trips.filter(trip => !trip.distance || trip.distance <= 0).length;
+            // Show button if count > 0 OR filter is active
+            btn.style.display = (count > 0 || showOnlyNoDistance) ? '' : 'none';
+            btn.dataset.count = String(count);
+            if (showOnlyNoDistance) {
+                btn.textContent = `${t('filterNoDistanceActive')} (${count})`;
+            } else {
+                btn.textContent = `${t('filterNoDistance')} (${count})`;
+            }
+        }
+
         // Toggle filter for trips without a state
         function toggleNoStateFilter() {
             showOnlyNoState = !showOnlyNoState;
@@ -2598,6 +2621,21 @@
             loadData();
         }
 
+        function toggleNoDistanceFilter() {
+            showOnlyNoDistance = !showOnlyNoDistance;
+            const btn = document.getElementById('filterNoDistanceBtn');
+            if (showOnlyNoDistance) {
+                btn.style.background = '#4caf50';
+                btn.style.color = 'white';
+                btn.textContent = `${t('filterNoDistanceActive')} (${btn.dataset.count || 0})`;
+            } else {
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.textContent = `${t('filterNoDistance')} (${btn.dataset.count || 0})`;
+            }
+            loadData();
+        }
+
         // Load data from Supabase or localStorage
         async function loadData() {
             try {
@@ -2624,6 +2662,7 @@
 
                 updateNoStateFilterCount(trips);
                 updateOutOfRangeFilterCount(trips);
+                updateNoDistanceFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
                 updateAchievements(trips);
@@ -2634,6 +2673,7 @@
                 const trips = getLocalTrips();
                 updateNoStateFilterCount(trips);
                 updateOutOfRangeFilterCount(trips);
+                updateNoDistanceFilterCount(trips);
                 displayTrips(trips);
                 updateStats(trips);
                 updateAchievements(trips);
@@ -3151,6 +3191,14 @@
                 filtered = filtered.filter(trip => !isValidTrip(trip));
                 if (filtered.length === 0) {
                     tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ No trips outside the valid date range!</p>';
+                    return;
+                }
+            }
+
+            if (showOnlyNoDistance) {
+                filtered = filtered.filter(trip => !trip.distance || trip.distance <= 0);
+                if (filtered.length === 0) {
+                    tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ All trips have distance entered!</p>';
                     return;
                 }
             }
