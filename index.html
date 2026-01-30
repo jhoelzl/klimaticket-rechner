@@ -1361,14 +1361,14 @@
                     <input type="number" id="tripCost" placeholder="5.00" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <label id="tripDistanceLabel" for="tripDistance">Distance (km):</label>
+                    <label id="tripDistanceLabel" for="tripDistance">Distance (km) (optional):</label>
                     <input type="number" id="tripDistance" placeholder="e.g. 45" step="0.1" min="0">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label id="tripNotesLabel" for="tripNotes">Notes:</label>
+                    <label id="tripNotesLabel" for="tripNotes">Notes (optional):</label>
                     <input type="text" id="tripNotes" placeholder="optional">
                 </div>
             </div>
@@ -1507,10 +1507,10 @@
                 <label class="required-field" id="editTripCostLabel" for="editTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="editTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
-                <label id="editTripDistanceLabel" for="editTripDistance" style="margin-top: 12px;">Distance (km):</label>
+                <label id="editTripDistanceLabel" for="editTripDistance" style="margin-top: 12px;">Distance (km) (optional):</label>
                 <input type="number" id="editTripDistance" placeholder="e.g. 45" step="0.1" min="0">
                 
-                <label id="editTripNotesLabel" for="editTripNotes" style="margin-top: 12px;">Notes:</label>
+                <label id="editTripNotesLabel" for="editTripNotes" style="margin-top: 12px;">Notes (optional):</label>
                 <input type="text" id="editTripNotes" placeholder="optional">
                 
                 <div class="modal-buttons">
@@ -1561,11 +1561,11 @@
                 <label class="required-field" id="quickTripCostLabel" for="quickTripCost" style="margin-top: 12px;">Cost (EUR):</label>
                 <input type="number" id="quickTripCost" placeholder="5.00" step="0.01" min="0" required>
                 
-                <label id="quickTripDistanceLabel" for="quickTripDistance" style="margin-top: 12px;">Distance (km):</label>
+                <label id="quickTripDistanceLabel" for="quickTripDistance" style="margin-top: 12px;">Distance (km) (optional):</label>
                 <input type="number" id="quickTripDistance" placeholder="e.g. 45" step="0.1" min="0">
                 <small id="quickTripDistanceHelp" style="display: block; color: #999; font-size: 12px; margin-top: 4px;">Approximate distance for accurate CO₂ calculation</small>
                 
-                <label id="quickTripNotesLabel" for="quickTripNotes" style="margin-top: 12px;">Notes:</label>
+                <label id="quickTripNotesLabel" for="quickTripNotes" style="margin-top: 12px;">Notes (optional):</label>
                 <input type="text" id="quickTripNotes" placeholder="optional">
                 
                 <div class="modal-buttons" style="margin-top: 20px;">
@@ -1640,8 +1640,8 @@
                 editTripRouteLabel: 'Route:',
                 editTripStatesLabel: 'State(s):',
                 editTripCostLabel: 'Cost (EUR):',
-                editTripDistanceLabel: 'Distance (km) - optional:',
-                editTripNotesLabel: 'Notes:',
+                editTripDistanceLabel: 'Distance (km) (optional):',
+                editTripNotesLabel: 'Notes (optional):',
                 editTripCancelBtn: 'Cancel',
                 editTripSaveBtn: 'Save',
                 tripDateLabel: 'Date:',
@@ -1650,8 +1650,10 @@
                 tripStatesLabel: 'State(s) involved:',
                 tripStatesHelp: 'Multi-select with Ctrl/Cmd + click',
                 tripCostLabel: 'Cost without ticket (EUR):',
-                tripNotesLabel: 'Notes:',
+                tripNotesLabel: 'Notes (optional):',
                 tripNotesPlaceholder: 'optional',
+                tripDistanceLabel: 'Distance (km) (optional):',
+                tripDistancePlaceholder: 'e.g. 45',
                 saveTripBtn: '➕ Save trip',
                 backupHeading: '💾 Backup',
                 backupSubtitle: 'Export your data as JSON or CSV for backup.',
@@ -1729,7 +1731,7 @@
                 quickTripRoutePlaceholder: 'e.g. Salzburg - Vienna',
                 quickTripStatesLabel: 'State(s):',
                 quickTripCostLabel: 'Cost (EUR):',
-                quickTripDistanceLabel: 'Distance (km) - optional:',
+                quickTripDistanceLabel: 'Distance (km) (optional):',
                 quickTripDistancePlaceholder: 'e.g. 45',
                 quickTripDistanceHelp: 'Approximate distance for accurate CO₂ calculation',
                 quickTripNotesLabel: 'Notes (optional):',
@@ -1789,8 +1791,8 @@
                 editTripRouteLabel: 'Route:',
                 editTripStatesLabel: 'Bundesland(er):',
                 editTripCostLabel: 'Kosten (EUR):',
-                editTripDistanceLabel: 'Distanz (km) - optional:',
-                editTripNotesLabel: 'Notiz:',
+                editTripDistanceLabel: 'Distanz (km) (optional):',
+                editTripNotesLabel: 'Notiz (optional):',
                 editTripCancelBtn: 'Abbrechen',
                 editTripSaveBtn: 'Speichern',
                 tripDateLabel: 'Datum:',
@@ -1799,9 +1801,9 @@
                 tripStatesLabel: 'Bundesland(er) betroffen:',
                 tripStatesHelp: 'Mehrfachauswahl mit Ctrl/Cmd + Klick',
                 tripCostLabel: 'Kosten ohne Ticket (EUR):',
-                tripNotesLabel: 'Notiz:',
+                tripNotesLabel: 'Notiz (optional):',
                 tripNotesPlaceholder: 'optional',
-                tripDistanceLabel: 'Distanz (km) - optional:',
+                tripDistanceLabel: 'Distanz (km) (optional):',
                 tripDistancePlaceholder: 'z.B. 45',
                 tripDistanceHelp: 'Ungefähre Entfernung deiner Fahrt für genaue CO₂-Berechnung',
                 saveTripBtn: '➕ Fahrt speichern',
@@ -1881,7 +1883,7 @@
                 quickTripRoutePlaceholder: 'z.B. Salzburg - Wien',
                 quickTripStatesLabel: 'Bundesland(er):',
                 quickTripCostLabel: 'Kosten (EUR):',
-                quickTripDistanceLabel: 'Distanz (km) - optional:',
+                quickTripDistanceLabel: 'Distanz (km) (optional):',
                 quickTripDistancePlaceholder: 'z.B. 45',
                 quickTripDistanceHelp: 'Ungefähre Entfernung für genaue CO₂-Berechnung',
                 quickTripNotesLabel: 'Notiz (optional):',
