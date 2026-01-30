@@ -779,6 +779,7 @@
                 <div class="stat-box stat-savings">
                     <div class="label" id="savingsLabel">Ersparnis mit Klimaticket</div>
                     <div class="value" id="savings">0€</div>
+                    <div id="savingsSummary" style="margin-top: 8px; font-size: 12px; line-height: 1.4;"></div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
@@ -2017,14 +2018,22 @@
             }
 
             const messageEl = document.getElementById('message');
-            if (validTrips.length === 0) {
+            const summaryEl = document.getElementById('savingsSummary');
+            if (messageEl) {
                 messageEl.classList.add('hidden');
+            }
+            if (validTrips.length === 0) {
+                if (summaryEl) {
+                    summaryEl.textContent = '';
+                }
             } else if (savings >= 0) {
-                messageEl.className = 'message positive';
-                messageEl.textContent = `✅ Glückwunsch! Du sparst ${Math.abs(savings).toFixed(2)}€ mit dem Klimaticket.`;
+                if (summaryEl) {
+                    summaryEl.textContent = `✅ Glückwunsch! Du sparst €${Math.abs(savings).toFixed(2)} mit dem Klimaticket.`;
+                }
             } else {
-                messageEl.className = 'message negative';
-                messageEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um das Ticket auszugleichen.`;
+                if (summaryEl) {
+                    summaryEl.textContent = `⚠️ Du brauchst noch €${Math.abs(savings).toFixed(2)} an Fahrten, um das Ticket auszugleichen.`;
+                }
             }
 
             // Generate heatmap
