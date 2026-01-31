@@ -113,10 +113,6 @@
   - Shareable links for single trips
   - Anonymous stats (e.g. “Saved €X in 30 days”)
 
-- [ ] **Social media integration**
-  - Share stats on X/Twitter
-  - “My Klimaticket balance” badge
-
 ---
 
 ## 🎨 UI/UX Improvements
@@ -139,10 +135,6 @@
   - Full tab navigation
   - Enter to save in modals
   - Hotkeys (e.g. Ctrl+S)
-
-- [ ] **Voice input**
-  - Speech recognition for trip entry
-  - Browser Speech API integration
 
 ---
 
@@ -268,6 +260,38 @@
 - [ ] **Error tracking**
   - Sentry integration
   - User error reports with context
+
+---
+
+## 🧰 Technical Add‑Ons (Suggested)
+
+### Code Quality & Tooling
+- [ ] **Type checking**
+  - JSDoc + `@ts-check` or a gradual TypeScript migration
+- [ ] **Linting & formatting**
+  - ESLint + Prettier with CI enforcement
+- [ ] **Data validation**
+  - Schema validation for trips/settings (e.g. Zod) before save/import
+
+### Offline & Sync Reliability
+- [ ] **IndexedDB cache**
+  - Local cache for large datasets and faster filtering
+- [ ] **Background sync queue**
+  - Service Worker sync for offline writes
+
+### Observability & Quality Gates
+- [ ] **Structured logging**
+  - Centralized error logs and UI breadcrumbs
+- [ ] **Performance budgets**
+  - Lighthouse CI + Web Vitals tracking
+- [ ] **Automated testing**
+  - Playwright E2E + unit tests for stats/calculations
+
+### Build & Localization Hygiene
+- [ ] **Modern build pipeline**
+  - Vite/Parcel for bundling, minify, and asset hashing
+- [ ] **i18n checks**
+  - Missing‑key detection and translation linting
 
 ---
 
