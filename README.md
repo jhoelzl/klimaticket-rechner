@@ -190,7 +190,10 @@ klimaticket_rechner/
 ├── manifest.json           # PWA manifest
 ├── sw.js                   # Service Worker (offline support)
 ├── README.md               # This file
-├── FEATURES.md             # Feature roadmap
+├── docs/
+│   ├── FEATURES.md         # Feature roadmap
+│   ├── TEST_ANALYSIS.md    # Test analysis
+│   └── COVERAGE.md         # Coverage report
 ├── .gitignore              # Git ignore file
 └── .env.example            # Environment variables template
 ```
@@ -332,7 +335,7 @@ npx http-server
 
 ## 📋 Planned Features
 
-See [FEATURES.md](FEATURES.md) for complete roadmap with 50+ feature ideas:
+See [docs/FEATURES.md](docs/FEATURES.md) for complete roadmap with 50+ feature ideas:
 
 - [ ] Advanced filtering & search
 - [ ] Excel export (.xlsx)
@@ -388,7 +391,7 @@ MIT License – Free to use!
 ## 🎯 Support
 
 - **Issues:** Use GitHub Issues
-- **Features:** Check FEATURES.md + create issue
+- **Features:** Check docs/FEATURES.md + create issue
 - **Bugs:** Report with screenshot/stacktrace
 
 ---
