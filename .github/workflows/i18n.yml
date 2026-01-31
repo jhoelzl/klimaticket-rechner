@@ -1,0 +1,21 @@
+name: i18n checks
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    i18n:
+        name: i18n translation check
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+            - name: Run i18n check
+              run: node scripts/check-i18n.js
