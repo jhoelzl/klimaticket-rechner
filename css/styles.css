@@ -471,19 +471,30 @@ label.required-field::after {
 
 .modal-close-btn {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
     font-size: 24px;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 8px 12px;
     transition: color 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--bg-color);
 }
 
 .modal-close-btn:hover {
     color: var(--primary);
+}
+
+.modal-close-btn:active {
+    background: var(--border);
 }
 
 .modal-content {
@@ -494,6 +505,18 @@ label.required-field::after {
     max-width: 400px;
     box-shadow: 0 4px 20px var(--shadow);
     transition: background-color 0.3s ease;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        padding-top: 16px;
+        border-radius: 16px;
+    }
 }
 
 .modal-tabs {
@@ -545,6 +568,13 @@ label.required-field::after {
     box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.1);
 }
 
+@media (max-width: 600px) {
+    .modal-form input {
+        font-size: 16px;
+        padding: 14px;
+    }
+}
+
 .modal-buttons {
     display: flex;
     gap: 8px;
@@ -558,6 +588,19 @@ label.required-field::after {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+    min-height: 44px;
+}
+
+@media (max-width: 600px) {
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-buttons button {
+        min-height: 48px;
+        font-size: 16px;
+    }
 }
 
 .modal-btn-primary {
