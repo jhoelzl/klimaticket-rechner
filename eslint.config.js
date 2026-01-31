@@ -21,5 +21,25 @@ module.exports = [
       "no-var": "error",
       "prefer-const": "off"
     }
+  },
+  {
+    files: ["tests/**/*.js", "vitest.config.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      }
+    },
+    rules: {
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "no-undef": "off",
+      "no-console": "off",
+      "eqeqeq": ["error", "always"],
+      "curly": "off",
+      "no-var": "error",
+      "prefer-const": "off"
+    }
   }
 ];
