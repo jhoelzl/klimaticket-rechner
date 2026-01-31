@@ -57,6 +57,7 @@ const TRANSLATIONS = {
         tripNotesPlaceholder: '',
         tripDistanceLabel: 'Distance (km):',
         tripDistancePlaceholder: '100',
+        tripDistanceHelp: 'Approximate distance of your trip for accurate CO₂ calculation',
         saveTripBtn: '➕ Save trip',
         backupHeading: '💾 Backup',
         backupSubtitle: 'Export your data as JSON or CSV for backup.',
