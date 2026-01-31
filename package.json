@@ -2,7 +2,6 @@
   "name": "klimaticket_rechner",
   "version": "1.0.0",
   "description": "A complete web app to track trips, calculate costs, and visualize statistics for the Austrian Klimaticket.",
-  "main": "sw.js",
   "scripts": {
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
