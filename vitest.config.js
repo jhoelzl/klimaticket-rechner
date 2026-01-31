@@ -6,11 +6,20 @@ module.exports = defineConfig({
         environment: 'jsdom',
         coverage: {
             provider: 'v8',
-            reporter: ['text', 'json', 'html'],
+            reporter: ['text', 'text-summary', 'json', 'html', 'lcov'],
+            reportOnFailure: true,
             exclude: [
                 'node_modules/',
-                'tests/'
-            ]
+                'tests/',
+                '**/*.test.js',
+                '**/*.spec.js'
+            ],
+            thresholds: {
+                lines: 60,
+                functions: 60,
+                branches: 60,
+                statements: 60
+            }
         }
     }
 });
