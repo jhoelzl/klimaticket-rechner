@@ -232,7 +232,7 @@ function renderHeatmapMonth() {
     ]);
 
     if (totalDates.size === 0) {
-        heatmapContent.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 20px;">No trips to visualize yet</p>';
+        heatmapContent.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 20px;">${t('noTripsToVisualize')}</p>`;
         return;
     }
 
@@ -244,10 +244,10 @@ function renderHeatmapMonth() {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    const startingDayOfWeek = (firstDay.getDay() + 6) % 7;
 
     let dayHeaders = '';
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames = t('dayNamesShort') || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     for (let i = 0; i < 7; i++) {
         dayHeaders += `<div class="heatmap-day-header">${dayNames[i]}</div>`;
     }
@@ -273,13 +273,13 @@ function renderHeatmapMonth() {
         const isToday = dateStr === today;
         const todayStyle = isToday ? 'border: 2px solid #ff5722; box-shadow: 0 0 8px rgba(255, 87, 34, 0.5); font-weight: bold;' : '';
 
-        let title = 'No trips';
+        let title = t('noTripsTitle');
         if (validCount > 0 && invalidCount > 0) {
-            title = `${validCount} trip${validCount !== 1 ? 's' : ''} (${invalidCount} out of range)`;
+            title = `${validCount} ${validCount !== 1 ? t('tripsTitle') : t('tripTitle')} (${invalidCount} ${t('outOfRangeShort')})`;
         } else if (validCount > 0) {
-            title = `${validCount} trip${validCount !== 1 ? 's' : ''}`;
+            title = `${validCount} ${validCount !== 1 ? t('tripsTitle') : t('tripTitle')}`;
         } else if (invalidCount > 0) {
-            title = `${invalidCount} trip${invalidCount !== 1 ? 's' : ''} out of range`;
+            title = `${invalidCount} ${invalidCount !== 1 ? t('tripsTitle') : t('tripTitle')} ${t('outOfRangeShort')}`;
         }
         dayCells += `<div class="heatmap-day ${level}" data-date="${dateStr}" title="${title}" style="cursor: pointer; ${todayStyle}">${day}</div>`;
     }

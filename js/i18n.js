@@ -184,7 +184,8 @@ const TRANSLATIONS = {
         carbonVsPlaneLabel: 'vs. Flight',
         carbonKgUnit: 'kg CO₂',
         carbonFootprint: 'Environmental footprint',
-        carbonEquivalent: '{value} kg CO₂ equivalent saved vs car travel'
+        carbonEquivalent: '{value} kg CO₂ equivalent saved vs car travel',
+        dayNamesShort: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     },
     de: {
         appTitle: '🚆 Klimaticket Rechner',
@@ -372,7 +373,8 @@ const TRANSLATIONS = {
         carbonVsPlaneLabel: 'vs. Flugzeug',
         carbonKgUnit: 'kg CO₂',
         carbonFootprint: 'Umweltfußabdruck',
-        carbonEquivalent: '{value} kg CO₂ Äquivalent gespart vs. Autofahrt'
+        carbonEquivalent: '{value} kg CO₂ Äquivalent gespart vs. Autofahrt',
+        dayNamesShort: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
     }
 };
 
