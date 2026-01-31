@@ -1,0 +1,25 @@
+{
+  "name": "klimaticket_rechner",
+  "version": "1.0.0",
+  "description": "A complete web app to track trips, calculate costs, and visualize statistics for the Austrian Klimaticket.",
+  "main": "sw.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhoelzl/klimaticket-rechner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jhoelzl/klimaticket-rechner/issues"
+  },
+  "homepage": "https://github.com/jhoelzl/klimaticket-rechner#readme",
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "globals": "^17.2.0"
+  }
+}
