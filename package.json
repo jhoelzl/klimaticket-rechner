@@ -4,7 +4,8 @@
   "description": "A complete web app to track trips, calculate costs, and visualize statistics for the Austrian Klimaticket.",
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,10 @@
   },
   "homepage": "https://github.com/jhoelzl/klimaticket-rechner#readme",
   "devDependencies": {
+    "@vitest/ui": "^4.0.18",
     "eslint": "^9.39.2",
-    "globals": "^17.2.0"
+    "globals": "^17.2.0",
+    "jsdom": "^27.4.0",
+    "vitest": "^4.0.18"
   }
 }
