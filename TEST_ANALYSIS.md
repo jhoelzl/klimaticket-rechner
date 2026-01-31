@@ -1,10 +1,10 @@
 # Unit Test & Workflow Analysis
 
 ## Current State
-- **Test Files**: 2 (`data.test.js`, `stats.test.js`)
-- **Total Tests**: 32 (all passing)
+- **Test Files**: 3 (`data.test.js`, `stats.test.js`, `i18n.test.js`)
+- **Total Tests**: 68 (all passing)
 - **Workflow Jobs**: 1 (test job with linting + tests)
-- **Coverage**: Focused on core data & stats modules
+- **Coverage**: Focused on core data, stats, and i18n modules
 
 ---
 
@@ -24,6 +24,14 @@
 - Filtering invalid trips
 - All output properties validation
 
+### i18n Module (36 tests)
+- Translation lookups with fallbacks (`t()`)
+- Locale selection (`getLocale()`)
+- Placeholder formatting and interpolation (`formatText()`)
+- Achievement name/description localization
+- Language switching behavior and consistency
+- Edge cases (unknown keys, emojis, null IDs)
+
 ---
 
 ## 🚨 Critical Gaps & Missing Tests
@@ -35,27 +43,20 @@
    - DOM manipulation functions
    - **Impact**: High - UI is critical for user experience
 
-### 2. **i18n Module** - NOT TESTED
-   - Translation function `t()`
-   - Language switching (`applyLanguage()`, `getLocale()`)
-   - Text formatting (`formatText()`)
-   - Achievement localization
-   - **Impact**: Medium - Core for multi-language support
-
-### 3. **Export Module** - NOT TESTED
+### 2. **Export Module** - NOT TESTED
    - Export formats (JSON, CSV, PDF)
    - Data import functionality
    - File handling
    - Data clearing operations
    - **Impact**: Medium - Important user features but not core logic
 
-### 4. **Features/Achievements** - NOT TESTED
+### 3. **Features/Achievements** - NOT TESTED
    - Achievement tracking logic
    - Achievement unlock conditions
    - Badge calculations
    - **Impact**: Low - Nice-to-have feature
 
-### 5. **Features/Heatmap** - NOT TESTED
+### 4. **Features/Heatmap** - NOT TESTED
    - Heatmap generation
    - Month navigation
    - Tooltip functionality
@@ -96,9 +97,8 @@ Tests 5-7 are somewhat repetitive:
 
 ### HIGH Priority
 1. **Add UI Module Tests** - Cover modal interactions, toast notifications, DOM updates
-2. **Add i18n Tests** - Ensure translations work correctly across languages
-3. **Enable Coverage Reporting** - Add Codecov/Coveralls integration to workflow
-4. **Add Workflow Security Check** - Dependency scanning (Dependabot)
+2. **Enable Coverage Reporting** - Add Codecov/Coveralls integration to workflow
+3. **Add Workflow Security Check** - Dependency scanning (Dependabot)
 
 ### MEDIUM Priority
 5. **Add Export Module Tests** - JSON/CSV export verification
@@ -114,9 +114,9 @@ Tests 5-7 are somewhat repetitive:
 
 ## Summary
 
-**Current Coverage**: ~25% of core logic (data + stats only)
-**Serious Missing**: UI, i18n, Export modules (business-critical)
+**Current Coverage**: ~35% of core logic (data + stats + i18n)
+**Serious Missing**: UI, Export modules (business-critical)
 **Duplicates**: Minimal - only minor edge case redundancy
 **Workflow Status**: Basic but functional - lacks coverage reporting & advanced checks
 
-**Quick Win**: Add i18n tests (should take 30-45 mins for 8-10 tests)
+**Quick Win**: Add export tests (JSON/CSV) or UI smoke tests
