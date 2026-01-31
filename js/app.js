@@ -23,10 +23,10 @@ async function reloadData() {
 
     try {
         await loadData();
-        showToast('✅ Data refreshed!', 'success');
+        showToast(t('dataRefreshed'), 'success');
     } catch (err) {
         console.error('Reload error:', err);
-        showToast('❌ Refresh failed', 'error');
+        showToast(t('refreshFailed'), 'error');
     } finally {
         setTimeout(() => {
             reloadBtn.style.opacity = '1';
@@ -114,7 +114,7 @@ async function handleEmailConfirmation() {
 
     if (tokenHash && type === 'email_signup') {
         try {
-            showToast('⏳ Confirming email...', 'success');
+            showToast(t('emailConfirming'), 'success');
             const { error } = await supabase.auth.verifyOtp({
                 token_hash: tokenHash,
                 type: 'email'
@@ -123,11 +123,11 @@ async function handleEmailConfirmation() {
             if (error) throw error;
 
             window.history.replaceState({}, document.title, window.location.pathname);
-            showToast('✅ Email confirmed! You are now signed in.', 'success');
+            showToast(t('emailConfirmed'), 'success');
         } catch (err) {
             console.error('Email confirmation error:', err);
             window.history.replaceState({}, document.title, window.location.pathname);
-            showToast('❌ Email confirmation failed: ' + err.message, 'error');
+            showToast(formatText('emailConfirmFailed', { error: err.message }), 'error');
         }
     }
 }
@@ -138,13 +138,13 @@ async function submitLogin(e) {
     const password = document.getElementById('loginPassword').value;
 
     try {
-        showToast('⏳ Signing in...', 'success');
+        showToast(t('signingIn'), 'success');
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password
         });
         if (error) throw error;
-        showToast('✅ Signed in successfully!', 'success');
+        showToast(t('signedIn'), 'success');
         closeAuthModal();
         const { data: { user } } = await supabase.auth.getUser();
         currentUser = user;
@@ -152,7 +152,7 @@ async function submitLogin(e) {
         loadData();
     } catch (err) {
         console.error('Login error:', err);
-        showToast('❌ ' + (err.message || 'Login failed'), 'error');
+        showToast(`❌ ${err.message || t('loginFailed')}`, 'error');
     }
 }
 
@@ -163,23 +163,23 @@ async function submitSignup(e) {
     const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
 
     if (password !== passwordConfirm) {
-        showToast('❌ Passwords do not match', 'error');
+        showToast(t('passwordsMismatch'), 'error');
         return;
     }
 
     if (password.length < 6) {
-        showToast('❌ Password must be at least 6 characters', 'error');
+        showToast(t('passwordTooShort'), 'error');
         return;
     }
 
     try {
-        showToast('⏳ Creating account...', 'success');
+        showToast(t('creatingAccount'), 'success');
         const { error } = await supabase.auth.signUp({
             email,
             password
         });
         if (error) throw error;
-        showToast('✅ Account created! You are now signed in.', 'success');
+        showToast(t('accountCreated'), 'success');
         closeAuthModal();
         const { data: { user } } = await supabase.auth.getUser();
         currentUser = user;
@@ -187,7 +187,7 @@ async function submitSignup(e) {
         loadData();
     } catch (err) {
         console.error('Signup error:', err);
-        showToast('❌ ' + (err.message || 'Sign up failed'), 'error');
+        showToast(`❌ ${err.message || t('signUpFailed')}`, 'error');
     }
 }
 
@@ -209,7 +209,7 @@ async function logout() {
         currentUser = null;
         userTicketCost = DEFAULT_TICKET_COST;
         updateAuthUI();
-        showToast('👋 Signed out', 'success');
+        showToast(t('signedOut'), 'success');
     } catch (err) {
         console.error('Logout error:', err);
     }
@@ -223,24 +223,24 @@ async function submitSettings(e) {
     const language = document.getElementById('languageSelect').value;
 
     if (!ticketCost || isNaN(ticketCost) || parseFloat(ticketCost) < 0) {
-        showToast('❌ Please enter a valid amount', 'error');
+        showToast(t('invalidAmount'), 'error');
         return;
     }
 
     if (!startDate || !endDate) {
-        showToast('❌ Please enter start and end dates', 'error');
+        showToast(t('enterDates'), 'error');
         return;
     }
 
     if (new Date(startDate) >= new Date(endDate)) {
-        showToast('❌ Start date must be before end date', 'error');
+        showToast(t('startBeforeEnd'), 'error');
         return;
     }
 
     await saveUserSettings(ticketCost, startDate, endDate, language);
     applyLanguage(language);
     closeSettingsModal();
-    showToast('✅ Settings saved!', 'success');
+    showToast(t('settingsSaved'), 'success');
 }
 
 function updateAuthUI() {
@@ -357,7 +357,7 @@ async function addTrip() {
     const states = Array.from(statesSelect.selectedOptions).map(opt => opt.value);
 
     if (!date || !route || !cost || cost <= 0) {
-        showToast('❌ Please fill in all required fields!', 'error');
+        showToast(t('fillRequiredFields'), 'error');
         return;
     }
 
@@ -385,7 +385,7 @@ async function addTrip() {
             localStorage.setItem('trips', JSON.stringify(trips));
         }
 
-        showToast(`✅ Trip "${route}" (+€${cost.toFixed(2)}) added!`);
+        showToast(formatText('tripAdded', { route, cost: cost.toFixed(2) }));
 
         document.getElementById('tripRoute').value = '';
         document.getElementById('tripCost').value = '';
@@ -400,7 +400,7 @@ async function addTrip() {
         }, 300);
     } catch (err) {
         console.error('Add trip error:', err);
-        showToast('❌ Save failed: ' + err.message, 'error');
+        showToast(formatText('saveFailed', { error: err.message }), 'error');
     }
 }
 
@@ -428,7 +428,7 @@ async function addQuickTrip(cost, route, distance) {
             localStorage.setItem('trips', JSON.stringify(trips));
         }
 
-        showToast(`✅ ${route} (+€${cost.toFixed(2)}) added!`);
+        showToast(formatText('quickTripAdded', { route, cost: cost.toFixed(2) }));
         loadData();
 
         setTimeout(() => {
@@ -436,7 +436,7 @@ async function addQuickTrip(cost, route, distance) {
         }, 300);
     } catch (err) {
         console.error('Quick trip error:', err);
-        showToast('❌ Error: ' + err.message, 'error');
+        showToast(formatText('quickTripError', { error: err.message }), 'error');
     }
 }
 
@@ -478,19 +478,19 @@ async function submitQuickAddTrip(cost, route, distance) {
             localStorage.setItem('trips', JSON.stringify(trips));
         }
 
-        showToast(`✅ ${route} (+€${cost.toFixed(2)}) on ${formatDate(dateStr)} added!`);
+        showToast(formatText('quickTripAddedOn', { route, cost: cost.toFixed(2), date: formatDate(dateStr) }));
         closeQuickAddModal();
         loadData();
     } catch (err) {
         console.error('Quick add error:', err);
-        showToast('❌ Error: ' + err.message, 'error');
+        showToast(formatText('quickTripError', { error: err.message }), 'error');
     }
 }
 
 async function submitCustomQuickAddTrip(event) {
     event.preventDefault();
     const dateStr = document.getElementById('quickAddModal').dataset.selectedDate;
-    const route = document.getElementById('quickTripRoute').value.trim() || 'Trip';
+    const route = document.getElementById('quickTripRoute').value.trim() || t('tripTitle');
     const cost = parseFloat(document.getElementById('quickTripCost').value);
     const distance = document.getElementById('quickTripDistance').value.trim()
         ? parseFloat(document.getElementById('quickTripDistance').value)
@@ -501,7 +501,7 @@ async function submitCustomQuickAddTrip(event) {
     const states = Array.from(statesSelect.selectedOptions).map(opt => opt.value);
 
     if (!cost || cost <= 0) {
-        showToast('❌ Please enter a cost!', 'error');
+        showToast(t('costRequired'), 'error');
         return;
     }
 
@@ -529,17 +529,17 @@ async function submitCustomQuickAddTrip(event) {
             localStorage.setItem('trips', JSON.stringify(trips));
         }
 
-        showToast(`✅ ${route} (+€${cost.toFixed(2)}) on ${formatDate(dateStr)} added!`);
+        showToast(formatText('quickTripAddedOn', { route, cost: cost.toFixed(2), date: formatDate(dateStr) }));
         closeQuickAddModal();
         loadData();
     } catch (err) {
         console.error('Custom quick add error:', err);
-        showToast('❌ Error: ' + err.message, 'error');
+        showToast(formatText('quickTripError', { error: err.message }), 'error');
     }
 }
 
 async function deleteTrip(id) {
-    if (!confirm('Delete this trip?')) return;
+    if (!confirm(t('deleteTripConfirm'))) return;
 
     try {
         if (currentUser) {
@@ -558,7 +558,7 @@ async function deleteTrip(id) {
         loadData();
     } catch (err) {
         console.error('Delete error:', err);
-        showToast('❌ Delete failed: ' + err.message, 'error');
+        showToast(formatText('deleteFailed', { error: err.message }), 'error');
     }
 }
 
@@ -573,7 +573,7 @@ async function editTrip(id) {
             .single();
 
         if (error) {
-            showToast('❌ Failed to load trip', 'error');
+            showToast(t('tripLoadFailed'), 'error');
             return;
         }
         trip = normalizeTrip(data);
@@ -581,7 +581,7 @@ async function editTrip(id) {
         const trips = getLocalTrips();
         trip = trips.find(t => t.id === id);
         if (!trip) {
-            showToast('❌ Trip not found', 'error');
+            showToast(t('tripNotFound'), 'error');
             return;
         }
     }
@@ -621,7 +621,7 @@ async function submitEditTrip(e) {
     const states = Array.from(statesSelect.selectedOptions).map(opt => opt.value);
 
     if (!date || !route || !cost || cost <= 0) {
-        showToast('❌ Please fill in all required fields!', 'error');
+        showToast(t('fillRequiredFields'), 'error');
         return;
     }
 
@@ -656,12 +656,12 @@ async function submitEditTrip(e) {
             }
         }
 
-        showToast(`✅ Trip "${route}" updated!`);
+        showToast(formatText('tripUpdated', { route }));
         closeEditTripModal();
         loadData();
     } catch (err) {
         console.error('Edit trip error:', err);
-        showToast('❌ Save failed: ' + err.message, 'error');
+        showToast(formatText('saveFailed', { error: err.message }), 'error');
     }
 }
 
@@ -669,7 +669,7 @@ function displayTrips(trips) {
     const tripsList = document.getElementById('tripsList');
 
     if (trips.length === 0) {
-        tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No trips added yet</p>';
+        tripsList.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">${t('noTrips')}</p>`;
         return;
     }
 
@@ -677,7 +677,7 @@ function displayTrips(trips) {
     if (showOnlyNoState) {
         filtered = trips.filter(trip => !trip.states || trip.states.length === 0);
         if (filtered.length === 0) {
-            tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ All trips have a state!</p>';
+            tripsList.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">${t('allTripsHaveState')}</p>`;
             return;
         }
     }
@@ -685,7 +685,7 @@ function displayTrips(trips) {
     if (showOnlyOutOfRange) {
         filtered = filtered.filter(trip => !isValidTrip(trip));
         if (filtered.length === 0) {
-            tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ No trips outside the valid date range!</p>';
+            tripsList.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">${t('noOutOfRangeTrips')}</p>`;
             return;
         }
     }
@@ -693,7 +693,7 @@ function displayTrips(trips) {
     if (showOnlyNoDistance) {
         filtered = filtered.filter(trip => !trip.distance || trip.distance <= 0);
         if (filtered.length === 0) {
-            tripsList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">✓ All trips have distance entered!</p>';
+            tripsList.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">${t('allTripsHaveDistance')}</p>`;
             return;
         }
     }
@@ -702,7 +702,7 @@ function displayTrips(trips) {
 
     tripsList.innerHTML = sorted.map(trip => {
         const valid = isValidTrip(trip);
-        const badge = valid ? '' : '<span style="display: inline-block; background: #f44336; color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;">⚠️ Out of range</span>';
+        const badge = valid ? '' : `<span style="display: inline-block; background: #f44336; color: white; font-size: 10px; padding: 2px 6px; border-radius: 3px; margin-left: 6px;">${t('outOfRangeBadge')}</span>`;
 
         let statesText = '';
         if (trip.states && Array.isArray(trip.states) && trip.states.length > 0) {

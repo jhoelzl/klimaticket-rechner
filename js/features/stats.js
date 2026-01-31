@@ -153,10 +153,10 @@ function updateStats(trips) {
 function updateDaysRemaining() {
     const now = new Date();
     const daysLeft = Math.max(0, Math.ceil((userEndDate - now) / (1000 * 60 * 60 * 24)));
-    document.getElementById('daysRemaining').textContent = daysLeft + ' days';
+    document.getElementById('daysRemaining').textContent = formatText('daysRemaining', { days: daysLeft });
 
     const expiryOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-    document.getElementById('expiryDate').textContent = userEndDate.toLocaleDateString('en-GB', expiryOptions);
+    document.getElementById('expiryDate').textContent = userEndDate.toLocaleDateString(getLocale(), expiryOptions);
 }
 
 function getMonthsInRange(startDate, endDate) {

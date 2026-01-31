@@ -127,7 +127,7 @@ async function saveUserSettings(ticketCost, startDate, endDate, language = null)
         userTicketCost = parseFloat(ticketCost);
         userStartDate = startDate instanceof Date ? startDate : new Date(startDate);
         userEndDate = endDate instanceof Date ? endDate : new Date(endDate);
-        showToast('⚠️ Settings saved locally (no cloud access)', 'success');
+        showToast(t('settingsSavedLocally'), 'success');
     }
 }
 
