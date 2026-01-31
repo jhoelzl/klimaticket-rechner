@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "description": "A complete web app to track trips, calculate costs, and visualize statistics for the Austrian Klimaticket.",
   "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000",
+    "build": "echo 'No build step needed for vanilla JS project'",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "vitest",
+    "test:run": "vitest --run",
     "test:ui": "vitest --ui",
+    "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage --run",
-    "test:coverage:report": "vitest --coverage --run && open coverage/index.html"
+    "test:coverage:report": "vitest --coverage --run && open coverage/index.html",
+    "check:i18n": "node scripts/check-i18n.js"
   },
   "repository": {
     "type": "git",
