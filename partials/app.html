@@ -6,10 +6,10 @@
         <div class="header-top">
             <h1 id="appTitle">🚆 Klimaticket Calculator</h1>
             <div class="header-actions">
-                <button onclick="reloadData()" id="reloadBtn" title="Refresh data" class="header-icon-btn">🔄</button>
-                <button onclick="openSettingsModal()" id="settingsBtn" title="Settings" class="hidden header-icon-btn">⚙️</button>
-                <button onclick="handleAuthToggle()" id="profileBtn" title="Profile" class="hidden header-icon-btn">👤</button>
-                <button onclick="handleAuth()" id="authBtn" class="header-auth-btn">📧 Sign in</button>
+                <button id="reloadBtn" title="Refresh data" class="header-icon-btn">🔄</button>
+                <button id="settingsBtn" title="Settings" class="hidden header-icon-btn">⚙️</button>
+                <button id="profileBtn" title="Profile" class="hidden header-icon-btn">👤</button>
+                <button id="authBtn" class="header-auth-btn">📧 Sign in</button>
             </div>
         </div>
     </header>
@@ -21,9 +21,9 @@
             Click a day to quickly add a trip.
         </p>
         <div class="heatmap-nav">
-            <button id="heatmapPrevBtn" class="btn-secondary heatmap-nav-btn" onclick="previousHeatmapMonth()">← Previous</button>
+            <button id="heatmapPrevBtn" class="btn-secondary heatmap-nav-btn">← Previous</button>
             <span id="heatmapMonthTitle" class="heatmap-month-title">January 2026</span>
-            <button id="heatmapNextBtn" class="btn-secondary heatmap-nav-btn" onclick="nextHeatmapMonth()">Next →</button>
+            <button id="heatmapNextBtn" class="btn-secondary heatmap-nav-btn">Next →</button>
         </div>
         <div class="heatmap-container">
             <div id="heatmapContent" class="heatmap-months"></div>
@@ -173,9 +173,9 @@
         <p id="yearOverviewSubtitle" class="section-subtitle-muted">Trips and costs by month</p>
 
         <div class="year-selector">
-            <button onclick="changeYear(-1)">← {{previousYear}}</button>
+            <button id="yearPrevBtn">← {{previousYear}}</button>
             <span id="yearOverviewTitle">2026</span>
-            <button onclick="changeYear(1)">{{nextYear}} →</button>
+            <button id="yearNextBtn">{{nextYear}} →</button>
         </div>
 
         <div class="year-overview" id="yearOverview">
@@ -187,9 +187,9 @@
             <div class="trips-header">
                 <h2 id="tripsHeading" class="heading-reset">📋 Your Trips</h2>
                 <div class="trips-actions">
-                    <button id="filterNoStateBtn" class="btn-secondary filter-btn" onclick="toggleNoStateFilter()">🔍 Without state</button>
-                    <button id="filterOutOfRangeBtn" class="btn-secondary filter-btn" onclick="toggleOutOfRangeFilter()">⚠️ Out of range</button>
-                    <button id="filterNoDistanceBtn" class="btn-secondary filter-btn" onclick="toggleNoDistanceFilter()">📏 Without distance</button>
+                    <button id="filterNoStateBtn" class="btn-secondary filter-btn">🔍 Without state</button>
+                    <button id="filterOutOfRangeBtn" class="btn-secondary filter-btn">⚠️ Out of range</button>
+                    <button id="filterNoDistanceBtn" class="btn-secondary filter-btn">📏 Without distance</button>
                 </div>
             </div>
         <div class="trips-list" id="tripsList">
@@ -207,10 +207,10 @@
         </p>
 
         <div class="quick-buttons">
-            <button class="btn-secondary" onclick="addQuickTrip(3.60, 'S-Bahn Sbg', 10)">
+            <button class="btn-secondary" data-quick="main" data-cost="3.60" data-route="S-Bahn Sbg" data-distance="10">
                 🚇 S-Bahn Sbg<br>(€3.60)
             </button>
-            <button class="btn-secondary" onclick="addQuickTrip(3.00, 'Obus Sbg', 5)">
+            <button class="btn-secondary" data-quick="main" data-cost="3.00" data-route="Obus Sbg" data-distance="5">
                 🚌 Obus Sbg<br>(€3.00)
             </button>
         </div>
@@ -261,7 +261,7 @@
 
         <p id="tripDistanceHelp" class="help-text-inline">Approximate distance of your trip for accurate carbon calculation</p>
 
-        <button id="saveTripBtn" class="btn-primary btn-full" onclick="addTrip()">
+        <button id="saveTripBtn" class="btn-primary btn-full">
             ➕ Save trip
         </button>
     </div>
@@ -273,41 +273,41 @@
             <span id="backupSubtitle">Export your data as JSON or CSV for backup.</span>
         </p>
         <div class="export-buttons">
-            <button id="exportJsonBtn" class="btn-secondary" onclick="exportJSON()">📥 JSON Export</button>
-            <button id="exportCsvBtn" class="btn-secondary" onclick="exportCSV()">📊 CSV Export</button>
-            <button id="exportPdfBtn" class="btn-primary" onclick="exportPDF()">📄 PDF Summary</button>
-            <button id="importBtn" class="btn-secondary" onclick="importData()">📤 Import</button>
-            <button id="deleteBtn" class="btn-danger" onclick="clearAllData()">🗑️ Delete</button>
+            <button id="exportJsonBtn" class="btn-secondary">📥 JSON Export</button>
+            <button id="exportCsvBtn" class="btn-secondary">📊 CSV Export</button>
+            <button id="exportPdfBtn" class="btn-primary">📄 PDF Summary</button>
+            <button id="importBtn" class="btn-secondary">📤 Import</button>
+            <button id="deleteBtn" class="btn-danger">🗑️ Delete</button>
         </div>
     </div>
 </div>
 
 <!-- Hidden input for import -->
-<input type="file" id="importFile" accept=".json,.csv" class="hidden" onchange="handleFileImport()">
+<input type="file" id="importFile" accept=".json,.csv" class="hidden">
 
 <!-- Auth Modal -->
 <div id="authModal" class="modal">
     <div class="modal-content">
-        <button type="button" class="modal-close-btn" onclick="closeAuthModal()" title="Close (ESC)">✕</button>
+        <button type="button" id="authModalCloseBtn" class="modal-close-btn" title="Close (ESC)">✕</button>
         <div class="modal-tabs">
-            <button id="loginTab" class="modal-tab active" onclick="switchAuthTab('login')">🔐 Sign in</button>
-            <button id="signupTab" class="modal-tab" onclick="switchAuthTab('signup')">✍️ Sign up</button>
+            <button id="loginTab" class="modal-tab active">🔐 Sign in</button>
+            <button id="signupTab" class="modal-tab">✍️ Sign up</button>
         </div>
 
         <!-- Login Form -->
-        <form class="modal-form active" id="loginForm" onsubmit="submitLogin(event)">
+        <form class="modal-form active" id="loginForm">
             <label class="required-field modal-label">Email</label>
             <input type="email" placeholder="your@email.com" id="loginEmail" required class="modal-input">
             <label class="required-field modal-label">Password</label>
             <input type="password" placeholder="••••••" id="loginPassword" required>
             <div class="modal-buttons">
-                <button id="loginCancelBtn" type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Cancel</button>
+                <button id="loginCancelBtn" type="button" class="modal-btn-secondary">Cancel</button>
                 <button id="loginSubmitBtn" type="submit" class="modal-btn-primary">Sign in</button>
             </div>
         </form>
 
         <!-- Signup Form -->
-        <form class="modal-form" id="signupForm" onsubmit="submitSignup(event)">
+        <form class="modal-form" id="signupForm">
             <label class="required-field modal-label">Email</label>
             <input type="email" placeholder="your@email.com" id="signupEmail" required class="modal-input">
             <label class="required-field modal-label">Password</label>
@@ -316,7 +316,7 @@
             <label class="required-field modal-label">Repeat password</label>
             <input type="password" placeholder="••••••" id="signupPasswordConfirm" required minlength="6">
             <div class="modal-buttons">
-                <button id="signupCancelBtn" type="button" class="modal-btn-secondary" onclick="closeAuthModal()">Cancel</button>
+                <button id="signupCancelBtn" type="button" class="modal-btn-secondary">Cancel</button>
                 <button id="signupSubmitBtn" type="submit" class="modal-btn-primary">Sign up</button>
             </div>
         </form>
@@ -326,13 +326,13 @@
 <!-- Settings Modal -->
 <div id="settingsModal" class="modal">
     <div class="modal-content">
-        <button type="button" class="modal-close-btn" onclick="closeSettingsModal()" title="Close (ESC)">✕</button>
+        <button type="button" id="settingsModalCloseBtn" class="modal-close-btn" title="Close (ESC)">✕</button>
         <h2 id="settingsTitle" class="modal-title">⚙️ Settings</h2>
-        <form class="settings-form" onsubmit="submitSettings(event)">
+        <form class="settings-form" id="settingsForm">
             <!-- Dark Mode Toggle -->
             <div class="theme-toggle">
                 <label id="darkModeLabel" for="darkModeToggle">🌓 Dark mode</label>
-                <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()">
+                <div class="toggle-switch" id="darkModeToggle">
                     <div class="toggle-slider"></div>
                 </div>
             </div>
@@ -358,7 +358,7 @@
             <p id="endDateHelp" class="settings-help">The last day your Klimaticket is valid.</p>
 
             <div class="modal-buttons">
-                <button id="settingsCancelBtn" type="button" class="modal-btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                <button id="settingsCancelBtn" type="button" class="modal-btn-secondary">Cancel</button>
                 <button id="settingsSaveBtn" type="submit" class="modal-btn-primary">Save</button>
             </div>
         </form>
@@ -368,9 +368,9 @@
 <!-- Edit Trip Modal -->
 <div id="editTripModal" class="modal">
     <div class="modal-content">
-        <button type="button" class="modal-close-btn" onclick="closeEditTripModal()" title="Close (ESC)">✕</button>
+        <button type="button" id="editTripModalCloseBtn" class="modal-close-btn" title="Close (ESC)">✕</button>
         <h2 id="editTripHeading" class="modal-title">✏️ Edit Trip</h2>
-        <form class="settings-form" onsubmit="submitEditTrip(event)">
+        <form class="settings-form" id="editTripForm">
             <label class="required-field" id="editTripDateLabel" for="editTripDate">Date:</label>
             <input type="date" id="editTripDate" required>
 
@@ -400,7 +400,7 @@
             <input type="text" id="editTripNotes" placeholder="">
 
             <div class="modal-buttons">
-                <button id="editTripCancelBtn" type="button" class="modal-btn-secondary" onclick="closeEditTripModal()">Cancel</button>
+                <button id="editTripCancelBtn" type="button" class="modal-btn-secondary">Cancel</button>
                 <button id="editTripSaveBtn" type="submit" class="modal-btn-primary">Save</button>
             </div>
         </form>
@@ -410,16 +410,16 @@
 <!-- Quick Add Trip Modal (from Calendar) -->
 <div id="quickAddModal" class="modal">
     <div class="modal-content">
-        <button type="button" class="modal-close-btn" onclick="closeQuickAddModal()" title="Close (ESC)">✕</button>
+        <button type="button" id="quickAddModalCloseBtn" class="modal-close-btn" title="Close (ESC)">✕</button>
         <h2 class="modal-title"><span id="quickAddTitle">⚡ Add Trip</span> - <span id="quickAddDate"></span></h2>
 
         <div class="section-spacing-md">
             <label id="quickAddQuickButtonsLabel" class="quick-buttons-label"><strong>Quick Buttons:</strong></label>
             <div class="quick-buttons">
-                <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.60, 'S-Bahn Sbg', 10)">
+                <button type="button" class="btn-secondary" data-quick="modal" data-cost="3.60" data-route="S-Bahn Sbg" data-distance="10">
                     🚇 S-Bahn Sbg<br>(€3.60)
                 </button>
-                <button type="button" class="btn-secondary" onclick="submitQuickAddTrip(3.00, 'Obus Sbg', 5)">
+                <button type="button" class="btn-secondary" data-quick="modal" data-cost="3.00" data-route="Obus Sbg" data-distance="5">
                     🚌 Obus Sbg<br>(€3.00)
                 </button>
             </div>
@@ -427,7 +427,7 @@
 
         <hr class="divider">
 
-        <form class="settings-form" onsubmit="submitCustomQuickAddTrip(event)">
+        <form class="settings-form" id="quickAddForm">
             <label id="quickTripRouteLabel" for="quickTripRoute">Route:</label>
             <input type="text" id="quickTripRoute" placeholder="Salzburg - Vienna">
 
@@ -455,7 +455,7 @@
             <input type="text" id="quickTripNotes" placeholder="">
 
             <div class="modal-buttons modal-buttons-spaced">
-                <button id="quickAddCancelBtn" type="button" class="modal-btn-secondary" onclick="closeQuickAddModal()">Cancel</button>
+                <button id="quickAddCancelBtn" type="button" class="modal-btn-secondary">Cancel</button>
                 <button id="quickAddSubmitBtn" type="submit" class="modal-btn-primary">Add</button>
             </div>
         </form>

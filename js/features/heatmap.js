@@ -68,14 +68,18 @@ function generateStatesHeatmap(trips) {
 function renderYearOverview() {
     const yearOverviewContainer = document.getElementById('yearOverview');
     const yearTitle = document.getElementById('yearOverviewTitle');
-    yearTitle.textContent = currentYearView;
+    const prevButton = document.getElementById('yearPrevBtn');
+    const nextButton = document.getElementById('yearNextBtn');
 
-    const yearSelector = document.querySelector('.year-selector');
-    yearSelector.innerHTML = `
-        <button onclick="changeYear(-1)">← ${currentYearView - 1}</button>
-        <span id="yearOverviewTitle">${currentYearView}</span>
-        <button onclick="changeYear(1)">${currentYearView + 1} →</button>
-    `;
+    if (yearTitle) {
+        yearTitle.textContent = currentYearView;
+    }
+    if (prevButton) {
+        prevButton.textContent = `← ${currentYearView - 1}`;
+    }
+    if (nextButton) {
+        nextButton.textContent = `${currentYearView + 1} →`;
+    }
 
     const monthStats = {};
     const monthNames = ['Jän', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
@@ -110,8 +114,8 @@ function renderYearOverview() {
         const barWidth = (stats.trips / maxTrips) * 100;
 
         html += `
-            <div class="month-card ${isCurrentMonth ? 'current-month' : ''} ${noTrips ? 'no-trips' : ''}" 
-                 onclick="jumpToMonth(${currentYearView}, ${i})" 
+            <div class="month-card ${isCurrentMonth ? 'current-month' : ''} ${noTrips ? 'no-trips' : ''}"
+                 data-year="${currentYearView}" data-month="${i}"
                  title="Klicken um zu ${monthNames[i]} ${currentYearView} zu springen">
                 <div class="month-name">${monthNames[i]}</div>
                 <div class="month-trips">${stats.trips}</div>
@@ -277,7 +281,7 @@ function renderHeatmapMonth() {
         } else if (invalidCount > 0) {
             title = `${invalidCount} trip${invalidCount !== 1 ? 's' : ''} out of range`;
         }
-        dayCells += `<div class="heatmap-day ${level}" title="${title}" style="cursor: pointer; ${todayStyle}" onclick="openQuickAddFromCalendar('${dateStr}')" onmouseover="showTripTooltip(event, '${dateStr}')" onmouseout="hideTripTooltip()">${day}</div>`;
+        dayCells += `<div class="heatmap-day ${level}" data-date="${dateStr}" title="${title}" style="cursor: pointer; ${todayStyle}">${day}</div>`;
     }
 
     heatmapContent.innerHTML = `

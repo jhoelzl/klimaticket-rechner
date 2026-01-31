@@ -92,6 +92,134 @@ function initServiceWorker() {
     }
 }
 
+function initEventListeners() {
+    const bindClick = (id, handler) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('click', handler);
+        }
+    };
+
+    const bindSubmit = (id, handler) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('submit', handler);
+        }
+    };
+
+    bindClick('reloadBtn', reloadData);
+    bindClick('settingsBtn', openSettingsModal);
+    bindClick('profileBtn', handleAuthToggle);
+    bindClick('authBtn', handleAuth);
+
+    bindClick('heatmapPrevBtn', previousHeatmapMonth);
+    bindClick('heatmapNextBtn', nextHeatmapMonth);
+
+    bindClick('yearPrevBtn', () => changeYear(-1));
+    bindClick('yearNextBtn', () => changeYear(1));
+
+    bindClick('filterNoStateBtn', toggleNoStateFilter);
+    bindClick('filterOutOfRangeBtn', toggleOutOfRangeFilter);
+    bindClick('filterNoDistanceBtn', toggleNoDistanceFilter);
+
+    document.querySelectorAll('[data-quick="main"]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const cost = parseFloat(btn.dataset.cost);
+            const distance = btn.dataset.distance ? parseFloat(btn.dataset.distance) : null;
+            addQuickTrip(cost, btn.dataset.route, distance);
+        });
+    });
+
+    bindClick('saveTripBtn', addTrip);
+
+    bindClick('exportJsonBtn', exportJSON);
+    bindClick('exportCsvBtn', exportCSV);
+    bindClick('exportPdfBtn', exportPDF);
+    bindClick('importBtn', importData);
+    bindClick('deleteBtn', clearAllData);
+
+    const importFile = document.getElementById('importFile');
+    if (importFile) {
+        importFile.addEventListener('change', handleFileImport);
+    }
+
+    bindClick('authModalCloseBtn', closeAuthModal);
+    bindClick('loginTab', () => switchAuthTab('login'));
+    bindClick('signupTab', () => switchAuthTab('signup'));
+    bindClick('loginCancelBtn', closeAuthModal);
+    bindClick('signupCancelBtn', closeAuthModal);
+    bindSubmit('loginForm', submitLogin);
+    bindSubmit('signupForm', submitSignup);
+
+    bindClick('settingsModalCloseBtn', closeSettingsModal);
+    bindClick('darkModeToggle', toggleDarkMode);
+    bindClick('settingsCancelBtn', closeSettingsModal);
+    bindSubmit('settingsForm', submitSettings);
+
+    bindClick('editTripModalCloseBtn', closeEditTripModal);
+    bindClick('editTripCancelBtn', closeEditTripModal);
+    bindSubmit('editTripForm', submitEditTrip);
+
+    bindClick('quickAddModalCloseBtn', closeQuickAddModal);
+    bindClick('quickAddCancelBtn', closeQuickAddModal);
+    bindSubmit('quickAddForm', submitCustomQuickAddTrip);
+
+    document.querySelectorAll('[data-quick="modal"]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const cost = parseFloat(btn.dataset.cost);
+            const distance = btn.dataset.distance ? parseFloat(btn.dataset.distance) : null;
+            submitQuickAddTrip(cost, btn.dataset.route, distance);
+        });
+    });
+
+    const heatmapContent = document.getElementById('heatmapContent');
+    if (heatmapContent) {
+        heatmapContent.addEventListener('click', (event) => {
+            const dayCell = event.target.closest('.heatmap-day');
+            if (dayCell && dayCell.dataset.date) {
+                openQuickAddFromCalendar(dayCell.dataset.date);
+            }
+        });
+        heatmapContent.addEventListener('mouseover', (event) => {
+            const dayCell = event.target.closest('.heatmap-day');
+            if (dayCell && dayCell.dataset.date) {
+                showTripTooltip(event, dayCell.dataset.date);
+            }
+        });
+        heatmapContent.addEventListener('mouseout', (event) => {
+            const dayCell = event.target.closest('.heatmap-day');
+            if (dayCell && dayCell.dataset.date) {
+                hideTripTooltip();
+            }
+        });
+    }
+
+    const yearOverview = document.getElementById('yearOverview');
+    if (yearOverview) {
+        yearOverview.addEventListener('click', (event) => {
+            const monthCard = event.target.closest('.month-card');
+            if (monthCard) {
+                jumpToMonth(Number(monthCard.dataset.year), Number(monthCard.dataset.month));
+            }
+        });
+    }
+
+    const tripsList = document.getElementById('tripsList');
+    if (tripsList) {
+        tripsList.addEventListener('click', (event) => {
+            const editButton = event.target.closest('.trip-edit');
+            if (editButton) {
+                editTrip(Number(editButton.dataset.id));
+                return;
+            }
+            const deleteButton = event.target.closest('.trip-delete');
+            if (deleteButton) {
+                deleteTrip(Number(deleteButton.dataset.id));
+            }
+        });
+    }
+}
+
 async function checkAuth() {
     try {
         await handleEmailConfirmation();
@@ -723,8 +851,8 @@ function displayTrips(trips) {
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
                 <div class="trip-cost">€${trip.cost.toFixed(2)}</div>
-                <button class="trip-delete" style="background: var(--secondary); padding: 6px 10px;" onclick="editTrip(${trip.id})">✏️</button>
-                <button class="trip-delete" onclick="deleteTrip(${trip.id})">✕</button>
+                <button class="trip-delete trip-edit" data-id="${trip.id}" style="background: var(--secondary); padding: 6px 10px;">✏️</button>
+                <button class="trip-delete" data-id="${trip.id}">✕</button>
             </div>
         </div>
     `;
@@ -739,6 +867,7 @@ function initApp() {
     initPullToRefresh();
     initEscapeHandling();
     initServiceWorker();
+    initEventListeners();
     applyLanguage(currentLanguage);
     checkAuth();
 }
