@@ -29,7 +29,7 @@
   "homepage": "https://github.com/jhoelzl/klimaticket-rechner#readme",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.0.18",
-    "@vitest/ui": "^4.0.18",
+    "@vitest/ui": "^4.1.0",
     "eslint": "^9.39.2",
     "globals": "^17.2.0",
     "jsdom": "^27.4.0",
