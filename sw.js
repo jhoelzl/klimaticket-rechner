@@ -1,17 +1,29 @@
 // Service Worker for offline support and PWA features
-const CACHE_NAME = 'klimaticket-v1';
-const FILES_TO_CACHE = [
+const CACHE_NAME = 'klimaticket-v2';
+const APP_SHELL_FILES = [
     './',
     './index.html',
     './manifest.json',
-    './sw.js'
+    './sw.js',
+    './css/styles.css',
+    './partials/app.html',
+    './js/config.js',
+    './js/i18n.js',
+    './js/ui.js',
+    './js/data.js',
+    './js/app.js',
+    './js/partials.js',
+    './js/features/stats.js',
+    './js/features/heatmap.js',
+    './js/features/achievements.js',
+    './js/features/export.js'
 ];
 
 // Install event - cache files
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(FILES_TO_CACHE).catch(() => {
+            return cache.addAll(APP_SHELL_FILES).catch(() => {
                 // If caching fails, just continue
                 return Promise.resolve();
             });
@@ -38,46 +50,43 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests
-    if (!event.request.url.startsWith(self.location.origin)) {
+    const { request } = event;
+
+    // Only handle same-origin GET requests.
+    if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) {
         return;
     }
 
-    // For navigation requests (HTML pages), serve index.html for SPA routing
-    if (event.request.mode === 'navigate') {
-        event.respondWith(
-            caches.match('./index.html').then((response) => {
-                return response || fetch('./index.html');
-            })
-        );
+    // Respect explicit no-store requests from the app.
+    if (request.cache === 'no-store') {
+        event.respondWith(fetch(request));
         return;
     }
 
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            // Cache hit - return response
-            if (response) {
-                return response;
+    event.respondWith((async () => {
+        try {
+            const networkResponse = await fetch(request);
+
+            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                const cache = await caches.open(CACHE_NAME);
+                cache.put(request, networkResponse.clone());
             }
 
-            return fetch(event.request).then((response) => {
-                // Check if valid response
-                if (!response || response.status !== 200 || response.type !== 'basic') {
-                    return response;
+            return networkResponse;
+        } catch (_err) {
+            const cachedResponse = await caches.match(request);
+            if (cachedResponse) {
+                return cachedResponse;
+            }
+
+            if (request.mode === 'navigate') {
+                const offlineShell = await caches.match('./index.html');
+                if (offlineShell) {
+                    return offlineShell;
                 }
+            }
 
-                // Clone the response
-                const responseToCache = response.clone();
-
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, responseToCache);
-                });
-
-                return response;
-            }).catch(() => {
-                // Offline fallback
-                return caches.match('./index.html');
-            });
-        })
-    );
+            throw _err;
+        }
+    })());
 });
