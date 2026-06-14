@@ -86,9 +86,10 @@ function initThemeListener() {
 
 function initServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(err =>
-            console.log('Service Worker registration failed:', err)
-        );
+        navigator.serviceWorker
+            .register('sw.js', { updateViaCache: 'none' })
+            .then((registration) => registration.update())
+            .catch(err => console.log('Service Worker registration failed:', err));
     }
 }
 
