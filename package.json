@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/jhoelzl/klimaticket-rechner#readme",
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/coverage-v8": "^4.1.11",
     "@vitest/ui": "^4.1.10",
     "eslint": "^9.39.5",
     "globals": "^17.11.0",
