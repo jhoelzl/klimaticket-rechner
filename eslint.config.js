@@ -3,7 +3,7 @@ const globals = require("globals");
 module.exports = [
   {
     files: ["**/*.js"],
-    ignores: ["**/node_modules/**", ".githooks/**"],
+    ignores: ["**/node_modules/**", ".githooks/**", "dist/**", "ios/**"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "script",

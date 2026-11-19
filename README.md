@@ -73,6 +73,19 @@ python3 -m http.server 8000
 2. **Android:** Chrome → Menu → "Install app"
 3. App works offline with automatic cloud sync!
 
+### iPhone and iPad app
+
+Install Xcode and Node.js 22 or later, then run `npm ci` and `npm run ios:sync`.
+Open the native project with `npm run ios:open`, choose your Apple development
+team and a connected iPhone or iPad in Xcode, and run the app. Repeat
+`npm run ios:sync` after changing the web app. For local debug signing without
+committing your team ID, create `ios/signing.local.xcconfig` containing
+`DEVELOPMENT_TEAM = <your team ID>`.
+
+The app bundles the web interface; Supabase login and the externally loaded
+Supabase and PDF libraries require an internet connection. Anonymous data is
+stored separately from the browser/PWA.
+
 ---
 
 ## 🗄️ Database Structure (Supabase)
